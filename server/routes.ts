@@ -16,16 +16,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Skip external auth setup for development
   console.log("Using development authentication only");
   
-  // Initialize session middleware for development
-  app.use((req, res, next) => {
-    if (!req.session) {
-      req.session = {} as any;
+  // Use a simple in-memory session for development
+  const sessions = new Map();
+  
+  app.use((req: any, res, next) => {
+    const sessionId = req.headers['x-session-id'] || 'dev-session';
+    if (!sessions.has(sessionId)) {
+      sessions.set(sessionId, {});
     }
+    req.session = sessions.get(sessionId);
     next();
   });
 
   // Development auth routes (bypass for testing)
   app.get('/api/auth/user', async (req: any, res) => {
+    console.log('Auth check - session:', req.session);
+    console.log('devAuth value:', req.session?.devAuth);
     // Check for development session
     if (req.session?.devAuth) {
       const mockUser = {
@@ -37,8 +43,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date(),
         updatedAt: new Date()
       };
+      console.log('Returning user:', mockUser);
       res.json(mockUser);
     } else {
+      console.log('No valid session, returning 401');
       res.status(401).json({ message: "Unauthorized" });
     }
   });
@@ -46,11 +54,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Development login/logout routes (override any auth setup)
   app.get('/api/login', (req, res) => {
     console.log('Development login - setting session');
-    if (!req.session) {
-      console.warn('No session found, creating basic session');
-      req.session = {} as any;
-    }
+    console.log('Session before:', req.session);
     req.session.devAuth = true;
+    console.log('Session after:', req.session);
     res.redirect('/');
   });
 
