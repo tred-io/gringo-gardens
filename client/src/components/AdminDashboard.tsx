@@ -796,7 +796,7 @@ export default function AdminDashboard() {
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -814,7 +814,7 @@ export default function AdminDashboard() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
                   </SelectContent>

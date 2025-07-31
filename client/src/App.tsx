@@ -29,9 +29,7 @@ function Router() {
           <Route path="/gallery" component={Gallery} />
           <Route path="/blog" component={Blog} />
           <Route path="/contact" component={Contact} />
-          {!isLoading && isAuthenticated && (
-            <Route path="/admin" component={Admin} />
-          )}
+          <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       </main>

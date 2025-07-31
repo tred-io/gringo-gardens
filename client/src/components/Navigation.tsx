@@ -65,19 +65,19 @@ export default function Navigation() {
                   </span>
                 </Link>
                 <Button 
-                  asChild
                   variant="outline" 
                   className="border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
+                  onClick={() => window.location.href = '/'}
                 >
-                  <a href="/api/logout">Log Out</a>
+                  Log Out
                 </Button>
               </>
             ) : (
               <Button 
-                asChild
                 className="bg-bluebonnet-600 hover:bg-bluebonnet-700 text-white"
+                onClick={() => window.location.href = '/api/login'}
               >
-                <a href="/api/login">Log In</a>
+                Log In
               </Button>
             )}
           </div>
@@ -129,21 +129,27 @@ export default function Navigation() {
                   </Link>
                   <div className="px-3 py-2">
                     <Button 
-                      asChild
                       variant="outline" 
                       className="w-full border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = '/';
+                      }}
                     >
-                      <a href="/api/logout">Log Out</a>
+                      Log Out
                     </Button>
                   </div>
                 </>
               ) : (
                 <div className="px-3 py-2">
                   <Button 
-                    asChild
                     className="w-full bg-bluebonnet-600 hover:bg-bluebonnet-700 text-white"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      window.location.href = '/api/login';
+                    }}
                   >
-                    <a href="/api/login">Log In</a>
+                    Log In
                   </Button>
                 </div>
               )}
