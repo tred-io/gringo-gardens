@@ -48,7 +48,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             View Details
           </Button>
         </div>
-        {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
+        {product.stock !== null && product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
           <p className="text-orange-600 text-sm mt-2">Only {product.stock} left in stock!</p>
         )}
         {product.stock === 0 && (

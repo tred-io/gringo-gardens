@@ -69,7 +69,7 @@ export default function Blog() {
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-gray-600">
-                    <span>{new Date(featuredPost.createdAt).toLocaleDateString()}</span>
+                    <span>{featuredPost.createdAt ? new Date(featuredPost.createdAt).toLocaleDateString() : 'Unknown date'}</span>
                     {featuredPost.readTime && (
                       <>
                         <span className="mx-2">•</span>

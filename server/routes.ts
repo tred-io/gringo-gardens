@@ -19,7 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.user as any).claims.sub;
       const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {
@@ -248,7 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/blog', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.user as any)?.claims?.sub;
       const validatedData = insertBlogPostSchema.parse({ ...req.body, authorId: userId });
       const post = await storage.createBlogPost(validatedData);
       res.status(201).json(post);

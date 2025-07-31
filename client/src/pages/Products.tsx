@@ -8,15 +8,28 @@ import type { Product, Category } from "@shared/schema";
 
 export default function Products() {
   const [filters, setFilters] = useState({
-    category: "",
+    category: "all",
     search: "",
-    hardinessZone: "",
-    sunRequirements: "",
-    priceRange: "",
+    hardinessZone: "all",
+    sunRequirements: "all",
+    priceRange: "all",
   });
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== 'all') {
+          params.append(key, value);
+        }
+      });
+      const response = await fetch(`/api/products?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    },
   });
 
   const { data: categories = [] } = useQuery<Category[]>({
@@ -50,7 +63,7 @@ export default function Products() {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
@@ -66,7 +79,7 @@ export default function Products() {
                   <SelectValue placeholder="All Zones" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Zones</SelectItem>
+                  <SelectItem value="all">All Zones</SelectItem>
                   <SelectItem value="8a">Zone 8a</SelectItem>
                   <SelectItem value="8b">Zone 8b</SelectItem>
                   <SelectItem value="9a">Zone 9a</SelectItem>
@@ -81,7 +94,7 @@ export default function Products() {
                   <SelectValue placeholder="All Sun Requirements" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Sun Requirements</SelectItem>
+                  <SelectItem value="all">All Sun Requirements</SelectItem>
                   <SelectItem value="full">Full Sun</SelectItem>
                   <SelectItem value="partial">Partial Sun</SelectItem>
                   <SelectItem value="shade">Shade</SelectItem>

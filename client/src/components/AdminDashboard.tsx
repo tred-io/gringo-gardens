@@ -1081,7 +1081,7 @@ export default function AdminDashboard() {
                       <div>
                         <h3 className="text-lg font-semibold text-bluebonnet-900">{post.title}</h3>
                         <p className="text-gray-600">
-                          {post.published ? "Published" : "Draft"} • {new Date(post.createdAt).toLocaleDateString()}
+                          {post.published ? "Published" : "Draft"} • {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Unknown date'}
                         </p>
                       </div>
                       <div className="flex space-x-2">
@@ -1256,7 +1256,7 @@ export default function AdminDashboard() {
                           </h4>
                           <p className="text-gray-600">{message.email}</p>
                           <p className="text-sm text-gray-500">
-                            Subject: {message.subject} • {new Date(message.createdAt).toLocaleDateString()}
+                            Subject: {message.subject} • {message.createdAt ? new Date(message.createdAt).toLocaleDateString() : 'Unknown date'}
                           </p>
                         </div>
                         {!message.read && (

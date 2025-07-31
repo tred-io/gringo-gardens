@@ -56,7 +56,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         <div className="flex items-center justify-between text-sm text-gray-500">
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-1" />
-            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+            <span>{post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Unknown date'}</span>
           </div>
           {post.readTime && (
             <div className="flex items-center">
