@@ -13,12 +13,16 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  try {
-    await setupAuth(app);
-  } catch (error) {
-    console.warn("Auth setup failed, using development mode:", error);
-  }
+  // Skip external auth setup for development
+  console.log("Using development authentication only");
+  
+  // Initialize session middleware for development
+  app.use((req, res, next) => {
+    if (!req.session) {
+      req.session = {} as any;
+    }
+    next();
+  });
 
   // Development auth routes (bypass for testing)
   app.get('/api/auth/user', async (req: any, res) => {
@@ -39,15 +43,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Development login/logout routes
+  // Development login/logout routes (override any auth setup)
   app.get('/api/login', (req, res) => {
+    console.log('Development login - setting session');
+    if (!req.session) {
+      console.warn('No session found, creating basic session');
+      req.session = {} as any;
+    }
     req.session.devAuth = true;
     res.redirect('/');
   });
 
   app.get('/api/logout', (req, res) => {
-    req.session.devAuth = false;
-    delete req.session.devAuth;
+    console.log('Development logout - clearing session');
+    if (req.session) {
+      req.session.devAuth = false;
+      delete req.session.devAuth;
+    }
     res.redirect('/');
   });
 
