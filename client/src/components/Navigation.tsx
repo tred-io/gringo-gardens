@@ -41,7 +41,7 @@ export default function Navigation() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex space-x-8">
+          <div className="hidden lg:flex items-center space-x-8">
             {navigationItems.map((item) => (
               <Link key={item.href} href={item.href}>
                 <span className={`font-medium transition-colors ${
@@ -53,16 +53,32 @@ export default function Navigation() {
                 </span>
               </Link>
             ))}
-            {isAuthenticated && (
-              <Link href="/admin">
-                <span className={`font-medium transition-colors ${
-                  isActive("/admin")
-                    ? "text-bluebonnet-900"
-                    : "text-gray-700 hover:text-bluebonnet-600"
-                }`}>
-                  Admin
-                </span>
-              </Link>
+            {isAuthenticated ? (
+              <>
+                <Link href="/admin">
+                  <span className={`font-medium transition-colors ${
+                    isActive("/admin")
+                      ? "text-bluebonnet-900"
+                      : "text-gray-700 hover:text-bluebonnet-600"
+                  }`}>
+                    Admin
+                  </span>
+                </Link>
+                <Button 
+                  asChild
+                  variant="outline" 
+                  className="border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
+                >
+                  <a href="/api/logout">Log Out</a>
+                </Button>
+              </>
+            ) : (
+              <Button 
+                asChild
+                className="bg-bluebonnet-600 hover:bg-bluebonnet-700 text-white"
+              >
+                <a href="/api/login">Log In</a>
+              </Button>
             )}
           </div>
 
@@ -97,19 +113,39 @@ export default function Navigation() {
                   </span>
                 </Link>
               ))}
-              {isAuthenticated && (
-                <Link href="/admin">
-                  <span
-                    className={`block px-3 py-2 font-medium ${
-                      isActive("/admin")
-                        ? "text-bluebonnet-900"
-                        : "text-gray-700 hover:text-bluebonnet-600"
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+              {isAuthenticated ? (
+                <>
+                  <Link href="/admin">
+                    <span
+                      className={`block px-3 py-2 font-medium ${
+                        isActive("/admin")
+                          ? "text-bluebonnet-900"
+                          : "text-gray-700 hover:text-bluebonnet-600"
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Admin
+                    </span>
+                  </Link>
+                  <div className="px-3 py-2">
+                    <Button 
+                      asChild
+                      variant="outline" 
+                      className="w-full border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
+                    >
+                      <a href="/api/logout">Log Out</a>
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="px-3 py-2">
+                  <Button 
+                    asChild
+                    className="w-full bg-bluebonnet-600 hover:bg-bluebonnet-700 text-white"
                   >
-                    Admin
-                  </span>
-                </Link>
+                    <a href="/api/login">Log In</a>
+                  </Button>
+                </div>
               )}
             </div>
           </div>
