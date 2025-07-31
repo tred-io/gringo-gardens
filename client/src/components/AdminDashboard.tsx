@@ -1,0 +1,1282 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { isUnauthorizedError } from "@/lib/authUtils";
+import { 
+  Sprout, 
+  FileText, 
+  Image, 
+  Star, 
+  Mail, 
+  Settings, 
+  Plus, 
+  Edit, 
+  Trash2,
+  LogOut,
+  Eye,
+  EyeOff,
+  Check,
+  X
+} from "lucide-react";
+import type { 
+  Product, 
+  BlogPost, 
+  GalleryImage, 
+  Review, 
+  ContactMessage,
+  Category,
+  InsertProduct,
+  InsertBlogPost,
+  InsertGalleryImage,
+  InsertCategory
+} from "@shared/schema";
+
+// Form schemas
+const productSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  slug: z.string().min(1, "Slug is required"),
+  description: z.string().optional(),
+  price: z.string().min(1, "Price is required"),
+  imageUrl: z.string().url().optional().or(z.literal("")),
+  categoryId: z.string().min(1, "Category is required"),
+  hardinessZone: z.string().optional(),
+  sunRequirements: z.string().optional(),
+  stock: z.number().min(0).optional(),
+  featured: z.boolean().default(false),
+  active: z.boolean().default(true),
+});
+
+const blogPostSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  slug: z.string().min(1, "Slug is required"),
+  excerpt: z.string().optional(),
+  content: z.string().min(1, "Content is required"),
+  imageUrl: z.string().url().optional().or(z.literal("")),
+  category: z.string().optional(),
+  published: z.boolean().default(false),
+  readTime: z.number().min(1).optional(),
+});
+
+const galleryImageSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  imageUrl: z.string().url("Valid image URL is required"),
+  category: z.string().optional(),
+  featured: z.boolean().default(false),
+});
+
+const categorySchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  slug: z.string().min(1, "Slug is required"),
+  description: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal("")),
+});
+
+type ProductFormData = z.infer<typeof productSchema>;
+type BlogPostFormData = z.infer<typeof blogPostSchema>;
+type GalleryImageFormData = z.infer<typeof galleryImageSchema>;
+type CategoryFormData = z.infer<typeof categorySchema>;
+
+export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState("products");
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [isBlogDialogOpen, setIsBlogDialogOpen] = useState(false);
+  const [isGalleryDialogOpen, setIsGalleryDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [filters, setFilters] = useState({
+    productCategory: "",
+    productSearch: "",
+    productStatus: "",
+  });
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Queries
+  const { data: products = [] } = useQuery<Product[]>({
+    queryKey: ["/api/admin/products", filters],
+    retry: false,
+  });
+
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["/api/admin/categories"],
+    retry: false,
+  });
+
+  const { data: blogPosts = [] } = useQuery<BlogPost[]>({
+    queryKey: ["/api/admin/blog"],
+    retry: false,
+  });
+
+  const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
+    queryKey: ["/api/admin/gallery"],
+    retry: false,
+  });
+
+  const { data: reviews = [] } = useQuery<Review[]>({
+    queryKey: ["/api/admin/reviews"],
+    retry: false,
+  });
+
+  const { data: contactMessages = [] } = useQuery<ContactMessage[]>({
+    queryKey: ["/api/admin/contact"],
+    retry: false,
+  });
+
+  // Forms
+  const productForm = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      price: "",
+      imageUrl: "",
+      categoryId: "",
+      hardinessZone: "",
+      sunRequirements: "",
+      stock: 0,
+      featured: false,
+      active: true,
+    },
+  });
+
+  const blogForm = useForm<BlogPostFormData>({
+    resolver: zodResolver(blogPostSchema),
+    defaultValues: {
+      title: "",
+      slug: "",
+      excerpt: "",
+      content: "",
+      imageUrl: "",
+      category: "",
+      published: false,
+      readTime: 5,
+    },
+  });
+
+  const galleryForm = useForm<GalleryImageFormData>({
+    resolver: zodResolver(galleryImageSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      imageUrl: "",
+      category: "",
+      featured: false,
+    },
+  });
+
+  const categoryForm = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      imageUrl: "",
+    },
+  });
+
+  // Mutations
+  const createProductMutation = useMutation({
+    mutationFn: async (data: InsertProduct) => {
+      return await apiRequest("POST", "/api/admin/products", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({ title: "Product created successfully!" });
+      setIsProductDialogOpen(false);
+      productForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error creating product", variant: "destructive" });
+    },
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<InsertProduct> }) => {
+      return await apiRequest("PUT", `/api/admin/products/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({ title: "Product updated successfully!" });
+      setIsProductDialogOpen(false);
+      setEditingProduct(null);
+      productForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error updating product", variant: "destructive" });
+    },
+  });
+
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/products/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({ title: "Product deleted successfully!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error deleting product", variant: "destructive" });
+    },
+  });
+
+  const createCategoryMutation = useMutation({
+    mutationFn: async (data: InsertCategory) => {
+      return await apiRequest("POST", "/api/admin/categories", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      toast({ title: "Category created successfully!" });
+      setIsCategoryDialogOpen(false);
+      categoryForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error creating category", variant: "destructive" });
+    },
+  });
+
+  const createBlogPostMutation = useMutation({
+    mutationFn: async (data: InsertBlogPost) => {
+      return await apiRequest("POST", "/api/admin/blog", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
+      toast({ title: "Blog post created successfully!" });
+      setIsBlogDialogOpen(false);
+      blogForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error creating blog post", variant: "destructive" });
+    },
+  });
+
+  const updateBlogPostMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<InsertBlogPost> }) => {
+      return await apiRequest("PUT", `/api/admin/blog/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
+      toast({ title: "Blog post updated successfully!" });
+      setIsBlogDialogOpen(false);
+      setEditingPost(null);
+      blogForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error updating blog post", variant: "destructive" });
+    },
+  });
+
+  const deleteBlogPostMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/blog/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
+      toast({ title: "Blog post deleted successfully!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error deleting blog post", variant: "destructive" });
+    },
+  });
+
+  const createGalleryImageMutation = useMutation({
+    mutationFn: async (data: InsertGalleryImage) => {
+      return await apiRequest("POST", "/api/admin/gallery", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      toast({ title: "Gallery image added successfully!" });
+      setIsGalleryDialogOpen(false);
+      galleryForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error adding gallery image", variant: "destructive" });
+    },
+  });
+
+  const deleteGalleryImageMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/gallery/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      toast({ title: "Gallery image deleted successfully!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error deleting gallery image", variant: "destructive" });
+    },
+  });
+
+  const updateReviewMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: { featured?: boolean; approved?: boolean } }) => {
+      return await apiRequest("PUT", `/api/admin/reviews/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      toast({ title: "Review updated successfully!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error updating review", variant: "destructive" });
+    },
+  });
+
+  const markMessageReadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("PUT", `/api/admin/contact/${id}/read`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contact"] });
+      toast({ title: "Message marked as read!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error marking message as read", variant: "destructive" });
+    },
+  });
+
+  // Event handlers
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    productForm.reset({
+      name: product.name,
+      slug: product.slug,
+      description: product.description || "",
+      price: product.price,
+      imageUrl: product.imageUrl || "",
+      categoryId: product.categoryId || "",
+      hardinessZone: product.hardinessZone || "",
+      sunRequirements: product.sunRequirements || "",
+      stock: product.stock || 0,
+      featured: product.featured || false,
+      active: product.active || true,
+    });
+    setIsProductDialogOpen(true);
+  };
+
+  const handleEditBlogPost = (post: BlogPost) => {
+    setEditingPost(post);
+    blogForm.reset({
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt || "",
+      content: post.content,
+      imageUrl: post.imageUrl || "",
+      category: post.category || "",
+      published: post.published || false,
+      readTime: post.readTime || 5,
+    });
+    setIsBlogDialogOpen(true);
+  };
+
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    categoryForm.reset({
+      name: category.name,
+      slug: category.slug,
+      description: category.description || "",
+      imageUrl: category.imageUrl || "",
+    });
+    setIsCategoryDialogOpen(true);
+  };
+
+  const onProductSubmit = (data: ProductFormData) => {
+    const productData = {
+      ...data,
+      price: data.price,
+      stock: Number(data.stock) || 0,
+    };
+
+    if (editingProduct) {
+      updateProductMutation.mutate({ id: editingProduct.id, data: productData });
+    } else {
+      createProductMutation.mutate(productData);
+    }
+  };
+
+  const onBlogPostSubmit = (data: BlogPostFormData) => {
+    if (editingPost) {
+      updateBlogPostMutation.mutate({ id: editingPost.id, data });
+    } else {
+      createBlogPostMutation.mutate(data);
+    }
+  };
+
+  const onGalleryImageSubmit = (data: GalleryImageFormData) => {
+    createGalleryImageMutation.mutate(data);
+  };
+
+  const onCategorySubmit = (data: CategoryFormData) => {
+    createCategoryMutation.mutate(data);
+  };
+
+  const handleCloseProductDialog = () => {
+    setIsProductDialogOpen(false);
+    setEditingProduct(null);
+    productForm.reset();
+  };
+
+  const handleCloseBlogDialog = () => {
+    setIsBlogDialogOpen(false);
+    setEditingPost(null);
+    blogForm.reset();
+  };
+
+  const handleCloseCategoryDialog = () => {
+    setIsCategoryDialogOpen(false);
+    setEditingCategory(null);
+    categoryForm.reset();
+  };
+
+  const updateFilter = (key: string, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const stats = [
+    {
+      label: "Products",
+      value: products.length,
+      icon: Sprout,
+      color: "bg-bluebonnet-100 text-bluebonnet-600",
+    },
+    {
+      label: "Blog Posts",
+      value: blogPosts.length,
+      icon: FileText,
+      color: "bg-texas-green-100 text-texas-green-600",
+    },
+    {
+      label: "Gallery Images",
+      value: galleryImages.length,
+      icon: Image,
+      color: "bg-earth-100 text-earth-500",
+    },
+    {
+      label: "New Messages",
+      value: contactMessages.filter(msg => !msg.read).length,
+      icon: Mail,
+      color: "bg-blue-100 text-blue-600",
+    },
+  ];
+
+  return (
+    <section className="py-8 bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Admin Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-bluebonnet-900">Admin Dashboard</h1>
+            <p className="text-gray-600">Manage your nursery website content</p>
+          </div>
+          <Button 
+            variant="destructive"
+            onClick={() => window.location.href = "/api/logout"}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat) => (
+            <Card key={stat.label}>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className={`p-3 rounded-full ${stat.color}`}>
+                    <stat.icon className="w-6 h-6" />
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-2xl font-bold text-bluebonnet-900">{stat.value}</h3>
+                    <p className="text-gray-600">{stat.label}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Admin Tabs */}
+        <Card>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <div className="border-b border-gray-200">
+              <TabsList className="grid w-full grid-cols-6">
+                <TabsTrigger value="products">Products</TabsTrigger>
+                <TabsTrigger value="categories">Categories</TabsTrigger>
+                <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+                <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger value="messages">Messages</TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Products Tab */}
+            <TabsContent value="products" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Product Management</h2>
+                <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Product
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingProduct ? "Edit Product" : "Add New Product"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <Form {...productForm}>
+                      <form onSubmit={productForm.handleSubmit(onProductSubmit)} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={productForm.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={productForm.control}
+                            name="slug"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Slug</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={productForm.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={productForm.control}
+                            name="price"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Price</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={productForm.control}
+                            name="stock"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Stock</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    {...field} 
+                                    onChange={e => field.onChange(Number(e.target.value))}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={productForm.control}
+                          name="categoryId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select category" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {categories.map(category => (
+                                    <SelectItem key={category.id} value={category.id}>
+                                      {category.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={productForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Image URL</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="https://..." />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex gap-4">
+                          <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                            {editingProduct ? "Update Product" : "Create Product"}
+                          </Button>
+                          <Button type="button" variant="outline" onClick={handleCloseProductDialog}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Product Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <Select value={filters.productCategory} onValueChange={(value) => updateFilter("productCategory", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Categories</SelectItem>
+                    {categories.map(category => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="Search products..."
+                  value={filters.productSearch}
+                  onChange={(e) => updateFilter("productSearch", e.target.value)}
+                />
+                <Select value={filters.productStatus} onValueChange={(value) => updateFilter("productStatus", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Products Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full table-auto">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {products.map(product => (
+                      <tr key={product.id}>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div className="w-12 h-12 bg-gray-200 rounded-lg mr-4">
+                              {product.imageUrl && (
+                                <img 
+                                  src={product.imageUrl} 
+                                  alt={product.name}
+                                  className="w-12 h-12 object-cover rounded-lg"
+                                />
+                              )}
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                              <div className="text-sm text-gray-500">{product.slug}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {categories.find(c => c.id === product.categoryId)?.name || "Unknown"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">${product.price}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{product.stock || 0}</td>
+                        <td className="px-6 py-4">
+                          <Badge variant={product.active ? "default" : "destructive"}>
+                            {product.active ? "Active" : "Inactive"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditProduct(product)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteProductMutation.mutate(product.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </TabsContent>
+
+            {/* Categories Tab */}
+            <TabsContent value="categories" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Category Management</h2>
+                <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Category
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Category</DialogTitle>
+                    </DialogHeader>
+                    <Form {...categoryForm}>
+                      <form onSubmit={categoryForm.handleSubmit(onCategorySubmit)} className="space-y-4">
+                        <FormField
+                          control={categoryForm.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={categoryForm.control}
+                          name="slug"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Slug</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={categoryForm.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={categoryForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Image URL</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="https://..." />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex gap-4">
+                          <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                            Create Category
+                          </Button>
+                          <Button type="button" variant="outline" onClick={handleCloseCategoryDialog}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categories.map(category => (
+                  <Card key={category.id}>
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold text-bluebonnet-900 mb-2">{category.name}</h3>
+                      <p className="text-gray-600 mb-4">{category.description}</p>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditCategory(category)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Blog Tab */}
+            <TabsContent value="blog" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Blog Management</h2>
+                <Dialog open={isBlogDialogOpen} onOpenChange={setIsBlogDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      New Post
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingPost ? "Edit Blog Post" : "Create New Blog Post"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <Form {...blogForm}>
+                      <form onSubmit={blogForm.handleSubmit(onBlogPostSubmit)} className="space-y-4">
+                        <FormField
+                          control={blogForm.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Title</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={blogForm.control}
+                          name="slug"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Slug</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={blogForm.control}
+                          name="excerpt"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Excerpt</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={blogForm.control}
+                          name="content"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Content</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} rows={10} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex gap-4">
+                          <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                            {editingPost ? "Update Post" : "Create Post"}
+                          </Button>
+                          <Button type="button" variant="outline" onClick={handleCloseBlogDialog}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="space-y-4">
+                {blogPosts.map(post => (
+                  <Card key={post.id}>
+                    <CardContent className="p-6 flex justify-between items-center">
+                      <div>
+                        <h3 className="text-lg font-semibold text-bluebonnet-900">{post.title}</h3>
+                        <p className="text-gray-600">
+                          {post.published ? "Published" : "Draft"} • {new Date(post.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditBlogPost(post)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteBlogPostMutation.mutate(post.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Gallery Tab */}
+            <TabsContent value="gallery" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Gallery Management</h2>
+                <Dialog open={isGalleryDialogOpen} onOpenChange={setIsGalleryDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Upload Images
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Gallery Image</DialogTitle>
+                    </DialogHeader>
+                    <Form {...galleryForm}>
+                      <form onSubmit={galleryForm.handleSubmit(onGalleryImageSubmit)} className="space-y-4">
+                        <FormField
+                          control={galleryForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Image URL</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="https://..." />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={galleryForm.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Title</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={galleryForm.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex gap-4">
+                          <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                            Add Image
+                          </Button>
+                          <Button type="button" variant="outline" onClick={() => setIsGalleryDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {galleryImages.map(image => (
+                  <div key={image.id} className="relative group">
+                    <img 
+                      src={image.imageUrl} 
+                      alt={image.title || "Gallery image"}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => deleteGalleryImageMutation.mutate(image.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Reviews Tab */}
+            <TabsContent value="reviews" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Customer Reviews</h2>
+              </div>
+
+              <div className="space-y-4">
+                {reviews.map(review => (
+                  <Card key={review.id}>
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 className="font-semibold text-bluebonnet-900">{review.customerName}</h4>
+                          <div className="text-earth-400 text-sm">
+                            {Array.from({ length: review.rating }).map((_, i) => (
+                              <Star key={i} className="inline w-4 h-4 fill-current" />
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant={review.featured ? "default" : "outline"}
+                            onClick={() => updateReviewMutation.mutate({ 
+                              id: review.id, 
+                              data: { featured: !review.featured } 
+                            })}
+                          >
+                            {review.featured ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={review.approved ? "default" : "outline"}
+                            onClick={() => updateReviewMutation.mutate({ 
+                              id: review.id, 
+                              data: { approved: !review.approved } 
+                            })}
+                          >
+                            {review.approved ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-gray-700">{review.content}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* Messages Tab */}
+            <TabsContent value="messages" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Contact Messages</h2>
+              </div>
+
+              <div className="space-y-4">
+                {contactMessages.map(message => (
+                  <Card key={message.id} className={!message.read ? "border-bluebonnet-200" : ""}>
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 className="font-semibold text-bluebonnet-900">
+                            {message.firstName} {message.lastName}
+                          </h4>
+                          <p className="text-gray-600">{message.email}</p>
+                          <p className="text-sm text-gray-500">
+                            Subject: {message.subject} • {new Date(message.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        {!message.read && (
+                          <Button
+                            size="sm"
+                            onClick={() => markMessageReadMutation.mutate(message.id)}
+                          >
+                            Mark as Read
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-gray-700">{message.message}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </Card>
+      </div>
+    </section>
+  );
+}
