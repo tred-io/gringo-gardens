@@ -22,25 +22,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Development auth routes (bypass for testing)
   app.get('/api/auth/user', async (req: any, res) => {
-    // For development, return a mock admin user
-    const mockUser = {
-      id: 'dev-admin',
-      email: 'admin@gringogardens.com',
-      firstName: 'Admin',
-      lastName: 'User',
-      profileImageUrl: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    res.json(mockUser);
+    // Check for development session
+    if (req.session?.devAuth) {
+      const mockUser = {
+        id: 'dev-admin',
+        email: 'admin@gringogardens.com',
+        firstName: 'Admin',
+        lastName: 'User',
+        profileImageUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      res.json(mockUser);
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
   });
 
   // Development login/logout routes
   app.get('/api/login', (req, res) => {
-    res.redirect('/?admin=true');
+    req.session.devAuth = true;
+    res.redirect('/');
   });
 
   app.get('/api/logout', (req, res) => {
+    req.session.devAuth = false;
+    delete req.session.devAuth;
     res.redirect('/');
   });
 

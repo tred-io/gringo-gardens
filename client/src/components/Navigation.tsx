@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 import { Menu, X } from "lucide-react";
 import logoPath from "@assets/438299493_734376465563424_2823652752500766968_n_1753941603539.jpg";
 
@@ -9,6 +10,13 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+
+  const handleLogout = async () => {
+    // Clear the auth query cache and navigate to logout
+    await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    window.location.href = '/api/logout';
+  };
 
   const navigationItems = [
     { href: "/", label: "Home" },
@@ -67,7 +75,7 @@ export default function Navigation() {
                 <Button 
                   variant="outline" 
                   className="border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
-                  onClick={() => window.location.href = '/'}
+                  onClick={handleLogout}
                 >
                   Log Out
                 </Button>
@@ -133,7 +141,7 @@ export default function Navigation() {
                       className="w-full border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = '/';
+                        handleLogout();
                       }}
                     >
                       Log Out
