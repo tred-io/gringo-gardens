@@ -1,0 +1,62 @@
+You are a senior UI/UX and web designer with 10+ years of experience creating visually stunning, mobile-first websites for nurseries, botanical gardens, and small businesses. Your task is to design a complete website concept for “Gringo Gardens,” a Central Texas nursery in Lampasas, TX that also serves all of Texas and surrounding states. The nursery specializes in native Texas plants and trees, fruit trees, decorative trees, hanging baskets (indoor/outdoor), and common house and garden plants.
+
+Please provide:
+
+1. Brand Identity & Theme
+   - A concise brand statement (tone, personality).
+   - Primary color palette based on bluebonnet hues (hex codes).
+   - Secondary accent colors that complement bluebonnet.
+   - Typeface recommendations (crisp, easy-to-read for headings and body).
+
+2. Homepage Layout (Mobile-First)
+   A. Hero Section
+      • Full-screen hero image: describe an iconic bluebonnet shot near Fredericksburg or Lake Buchanan.
+      • Overlay headline and subheadline text content and styling.
+      • Primary Call-to-Action button (“Shop Native Plants” or “Visit Our Nursery”).
+
+   B. About Section
+      • Brief mission statement and origin story of Gringo Gardens.
+      • One or two supporting images (e.g., nursery storefront, owner in the field).
+      • “Learn More” link anchor to a detailed About page.
+
+   C. Product Categories Preview
+      • Grid or horizontal scroll showcasing four key categories: Native Plants & Trees, Fruit Trees, Decorative Trees, Hanging Baskets.
+      • Each category: image thumbnail, short label, hover effect.
+
+   D. Featured Gallery
+      • Carousel of vibrant plant and landscape photos.
+      • Prompt to “View Full Gallery.”
+
+   E. Testimonials & Local Community
+      • Two customer quotes praising quality and service.
+      • Small map or icon showing Lampasas location.
+
+   F. Footer
+      • Contact info (address, phone, email).
+      • Hours of operation.
+      • Social media icons.
+      • Newsletter signup form.
+
+3. Additional Pages & Features
+   - Products page with filtering by category and hardiness zone.
+   - About page with detailed nursery history and team bios.
+   - Plant care blog with categories “Native Species,” “Fruit Trees,” “Indoor Plants.”
+   - Contact page with embedded Google Map, form, and nursery hours.
+   - E-commerce integration recommendations (if selling online).
+
+4. UX Considerations
+   - Mobile-first grid and flexbox layout suggestions.
+   - Button sizes, touch targets, and legible font sizes for smartphones.
+   - Image optimization and lazy-loading strategy for fast load times.
+
+5. Visual Assets & Imagery
+   - Guidance on sourcing or photographing bluebonnet fields.
+   - Recommendations for vibrant, high-resolution product shots.
+   - Iconography style (line icons, filled icons).
+
+6. SEO & Accessibility
+   - Suggested meta title and description for homepage.
+   - ARIA label guidance for key interactive elements.
+   - Alt text examples for hero image and product thumbnails.
+
+Deliver your response in a structured format with headings, bullet points, and concise paragraphs for each section. Make sure all design recommendations prioritize the bluebonnet theme, a crisp font style, vibrant imagery, and a seamless mobile-first experience.
