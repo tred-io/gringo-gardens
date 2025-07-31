@@ -46,10 +46,18 @@ Preferred communication style: Simple, everyday language.
 ## Data Flow
 
 1. **Public Pages**: Users browse products, read blog posts, view gallery, and submit contact forms
-2. **Authentication**: Admin users authenticate via Replit OIDC for dashboard access
+2. **Authentication**: Admin users authenticate via Replit OIDC for dashboard access using the "Log In" button in navigation
 3. **Content Management**: Authenticated admins can create, edit, and delete all content through the admin dashboard
-4. **Data Persistence**: All content is stored in PostgreSQL with proper relationships
+4. **Data Persistence**: All content is stored in PostgreSQL with proper relationships and sample data
 5. **Real-time Updates**: TanStack Query provides optimistic updates and cache invalidation
+
+## Recent Changes (Latest Session)
+
+- **Fixed TypeScript Errors**: Resolved all LSP diagnostics across the application including date handling and null checks
+- **Fixed Products Page**: Corrected SelectItem empty value errors and API query formatting issues
+- **Added Login Button**: Navigation now displays "Log In" button for unauthenticated users and "Log Out" for authenticated users
+- **Added Sample Data**: Populated database with native Texas plants, fruit trees, herbs, categories, reviews, blog posts, and gallery images
+- **Enhanced Navigation**: Login/logout functionality integrated into both desktop and mobile navigation menus
 
 ## External Dependencies
 
