@@ -16,7 +16,7 @@ export default function HeroSection() {
         }}
         onLoad={() => console.log('Hero image loaded successfully')}
       />
-      <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-40"></div>
+      <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-20"></div>
       
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
