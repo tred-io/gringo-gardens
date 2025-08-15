@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import heroImage from "@assets/AdobeStock_108385172_Preview_1755300127143.jpeg";
 
 export default function HeroSection() {
   return (
@@ -9,7 +8,7 @@ export default function HeroSection() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('${heroImage}')`
+          backgroundImage: "url('/hero-image.jpg')"
         }}
       >
         <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-40"></div>
