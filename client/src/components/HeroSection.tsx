@@ -6,9 +6,9 @@ export default function HeroSection() {
     <section className="relative h-screen flex items-center justify-center text-white">
       {/* Background Image */}
       <img 
-        src="/hero-image.jpg" 
+        src="/hero-image.jpg?v=1" 
         alt="Texas wildflowers"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover z-0"
         onError={(e) => {
           console.error('Hero image failed to load:', e);
           // Fallback to original image
@@ -16,7 +16,7 @@ export default function HeroSection() {
         }}
         onLoad={() => console.log('Hero image loaded successfully')}
       />
-      <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-20"></div>
+      {/* <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-10 z-5"></div> */}
       
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
