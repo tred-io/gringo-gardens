@@ -47,8 +47,8 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
           <div>
             <img 
-              src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-              alt="Gringo Gardens greenhouse" 
+              src="/nursery-photo.jpg" 
+              alt="Gringo Gardens nursery with shade structures and native plants at sunset" 
               className="rounded-2xl shadow-2xl"
             />
           </div>
