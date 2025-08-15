@@ -96,10 +96,12 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-4">Contact Info</h3>
             <div className="space-y-3">
-              <div className="flex items-center">
-                <MapPin className="text-bluebonnet-400 w-5 h-5 mr-3" />
-                <span className="text-bluebonnet-200">4041 FM 1715<br />Lampasas, TX 76550</span>
-              </div>
+              <Link href="/contact">
+                <div className="flex items-center cursor-pointer hover:text-white transition-colors">
+                  <MapPin className="text-bluebonnet-400 w-5 h-5 mr-3" />
+                  <span className="text-bluebonnet-200 hover:text-white transition-colors">4041 FM 1715<br />Lampasas, TX 76550</span>
+                </div>
+              </Link>
               <div className="flex items-center">
                 <Mail className="text-bluebonnet-400 w-5 h-5 mr-3" />
                 <span className="text-bluebonnet-200">info@gringogardens.com</span>

@@ -34,7 +34,7 @@ export default function HeroSection() {
           <Link href="/contact">
             <Button 
               variant="outline" 
-              className="border-2 border-white bg-transparent hover:bg-white hover:text-bluebonnet-900 text-white px-8 py-4 text-lg font-semibold transition-all duration-300 shadow-lg"
+              className="border-2 border-bluebonnet bg-bluebonnet-600 hover:bg-bluebonnet hover:text-bluebonnet-900 px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
             >
               Visit Our Nursery
             </Button>
