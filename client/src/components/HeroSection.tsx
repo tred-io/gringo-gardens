@@ -5,14 +5,18 @@ export default function HeroSection() {
   return (
     <section className="relative h-screen flex items-center justify-center text-white">
       {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/hero-image.jpg')"
+      <img 
+        src="/hero-image.jpg" 
+        alt="Texas wildflowers"
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={(e) => {
+          console.error('Hero image failed to load:', e);
+          // Fallback to original image
+          e.currentTarget.src = 'https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80';
         }}
-      >
-        <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-40"></div>
-      </div>
+        onLoad={() => console.log('Hero image loaded successfully')}
+      />
+      <div className="absolute inset-0 bg-bluebonnet-900 bg-opacity-40"></div>
       
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
