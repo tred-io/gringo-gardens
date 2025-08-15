@@ -98,11 +98,7 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center">
                 <MapPin className="text-bluebonnet-400 w-5 h-5 mr-3" />
-                <span className="text-bluebonnet-200">123 Bluebonnet Trail<br />Lampasas, TX 76550</span>
-              </div>
-              <div className="flex items-center">
-                <Phone className="text-bluebonnet-400 w-5 h-5 mr-3" />
-                <span className="text-bluebonnet-200">(512) 555-GROW</span>
+                <span className="text-bluebonnet-200">4041 FM 1715<br />Lampasas, TX 76550</span>
               </div>
               <div className="flex items-center">
                 <Mail className="text-bluebonnet-400 w-5 h-5 mr-3" />

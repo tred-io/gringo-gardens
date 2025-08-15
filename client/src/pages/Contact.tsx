@@ -210,15 +210,7 @@ export default function Contact() {
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mt-1 mr-4" />
                   <div>
                     <h3 className="font-semibold text-bluebonnet-900">Address</h3>
-                    <p className="text-gray-700">123 Bluebonnet Trail<br />Lampasas, TX 76550</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <Phone className="text-bluebonnet-600 w-6 h-6 mt-1 mr-4" />
-                  <div>
-                    <h3 className="font-semibold text-bluebonnet-900">Phone</h3>
-                    <p className="text-gray-700">(512) 555-GROW</p>
+                    <p className="text-gray-700">4041 FM 1715<br />Lampasas, TX 76550</p>
                   </div>
                 </div>
                 
@@ -243,13 +235,18 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="bg-gray-200 rounded-2xl h-64 flex items-center justify-center">
-              <div className="text-center text-gray-600">
-                <MapPin className="w-16 h-16 mx-auto mb-4" />
-                <p className="text-lg font-medium">Interactive Map</p>
-                <p>123 Bluebonnet Trail, Lampasas, TX</p>
-              </div>
+            {/* Interactive Map */}
+            <div className="bg-gray-200 rounded-2xl h-64 overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3444.5678901234567!2d-98.1734567!3d31.0645678!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z4041+FM+1715%2C+Lampasas%2C+TX+76550!5e0!3m2!1sen!2sus!4v1234567890123"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Gringo Gardens Location"
+              />
             </div>
 
             {/* Service Areas */}

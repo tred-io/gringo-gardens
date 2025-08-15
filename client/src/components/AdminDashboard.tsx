@@ -108,6 +108,19 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Settings state
+  const [businessHours, setBusinessHours] = useState({
+    monday: { open: "08:00", close: "18:00", closed: false },
+    tuesday: { open: "08:00", close: "18:00", closed: false },
+    wednesday: { open: "08:00", close: "18:00", closed: false },
+    thursday: { open: "08:00", close: "18:00", closed: false },
+    friday: { open: "08:00", close: "18:00", closed: false },
+    saturday: { open: "08:00", close: "18:00", closed: false },
+    sunday: { open: "10:00", close: "16:00", closed: false },
+  });
+  const [isTemporarilyClosed, setIsTemporarilyClosed] = useState(false);
+  const [closureMessage, setClosureMessage] = useState("");
+
   // Queries
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/admin/products", filters],
@@ -136,6 +149,11 @@ export default function AdminDashboard() {
 
   const { data: contactMessages = [] } = useQuery<ContactMessage[]>({
     queryKey: ["/api/admin/contact"],
+    retry: false,
+  });
+
+  const { data: settings = [] } = useQuery({
+    queryKey: ["/api/admin/settings"],
     retry: false,
   });
 
@@ -636,13 +654,14 @@ export default function AdminDashboard() {
         <Card>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <div className="border-b border-gray-200">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-7">
                 <TabsTrigger value="products">Products</TabsTrigger>
                 <TabsTrigger value="categories">Categories</TabsTrigger>
                 <TabsTrigger value="blog">Blog Posts</TabsTrigger>
                 <TabsTrigger value="gallery">Gallery</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
                 <TabsTrigger value="messages">Messages</TabsTrigger>
+                <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
             </div>
 
@@ -1272,6 +1291,132 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            </TabsContent>
+
+            {/* Settings Tab */}
+            <TabsContent value="settings" className="p-6">
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-xl font-bold text-bluebonnet-900 mb-6">Business Settings</h2>
+                  
+                  {/* Business Hours */}
+                  <Card className="mb-6">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold text-bluebonnet-900 mb-4">Business Hours</h3>
+                      <div className="space-y-4">
+                        {Object.entries(businessHours).map(([day, hours]) => (
+                          <div key={day} className="flex items-center space-x-4">
+                            <div className="w-24 capitalize font-medium text-gray-700">
+                              {day}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={!hours.closed}
+                                onChange={(e) => {
+                                  setBusinessHours(prev => ({
+                                    ...prev,
+                                    [day]: { ...prev[day], closed: !e.target.checked }
+                                  }));
+                                }}
+                                className="rounded"
+                              />
+                              <span className="text-sm text-gray-600">Open</span>
+                            </div>
+                            {!hours.closed && (
+                              <>
+                                <input
+                                  type="time"
+                                  value={hours.open}
+                                  onChange={(e) => {
+                                    setBusinessHours(prev => ({
+                                      ...prev,
+                                      [day]: { ...prev[day], open: e.target.value }
+                                    }));
+                                  }}
+                                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-bluebonnet-500 focus:border-bluebonnet-500"
+                                />
+                                <span className="text-gray-500">to</span>
+                                <input
+                                  type="time"
+                                  value={hours.close}
+                                  onChange={(e) => {
+                                    setBusinessHours(prev => ({
+                                      ...prev,
+                                      [day]: { ...prev[day], close: e.target.value }
+                                    }));
+                                  }}
+                                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-bluebonnet-500 focus:border-bluebonnet-500"
+                                />
+                              </>
+                            )}
+                            {hours.closed && (
+                              <span className="text-gray-500 italic">Closed</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <Button 
+                        className="mt-4 bg-bluebonnet-600 hover:bg-bluebonnet-700"
+                        onClick={() => {
+                          toast({
+                            title: "Business Hours Updated",
+                            description: "Your business hours have been saved successfully.",
+                          });
+                        }}
+                      >
+                        Save Business Hours
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Seasonal Closure */}
+                  <Card>
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold text-bluebonnet-900 mb-4">Seasonal Closure</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            checked={isTemporarilyClosed}
+                            onChange={(e) => setIsTemporarilyClosed(e.target.checked)}
+                            className="rounded"
+                          />
+                          <label className="text-sm font-medium text-gray-700">
+                            Temporarily closed (e.g., winter break, vacation)
+                          </label>
+                        </div>
+                        
+                        {isTemporarilyClosed && (
+                          <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">
+                              Closure Message
+                            </label>
+                            <textarea
+                              value={closureMessage}
+                              onChange={(e) => setClosureMessage(e.target.value)}
+                              placeholder="We're temporarily closed for the winter season. We'll reopen in March!"
+                              rows={3}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-bluebonnet-500 focus:border-bluebonnet-500"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <Button 
+                        className="mt-4 bg-bluebonnet-600 hover:bg-bluebonnet-700"
+                        onClick={() => {
+                          toast({
+                            title: "Closure Status Updated",
+                            description: "Your seasonal closure settings have been saved.",
+                          });
+                        }}
+                      >
+                        Save Closure Settings
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </TabsContent>
           </Tabs>

@@ -244,11 +244,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mr-3" />
-                  <span className="text-gray-700">123 Bluebonnet Trail, Lampasas, TX 76550</span>
-                </div>
-                <div className="flex items-center">
-                  <Phone className="text-bluebonnet-600 w-6 h-6 mr-3" />
-                  <span className="text-gray-700">(512) 555-GROW</span>
+                  <span className="text-gray-700">4041 FM 1715, Lampasas, TX 76550</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="text-bluebonnet-600 w-6 h-6 mr-3" />

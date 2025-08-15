@@ -10,6 +10,7 @@ import {
   insertContactMessageSchema,
   insertNewsletterSubscriberSchema,
   insertCategorySchema,
+  insertSettingSchema,
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -405,6 +406,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error marking message as read:", error);
       res.status(500).json({ message: "Failed to mark message as read" });
+    }
+  });
+
+  // Settings Management Routes
+  app.get('/api/admin/settings', async (req, res) => {
+    try {
+      const settings = await storage.getAllSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.put('/api/admin/settings/:key', async (req, res) => {
+    try {
+      const { value } = req.body;
+      const setting = await storage.setSetting(req.params.key, value);
+      res.json(setting);
+    } catch (error) {
+      console.error("Error updating setting:", error);
+      res.status(500).json({ message: "Failed to update setting" });
+    }
+  });
+
+  app.get('/api/settings/:key', async (req, res) => {
+    try {
+      const setting = await storage.getSetting(req.params.key);
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error) {
+      console.error("Error fetching setting:", error);
+      res.status(500).json({ message: "Failed to fetch setting" });
     }
   });
 

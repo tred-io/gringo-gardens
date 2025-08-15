@@ -25,6 +25,7 @@ import {
   type NewsletterSubscriber,
   type InsertNewsletterSubscriber,
   type Setting,
+  type InsertSetting,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or } from "drizzle-orm";
@@ -98,6 +99,7 @@ export interface IStorage {
   // Settings operations
   getSetting(key: string): Promise<Setting | undefined>;
   setSetting(key: string, value: string): Promise<Setting>;
+  getAllSettings(): Promise<Setting[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -420,6 +422,10 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return setting;
+  }
+
+  async getAllSettings(): Promise<Setting[]> {
+    return await db.select().from(settings);
   }
 }
 
