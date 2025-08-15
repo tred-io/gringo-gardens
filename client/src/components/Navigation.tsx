@@ -43,7 +43,7 @@ export default function Navigation() {
               <img 
                 src={logoPath} 
                 alt="Gringo Gardens Logo" 
-                className="h-10 lg:h-12 object-contain"
+                className="h-20 lg:h-20 object-contain"
               />
             </Link>
           </div>
