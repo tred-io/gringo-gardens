@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -121,6 +121,24 @@ export default function AdminDashboard() {
   const [isTemporarilyClosed, setIsTemporarilyClosed] = useState(false);
   const [closureMessage, setClosureMessage] = useState("");
 
+  // Load settings on component mount
+  useEffect(() => {
+    if (settings) {
+      const businessHoursSetting = settings.find((s: any) => s.key === 'business_hours');
+      const temporaryClosureSetting = settings.find((s: any) => s.key === 'temporary_closure');
+      
+      if (businessHoursSetting?.value) {
+        setBusinessHours(JSON.parse(businessHoursSetting.value));
+      }
+      
+      if (temporaryClosureSetting?.value) {
+        const closure = JSON.parse(temporaryClosureSetting.value);
+        setIsTemporarilyClosed(closure.closed);
+        setClosureMessage(closure.message || "");
+      }
+    }
+  }, [settings]);
+
   // Queries
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/admin/products", filters],
@@ -155,6 +173,30 @@ export default function AdminDashboard() {
   const { data: settings = [] } = useQuery({
     queryKey: ["/api/admin/settings"],
     retry: false,
+  });
+
+  // Settings mutations
+  const updateSettingMutation = useMutation({
+    mutationFn: async ({ key, value }: { key: string; value: string }) => {
+      return await apiRequest(`/api/admin/settings/${key}`, {
+        method: "PUT",
+        body: { value },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({
+        title: "Settings Updated",
+        description: "Your settings have been saved successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update settings",
+        variant: "destructive",
+      });
+    },
   });
 
   // Forms
@@ -1360,13 +1402,14 @@ export default function AdminDashboard() {
                       <Button 
                         className="mt-4 bg-bluebonnet-600 hover:bg-bluebonnet-700"
                         onClick={() => {
-                          toast({
-                            title: "Business Hours Updated",
-                            description: "Your business hours have been saved successfully.",
+                          updateSettingMutation.mutate({
+                            key: "business_hours",
+                            value: JSON.stringify(businessHours)
                           });
                         }}
+                        disabled={updateSettingMutation.isPending}
                       >
-                        Save Business Hours
+                        {updateSettingMutation.isPending ? "Saving..." : "Save Business Hours"}
                       </Button>
                     </CardContent>
                   </Card>
@@ -1406,13 +1449,17 @@ export default function AdminDashboard() {
                       <Button 
                         className="mt-4 bg-bluebonnet-600 hover:bg-bluebonnet-700"
                         onClick={() => {
-                          toast({
-                            title: "Closure Status Updated",
-                            description: "Your seasonal closure settings have been saved.",
+                          updateSettingMutation.mutate({
+                            key: "temporary_closure",
+                            value: JSON.stringify({
+                              closed: isTemporarilyClosed,
+                              message: closureMessage
+                            })
                           });
                         }}
+                        disabled={updateSettingMutation.isPending}
                       >
-                        Save Closure Settings
+                        {updateSettingMutation.isPending ? "Saving..." : "Save Closure Settings"}
                       </Button>
                     </CardContent>
                   </Card>

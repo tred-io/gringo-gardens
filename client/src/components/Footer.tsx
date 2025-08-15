@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { MapPin, Phone, Mail, Facebook, Instagram } from "lucide-react";
@@ -12,6 +12,20 @@ import logoPath from "@assets/438299493_734376465563424_2823652752500766968_n_17
 export default function Footer() {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
+
+  // Fetch business hours and closure settings
+  const { data: businessHoursSetting } = useQuery({
+    queryKey: ["/api/settings/business_hours"],
+    retry: false,
+  });
+
+  const { data: temporaryClosureSetting } = useQuery({
+    queryKey: ["/api/settings/temporary_closure"],
+    retry: false,
+  });
+
+  const businessHours = businessHoursSetting?.value ? JSON.parse(businessHoursSetting.value) : null;
+  const temporaryClosure = temporaryClosureSetting?.value ? JSON.parse(temporaryClosureSetting.value) : null;
 
   const newsletterMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -137,14 +151,31 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-bluebonnet-700">
           <div className="text-center">
             <h3 className="text-lg font-bold mb-4">Hours of Operation</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {temporaryClosure?.closed ? (
               <div className="text-bluebonnet-200">
-                <strong>Monday - Saturday:</strong> 8:00 AM - 6:00 PM
+                <p className="text-orange-300 font-semibold mb-2">Temporarily Closed</p>
+                <p className="italic">{temporaryClosure.message}</p>
               </div>
-              <div className="text-bluebonnet-200">
-                <strong>Sunday:</strong> 10:00 AM - 4:00 PM
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                {businessHours ? (
+                  Object.entries(businessHours).map(([day, hours]: [string, any]) => (
+                    <div key={day} className="text-bluebonnet-200 capitalize">
+                      <strong>{day}:</strong> {hours.closed ? 'Closed' : `${hours.open} - ${hours.close}`}
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="text-bluebonnet-200">
+                      <strong>Monday - Saturday:</strong> 8:00 AM - 6:00 PM
+                    </div>
+                    <div className="text-bluebonnet-200">
+                      <strong>Sunday:</strong> 10:00 AM - 4:00 PM
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
 
