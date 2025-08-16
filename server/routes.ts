@@ -526,9 +526,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { imageProcessor } = await import("./imageProcessor");
       const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
 
-      // For object storage uploads, we'll use a different approach for duplicate detection
-      // Since each upload gets a unique object path, we rely on users to avoid uploading
-      // the same image content multiple times. The unique upload URLs prevent exact duplicates.
+      // Use the optimized URL or fall back to original object path
+      const finalImageUrl = optimizedUrl || objectPath;
 
       // Parse tags from comma-separated string to array
       let tagsArray: string[] = [];

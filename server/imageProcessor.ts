@@ -73,11 +73,12 @@ export class ImageProcessor {
       
       console.log(`Image processed: ${originalName} -> ${processedName} (${maxWidth}x${maxHeight}, ${quality}% quality)`);
       
-      return processedFile.publicUrl();
+      // Return the object path instead of public URL for consistency with object storage system
+      return `/objects/uploads/${processedName.split('/').pop()}`;
     } catch (error) {
       console.error('Error processing image:', error);
-      // Return original file URL if processing fails
-      return sourceFile.publicUrl();
+      // Return null if processing fails so we can use the original object path
+      return null;
     }
   }
 
