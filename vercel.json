@@ -8,5 +8,5 @@
       }
     }
   ],
-  "buildCommand": "vite build"
+  "buildCommand": "cd client && vite build"
 }
