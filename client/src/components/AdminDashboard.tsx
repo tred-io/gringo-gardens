@@ -635,7 +635,7 @@ export default function AdminDashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       toast({ 
         title: "Plant identification started!", 
-        description: "AI is analyzing the image. Results will appear shortly." 
+        description: "Analyzing the image. Results will appear shortly." 
       });
     },
     onError: (error) => {
@@ -1885,21 +1885,15 @@ export default function AdminDashboard() {
                           </div>
                         )}
                         
-                        {/* AI Plant Identification Status */}
-                        {(image as any).aiIdentified && (
+                        {/* Plant Information */}
+                        {(image as any).commonName && (
                           <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
-                            <div className="flex items-center gap-1 mb-1">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="font-medium text-green-800">AI Identified</span>
-                            </div>
-                            {(image as any).commonName && (
-                              <p className="text-green-700">
-                                <span className="font-medium">{(image as any).commonName}</span>
-                                {(image as any).latinName && (
-                                  <span className="italic text-xs text-green-600"> ({(image as any).latinName})</span>
-                                )}
-                              </p>
-                            )}
+                            <p className="text-green-700">
+                              <span className="font-medium">{(image as any).commonName}</span>
+                              {(image as any).latinName && (
+                                <span className="italic text-xs text-green-600"> ({(image as any).latinName})</span>
+                              )}
+                            </p>
                             {(image as any).texasNative === true && (
                               <Badge variant="default" className="bg-green-600 text-white text-xs mt-1">
                                 Texas Native
@@ -1931,7 +1925,7 @@ export default function AdminDashboard() {
                             <Trash2 className="w-4 h-4 mr-2" />
                             Delete
                           </Button>
-                          {!(image as any).aiIdentified && (
+                          {!(image as any).commonName && (
                             <Button
                               size="sm"
                               variant="secondary"
@@ -1946,7 +1940,7 @@ export default function AdminDashboard() {
                                 </>
                               ) : (
                                 <>
-                                  <span className="w-4 h-4 mr-2">🧠</span>
+                                  <span className="w-4 h-4 mr-2">🌿</span>
                                   ID Plant
                                 </>
                               )}

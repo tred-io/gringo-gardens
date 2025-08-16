@@ -26,8 +26,9 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
     if (plantDetails) {
       console.log(`Plant identified for image ${imageId}:`, plantDetails.common_name);
       
-      // Update gallery image with plant details
-      await storage.updateGalleryImage(imageId, {
+      // Update gallery image with plant details, overwriting main fields
+      const updateData: any = {
+        // Store detailed plant information
         commonName: plantDetails.common_name !== "unknown" ? plantDetails.common_name : null,
         latinName: plantDetails.latin_name !== "unknown" ? plantDetails.latin_name : null,
         hardinessZone: plantDetails.hardiness_zone !== "unknown" ? plantDetails.hardiness_zone : null,
@@ -38,7 +39,41 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
         classification: plantDetails.classification !== "unknown" ? plantDetails.classification : null,
         aiDescription: plantDetails.description || null,
         aiIdentified: true,
-      });
+      };
+
+      // Update main fields with plant information
+      if (plantDetails.common_name !== "unknown") {
+        updateData.title = plantDetails.common_name;
+        if (plantDetails.latin_name !== "unknown") {
+          updateData.title = `${plantDetails.common_name} (${plantDetails.latin_name})`;
+        }
+      }
+
+      if (plantDetails.description) {
+        updateData.description = plantDetails.description;
+      }
+
+      // Update category based on classification
+      if (plantDetails.classification !== "unknown") {
+        const categoryMap: Record<string, string> = {
+          'tree': 'trees',
+          'shrub': 'shrubs', 
+          'succulent': 'succulents',
+          'herb': 'herbs',
+          'vine': 'vines',
+          'grass': 'grasses',
+          'fern': 'ferns',
+          'annual': 'flowers',
+          'perennial': 'flowers'
+        };
+        
+        const mappedCategory = categoryMap[plantDetails.classification.toLowerCase()];
+        if (mappedCategory) {
+          updateData.category = mappedCategory;
+        }
+      }
+
+      await storage.updateGalleryImage(imageId, updateData);
       
       console.log(`Successfully updated plant details for image ${imageId}`);
     } else {
