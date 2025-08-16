@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import type { GalleryImage } from "@shared/schema";
 
 interface GalleryGridProps {
