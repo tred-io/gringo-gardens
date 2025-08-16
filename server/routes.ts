@@ -50,6 +50,9 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
       } else if (plantDetails.classification && plantDetails.classification !== "unknown") {
         // For multiple species or unclear ID, use classification + description
         updateData.title = plantDetails.classification.charAt(0).toUpperCase() + plantDetails.classification.slice(1) + " Collection";
+      } else if (plantDetails.description) {
+        // Even if everything else is unknown, use the description for title if available
+        updateData.title = "Mixed Plant Collection";
       }
 
       if (plantDetails.description) {

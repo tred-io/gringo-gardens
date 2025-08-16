@@ -178,16 +178,6 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
 export const insertGalleryImageSchema = createInsertSchema(galleryImages).omit({
   id: true,
   createdAt: true,
-  commonName: true,
-  latinName: true,
-  hardinessZone: true,
-  sunPreference: true,
-  droughtTolerance: true,
-  texasNative: true,
-  indoorOutdoor: true,
-  classification: true,
-  aiDescription: true,
-  aiIdentified: true,
 });
 
 export const insertReviewSchema = createInsertSchema(reviews).omit({
