@@ -13,7 +13,7 @@
   --card-foreground: hsl(20, 14.3%, 4.1%);
   --border: hsl(20, 5.9%, 90%);
   --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(215, 84%, 24%);
+  --primary: hsl(208, 100%, 34%);
   --primary-foreground: hsl(211, 100%, 99%);
   --secondary: hsl(60, 4.8%, 95.9%);
   --secondary-foreground: hsl(24, 9.8%, 10%);
@@ -24,23 +24,23 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Custom Bluebonnet Theme Colors */
-  --bluebonnet-50: hsl(214, 100%, 97%);
-  --bluebonnet-100: hsl(214, 95%, 93%);
-  --bluebonnet-200: hsl(213, 97%, 87%);
-  --bluebonnet-300: hsl(212, 96%, 78%);
-  --bluebonnet-400: hsl(213, 94%, 68%);
-  --bluebonnet-500: hsl(217, 91%, 60%);
-  --bluebonnet-600: hsl(221, 83%, 53%);
-  --bluebonnet-700: hsl(224, 76%, 48%);
-  --bluebonnet-800: hsl(226, 71%, 40%);
-  --bluebonnet-900: hsl(215, 84%, 24%);
+  /* Custom Bluebonnet Theme Colors - Updated to #004bac base */
+  --bluebonnet-50: hsl(208, 100%, 97%);
+  --bluebonnet-100: hsl(208, 100%, 93%);
+  --bluebonnet-200: hsl(208, 100%, 85%);
+  --bluebonnet-300: hsl(208, 100%, 75%);
+  --bluebonnet-400: hsl(208, 100%, 65%);
+  --bluebonnet-500: hsl(208, 100%, 55%);
+  --bluebonnet-600: hsl(208, 100%, 34%);
+  --bluebonnet-700: hsl(208, 100%, 28%);
+  --bluebonnet-800: hsl(208, 100%, 22%);
+  --bluebonnet-900: hsl(208, 100%, 16%);
   
-  /* Texas Green Colors */
-  --texas-green-100: hsl(78, 92%, 85%);
-  --texas-green-400: hsl(78, 92%, 55%);
-  --texas-green-500: hsl(78, 92%, 45%);
-  --texas-green-600: hsl(142, 76%, 36%);
+  /* Texas Green Colors - Updated to #7ed856 base */
+  --texas-green-100: hsl(93, 65%, 90%);
+  --texas-green-400: hsl(93, 65%, 70%);
+  --texas-green-500: hsl(93, 65%, 60%);
+  --texas-green-600: hsl(93, 65%, 50%);
   
   /* Earth Tone Colors */
   --earth-100: hsl(45, 93%, 85%);
@@ -60,7 +60,7 @@
   --card-foreground: hsl(0, 0%, 98%);
   --border: hsl(240, 3.7%, 15.9%);
   --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(215, 84%, 24%);
+  --primary: hsl(208, 100%, 34%);
   --primary-foreground: hsl(211, 100%, 99%);
   --secondary: hsl(240, 3.7%, 15.9%);
   --secondary-foreground: hsl(0, 0%, 98%);
