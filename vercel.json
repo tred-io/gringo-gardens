@@ -1,6 +1,7 @@
 {
-  "buildCommand": "cd client && vite build --outDir ../public --emptyOutDir",
+  "buildCommand": "cd client && vite build --outDir ../public --emptyOutDir --force",
   "outputDirectory": "public",
   "cleanUrls": false,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "version": 3
 }
