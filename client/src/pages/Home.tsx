@@ -251,9 +251,18 @@ export default function Home() {
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mr-3" />
                   <span className="text-gray-700">4041 FM 1715, Lampasas, TX 76550</span>
                 </div>
-                <div className="flex items-center">
-                  <Clock className="text-red-600 w-6 h-6 mr-3" />
-                  <span className="text-red-700 font-medium">Temporarily Closed</span>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                  <div className="flex items-start">
+                    <Clock className="text-red-600 w-6 h-6 mr-3 mt-0.5" />
+                    <div>
+                      <h4 className="text-red-800 font-semibold mb-2">Temporarily Closed</h4>
+                      <p className="text-red-700 text-sm leading-relaxed">
+                        We're currently taking a break to prepare for the upcoming growing season. 
+                        Please check back soon or contact us for plant availability and reopening updates. 
+                        Thank you for your patience!
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
               </div>
