@@ -1502,8 +1502,8 @@ export default function AdminDashboard() {
                 <h2 className="text-xl font-bold text-bluebonnet-900">Gallery Management</h2>
                 <div className="flex gap-2">
                   <ObjectUploader
-                    maxNumberOfFiles={10}
-                    maxFileSize={10485760}
+                    maxNumberOfFiles={50}
+                    maxFileSize={15728640}
                     onGetUploadParameters={async () => {
                       const response = await apiRequest("POST", "/api/objects/upload");
                       const data = await response.json();
