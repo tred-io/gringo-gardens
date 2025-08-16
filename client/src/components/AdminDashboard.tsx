@@ -31,6 +31,7 @@ import {
   Check,
   X
 } from "lucide-react";
+import { ObjectUploader } from "./ObjectUploader";
 import type { 
   Product, 
   BlogPost, 
@@ -1163,16 +1164,67 @@ export default function AdminDashboard() {
             <TabsContent value="gallery" className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-bluebonnet-900">Gallery Management</h2>
-                <Dialog open={isGalleryDialogOpen} onOpenChange={setIsGalleryDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Upload Images
-                    </Button>
-                  </DialogTrigger>
+                <div className="flex gap-2">
+                  <ObjectUploader
+                    maxNumberOfFiles={10}
+                    maxFileSize={10485760}
+                    onGetUploadParameters={async () => {
+                      const response = await apiRequest("/api/objects/upload", {
+                        method: "POST",
+                      });
+                      return {
+                        method: "PUT" as const,
+                        url: response.uploadURL,
+                      };
+                    }}
+                    onComplete={(result) => {
+                      // Process each uploaded file
+                      result.successful.forEach(async (file) => {
+                        try {
+                          await apiRequest("/api/gallery-images", {
+                            method: "PUT",
+                            body: {
+                              imageURL: file.uploadURL,
+                              title: file.name || "Uploaded Image",
+                              altText: file.name || "Gallery Image",
+                              category: "general",
+                              featured: false,
+                            },
+                          });
+                        } catch (error) {
+                          console.error("Error saving gallery image:", error);
+                          toast({
+                            title: "Upload Error",
+                            description: `Failed to save ${file.name}`,
+                            variant: "destructive",
+                          });
+                        }
+                      });
+                      
+                      // Refresh gallery images
+                      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+                      
+                      toast({
+                        title: "Upload Complete",
+                        description: `Successfully uploaded ${result.successful.length} image(s)`,
+                      });
+                    }}
+                    buttonClassName="bg-bluebonnet-600 hover:bg-bluebonnet-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Upload Images
+                  </ObjectUploader>
+                  
+                  <Dialog open={isGalleryDialogOpen} onOpenChange={setIsGalleryDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add by URL
+                      </Button>
+                    </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Add Gallery Image</DialogTitle>
+                      <DialogTitle>Add Gallery Image by URL</DialogTitle>
                     </DialogHeader>
                     <Form {...galleryForm}>
                       <form onSubmit={galleryForm.handleSubmit(onGalleryImageSubmit)} className="space-y-4">
@@ -1227,6 +1279,7 @@ export default function AdminDashboard() {
                     </Form>
                   </DialogContent>
                 </Dialog>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">

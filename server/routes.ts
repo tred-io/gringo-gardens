@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth} from "./replitAuth";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import {
   insertProductSchema,
   insertBlogPostSchema,
@@ -441,6 +442,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching setting:", error);
       res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
+  // Object Storage Routes for Image Uploads
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(
+        req.path,
+      );
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error checking object access:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  app.post("/api/objects/upload", async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    res.json({ uploadURL });
+  });
+
+  app.put("/api/gallery-images", async (req, res) => {
+    if (!req.body.imageURL) {
+      return res.status(400).json({ error: "imageURL is required" });
+    }
+
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(
+        req.body.imageURL,
+      );
+
+      // Create gallery image in database
+      const galleryImage = await storage.createGalleryImage({
+        title: req.body.title || "Uploaded Image",
+        imageUrl: objectPath,
+        altText: req.body.altText || req.body.title || "Gallery Image",
+        category: req.body.category || "general",
+        featured: req.body.featured || false,
+      });
+
+      res.status(200).json({
+        objectPath: objectPath,
+        galleryImage: galleryImage,
+      });
+    } catch (error) {
+      console.error("Error creating gallery image:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
