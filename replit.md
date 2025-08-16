@@ -65,7 +65,8 @@ Preferred communication style: Simple, everyday language.
 - **Business Hours Management**: Created comprehensive admin settings panel with individual day hour management and seasonal closure options
 - **Settings API**: Implemented backend API routes for settings management with database storage
 - **Hero Image Update**: Successfully integrated client's Adobe Stock wildflower image as hero background, replacing placeholder with authentic Texas wildflower field imagery
-- **Social Media Integration**: Updated footer social media links to point to actual Gringo Gardens accounts (Facebook, YouTube, TikTok, X/Twitter, Google Maps)
+- **Social Media Integration**: Updated footer social media links to point to actual Gringo Gardens accounts (Facebook, Instagram, YouTube, TikTok, X/Twitter, Google Maps)
+- **Home Page Photo Update**: Replaced placeholder images in "Rooted in Texas Tradition" section with authentic nursery photos showing colorful mums, vegetable seedlings, and vibrant bougainvillea under shade structures
 
 ## External Dependencies
 
