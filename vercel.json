@@ -1,4 +1,4 @@
 {
-  "buildCommand": "cd client && vite build",
-  "outputDirectory": "dist/public"
+  "buildCommand": "cd client && vite build --outDir ../public --emptyOutDir",
+  "outputDirectory": "public"
 }
