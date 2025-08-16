@@ -1172,34 +1172,52 @@ export default function AdminDashboard() {
                         url: response.uploadURL,
                       };
                     }}
-                    onComplete={(result) => {
-                      // Process each uploaded file
-                      result.successful.forEach(async (file) => {
+                    onComplete={async (result) => {
+                      console.log("Upload complete result:", result);
+                      let successCount = 0;
+                      let errorCount = 0;
+                      
+                      // Process each uploaded file sequentially
+                      for (const file of result.successful) {
                         try {
-                          await apiRequest("PUT", "/api/gallery-images", {
+                          console.log("Processing file:", file);
+                          const response = await apiRequest("PUT", "/api/gallery-images", {
                             imageURL: file.uploadURL,
                             title: file.name || "Uploaded Image",
                             altText: file.name || "Gallery Image",
                             category: "general",
                             featured: false,
                           });
+                          console.log("Gallery image created:", response);
+                          successCount++;
                         } catch (error) {
                           console.error("Error saving gallery image:", error);
+                          errorCount++;
                           toast({
                             title: "Upload Error",
                             description: `Failed to save ${file.name}`,
                             variant: "destructive",
                           });
                         }
-                      });
+                      }
                       
                       // Refresh gallery images
                       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
                       
-                      toast({
-                        title: "Upload Complete",
-                        description: `Successfully uploaded ${result.successful.length} image(s)`,
-                      });
+                      if (successCount > 0) {
+                        toast({
+                          title: "Upload Complete",
+                          description: `Successfully uploaded ${successCount} image(s)`,
+                        });
+                      }
+                      
+                      if (errorCount > 0) {
+                        toast({
+                          title: "Partial Upload",
+                          description: `${errorCount} image(s) failed to save`,
+                          variant: "destructive",
+                        });
+                      }
                     }}
                     buttonClassName="bg-bluebonnet-600 hover:bg-bluebonnet-700"
                   >
