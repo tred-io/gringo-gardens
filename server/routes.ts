@@ -25,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use((req: any, res, next) => {
     const sessionId = req.headers['x-session-id'] || 'dev-session';
     if (!sessions.has(sessionId)) {
-      sessions.set(sessionId, {});
+      sessions.set(sessionId, { devAuth: false });
     }
     req.session = sessions.get(sessionId);
     next();
@@ -682,6 +682,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } else {
       res.status(401).json({ error: 'Invalid password' });
     }
+  });
+
+  // Handle 404 for API routes that don't exist
+  app.use('/api/*', (req: Request, res: Response) => {
+    res.status(404).json({ 
+      message: `API endpoint not found: ${req.method} ${req.path}` 
+    });
   });
 
   const httpServer = createServer(app);
