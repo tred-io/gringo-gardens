@@ -78,7 +78,18 @@ export interface IStorage {
     featured?: boolean;
   }): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
-  updateGalleryImage(id: string, image: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
+  updateGalleryImage(id: string, image: Partial<InsertGalleryImage & {
+    commonName?: string | null;
+    latinName?: string | null;
+    hardinessZone?: string | null;
+    sunPreference?: string | null;
+    droughtTolerance?: string | null;
+    texasNative?: boolean | null;
+    indoorOutdoor?: string | null;
+    classification?: string | null;
+    aiDescription?: string | null;
+    aiIdentified?: boolean;
+  }>): Promise<GalleryImage | undefined>;
   deleteGalleryImage(id: string): Promise<boolean>;
 
   // Review operations

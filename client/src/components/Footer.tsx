@@ -191,7 +191,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-bluebonnet-700 text-center">
           <p className="text-bluebonnet-200">
-            © 2025 Gringo Gardens. All rights reserved. | Serving Texas with native plants since 2010.
+            © 2025 Gringo Gardens. All rights reserved. | Serving Texas with native plants since 2019.
           </p>
         </div>
       </div>

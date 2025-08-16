@@ -14,6 +14,45 @@ import {
   insertSettingSchema,
   insertTeamMemberSchema,
 } from "@shared/schema";
+import { identifyPlantFromImage, type PlantDetails } from "./plantIdentification";
+
+// Background function to identify plant and update gallery image
+async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
+  try {
+    console.log(`Starting AI plant identification for image ${imageId}`);
+    
+    const plantDetails = await identifyPlantFromImage(imageUrl);
+    
+    if (plantDetails) {
+      console.log(`Plant identified for image ${imageId}:`, plantDetails.common_name);
+      
+      // Update gallery image with plant details
+      await storage.updateGalleryImage(imageId, {
+        commonName: plantDetails.common_name !== "unknown" ? plantDetails.common_name : null,
+        latinName: plantDetails.latin_name !== "unknown" ? plantDetails.latin_name : null,
+        hardinessZone: plantDetails.hardiness_zone !== "unknown" ? plantDetails.hardiness_zone : null,
+        sunPreference: plantDetails.sun_preference !== "unknown" ? plantDetails.sun_preference : null,
+        droughtTolerance: plantDetails.drought_tolerance !== "unknown" ? plantDetails.drought_tolerance : null,
+        texasNative: typeof plantDetails.texas_native === "boolean" ? plantDetails.texas_native : null,
+        indoorOutdoor: plantDetails.indoor_outdoor !== "unknown" ? plantDetails.indoor_outdoor : null,
+        classification: plantDetails.classification !== "unknown" ? plantDetails.classification : null,
+        aiDescription: plantDetails.description || null,
+        aiIdentified: true,
+      });
+      
+      console.log(`Successfully updated plant details for image ${imageId}`);
+    } else {
+      console.log(`No plant identification available for image ${imageId}`);
+      
+      // Mark as processed but not identified
+      await storage.updateGalleryImage(imageId, {
+        aiIdentified: false,
+      });
+    }
+  } catch (error) {
+    console.error(`Error in plant identification for image ${imageId}:`, error);
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Skip external auth setup for development
@@ -377,7 +416,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "This image already exists in the gallery" });
       }
       
+      // Create gallery image first
       const image = await storage.createGalleryImage(validatedData);
+      
+      // Trigger AI plant identification in background (don't wait for it)
+      identifyAndUpdatePlant(image.id, validatedData.imageUrl).catch(error => {
+        console.error("Error in background plant identification:", error);
+      });
+      
       res.status(201).json(image);
     } catch (error) {
       console.error("Error creating gallery image:", error);
@@ -420,6 +466,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting gallery image:", error);
       res.status(500).json({ message: "Failed to delete gallery image" });
+    }
+  });
+
+  // Manually trigger AI plant identification for a gallery image
+  app.post('/api/admin/gallery/:id/identify', async (req, res) => {
+    try {
+      const images = await storage.getGalleryImages();
+      const image = images.find(img => img.id === req.params.id);
+      
+      if (!image) {
+        return res.status(404).json({ message: "Gallery image not found" });
+      }
+
+      // Trigger AI identification
+      identifyAndUpdatePlant(image.id, image.imageUrl).catch(error => {
+        console.error("Error in manual plant identification:", error);
+      });
+
+      res.json({ message: "Plant identification started", imageId: image.id });
+    } catch (error) {
+      console.error("Error starting plant identification:", error);
+      res.status(500).json({ message: "Failed to start plant identification" });
     }
   });
 

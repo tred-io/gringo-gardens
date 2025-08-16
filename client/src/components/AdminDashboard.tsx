@@ -627,6 +627,37 @@ export default function AdminDashboard() {
     },
   });
 
+  const identifyPlantMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("POST", `/api/admin/gallery/${id}/identify`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      toast({ 
+        title: "Plant identification started!", 
+        description: "AI is analyzing the image. Results will appear shortly." 
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ 
+        title: "Error identifying plant", 
+        description: "Failed to start AI plant identification",
+        variant: "destructive" 
+      });
+    },
+  });
+
   const createReviewMutation = useMutation({
     mutationFn: async (data: InsertReview) => {
       return await apiRequest("POST", "/api/admin/reviews", data);
@@ -1853,7 +1884,35 @@ export default function AdminDashboard() {
                             )}
                           </div>
                         )}
-                        <div className="flex gap-2">
+                        
+                        {/* AI Plant Identification Status */}
+                        {(image as any).aiIdentified && (
+                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                            <div className="flex items-center gap-1 mb-1">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span className="font-medium text-green-800">AI Identified</span>
+                            </div>
+                            {(image as any).commonName && (
+                              <p className="text-green-700">
+                                <span className="font-medium">{(image as any).commonName}</span>
+                                {(image as any).latinName && (
+                                  <span className="italic text-xs text-green-600"> ({(image as any).latinName})</span>
+                                )}
+                              </p>
+                            )}
+                            {(image as any).texasNative === true && (
+                              <Badge variant="default" className="bg-green-600 text-white text-xs mt-1">
+                                Texas Native
+                              </Badge>
+                            )}
+                            {(image as any).classification && (
+                              <p className="text-green-600 text-xs mt-1">
+                                Type: {(image as any).classification}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex gap-2 flex-wrap">
                           <Button
                             size="sm"
                             variant="outline"
@@ -1872,6 +1931,27 @@ export default function AdminDashboard() {
                             <Trash2 className="w-4 h-4 mr-2" />
                             Delete
                           </Button>
+                          {!(image as any).aiIdentified && (
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => identifyPlantMutation.mutate(image.id)}
+                              disabled={identifyPlantMutation.isPending}
+                              className="flex-1"
+                            >
+                              {identifyPlantMutation.isPending && identifyPlantMutation.variables === image.id ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2"></div>
+                                  Identifying...
+                                </>
+                              ) : (
+                                <>
+                                  <span className="w-4 h-4 mr-2">🧠</span>
+                                  ID Plant
+                                </>
+                              )}
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>

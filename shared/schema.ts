@@ -89,6 +89,17 @@ export const galleryImages = pgTable("gallery_images", {
   category: varchar("category", { length: 50 }),
   tags: text("tags").array().default(sql`'{}'::text[]`),
   featured: boolean("featured").default(false),
+  // AI-generated plant identification fields
+  commonName: varchar("common_name", { length: 255 }),
+  latinName: varchar("latin_name", { length: 255 }),
+  hardinessZone: varchar("hardiness_zone", { length: 100 }),
+  sunPreference: varchar("sun_preference", { length: 100 }),
+  droughtTolerance: varchar("drought_tolerance", { length: 100 }),
+  texasNative: boolean("texas_native"),
+  indoorOutdoor: varchar("indoor_outdoor", { length: 50 }),
+  classification: varchar("classification", { length: 100 }),
+  aiDescription: text("ai_description"),
+  aiIdentified: boolean("ai_identified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -167,6 +178,16 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
 export const insertGalleryImageSchema = createInsertSchema(galleryImages).omit({
   id: true,
   createdAt: true,
+  commonName: true,
+  latinName: true,
+  hardinessZone: true,
+  sunPreference: true,
+  droughtTolerance: true,
+  texasNative: true,
+  indoorOutdoor: true,
+  classification: true,
+  aiDescription: true,
+  aiIdentified: true,
 });
 
 export const insertReviewSchema = createInsertSchema(reviews).omit({
