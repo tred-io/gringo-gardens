@@ -23,16 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
-      - name: Build client
-        run: npm run build:client
+      - name: Build application
+        run: npm run build
         env:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
           
-      - name: Build server
-        run: npm run build:server
-        
-      - name: Run database migrations
-        run: npm run db:migrate
+      - name: Push database schema
+        run: npx drizzle-kit push --force
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           

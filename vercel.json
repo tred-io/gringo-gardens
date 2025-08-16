@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm ci",
   "builds": [
     {
       "src": "package.json",
@@ -21,17 +18,5 @@
       "src": "/(.*)",
       "dest": "/client/dist/$1"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "OPENAI_API_KEY": "@openai_api_key", 
-    "SESSION_SECRET": "@session_secret",
-    "ADMIN_PASSWORD": "@admin_password",
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "dist/index.js": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
