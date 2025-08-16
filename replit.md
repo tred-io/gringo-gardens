@@ -79,6 +79,7 @@ Preferred communication style: Simple, everyday language.
 - **Password-Protected Admin Access**: Removed login/logout buttons from navigation and implemented simple password protection for /admin route. Admin area is now accessible only via direct link with password authentication (default: GringoGardens2025!, configurable via ADMIN_PASSWORD environment variable). Uses sessionStorage for authentication state within browser session.
 - **Category Homepage Selection System**: Added `showOnHomepage` boolean field to categories table with admin interface controls. Home page now filters and displays only categories marked for homepage display (max 4). Admin dashboard shows "Homepage" badges for selected categories and provides toggle switch in category edit form.
 - **Home Page Image Integration**: Updated home page to use admin-selected category images instead of hardcoded fallback images. Categories without images are filtered out to ensure consistent visual presentation. Images are properly integrated with gradient overlays and responsive design.
+- **Category Image Update System Fixed**: Resolved critical missing API endpoints - added PUT `/api/admin/categories/:id` and DELETE `/api/admin/categories/:id` routes. Category image updates from admin dashboard now properly save to database and appear on home page immediately. All category management CRUD operations are now fully functional.
 
 ## External Dependencies
 
