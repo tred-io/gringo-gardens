@@ -16,6 +16,53 @@ import {
 
 export default function AdminDashboardSimple() {
   const [activeTab, setActiveTab] = useState("overview");
+  
+  // Test API connectivity first
+  const { data: apiTest, isLoading: isApiLoading, error: apiError } = useQuery({
+    queryKey: ["/api/admin/settings"],
+    retry: false,
+  });
+
+  // Show deployment message only if API fails
+  if (!isApiLoading && apiError && !apiTest) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-bluebonnet-900 mb-4">Admin Dashboard</h1>
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+              <p className="text-gray-600 mb-4">
+                Backend API is not available in this deployment environment.
+              </p>
+              <p className="text-sm text-gray-500">
+                Full admin functionality is available when the backend is deployed.
+              </p>
+              <button
+                onClick={() => {
+                  sessionStorage.removeItem("adminAuthenticated");
+                  window.location.href = "/";
+                }}
+                className="mt-4 px-4 py-2 bg-bluebonnet-600 text-white rounded hover:bg-bluebonnet-700"
+              >
+                Return to Website
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isApiLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-bluebonnet-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading admin dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Simple queries with null handling
   const { data: products } = useQuery({
