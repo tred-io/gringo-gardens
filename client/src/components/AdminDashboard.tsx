@@ -109,6 +109,36 @@ type CategoryFormData = z.infer<typeof categorySchema>;
 type ReviewFormData = z.infer<typeof reviewSchema>;
 
 export default function AdminDashboard() {
+  // Simple deployment-friendly version
+  if (typeof window !== "undefined" && window.location.hostname.includes("vercel.app")) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-bluebonnet-900 mb-4">Admin Dashboard</h1>
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+              <p className="text-gray-600 mb-4">
+                Admin functionality is available in the development environment.
+              </p>
+              <p className="text-sm text-gray-500">
+                This demo deployment shows the public website features. 
+                Contact us to access the full admin panel.
+              </p>
+              <button
+                onClick={() => {
+                  sessionStorage.removeItem("adminAuthenticated");
+                  window.location.href = "/";
+                }}
+                className="mt-4 px-4 py-2 bg-bluebonnet-600 text-white rounded hover:bg-bluebonnet-700"
+              >
+                Return to Website
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const [activeTab, setActiveTab] = useState("products");
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isBlogDialogOpen, setIsBlogDialogOpen] = useState(false);
@@ -147,44 +177,44 @@ export default function AdminDashboard() {
     retry: false,
   });
 
-  const { data: products = [] } = useQuery<Product[]>({
+  const { data: products = [] } = useQuery<Product[] | null>({
     queryKey: ["/api/admin/products", filters],
     retry: false,
   });
 
-  const { data: categories = [] } = useQuery<Category[]>({
+  const { data: categories = [] } = useQuery<Category[] | null>({
     queryKey: ["/api/admin/categories"],
     retry: false,
   });
 
-  const { data: blogPosts = [] } = useQuery<BlogPost[]>({
+  const { data: blogPosts = [] } = useQuery<BlogPost[] | null>({
     queryKey: ["/api/admin/blog"],
     retry: false,
   });
 
-  const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
+  const { data: galleryImages = [] } = useQuery<GalleryImage[] | null>({
     queryKey: ["/api/admin/gallery"],
     retry: false,
   });
 
-  const { data: reviews = [] } = useQuery<Review[]>({
+  const { data: reviews = [] } = useQuery<Review[] | null>({
     queryKey: ["/api/admin/reviews"],
     retry: false,
   });
 
-  const { data: contactMessages = [] } = useQuery<ContactMessage[]>({
+  const { data: contactMessages = [] } = useQuery<ContactMessage[] | null>({
     queryKey: ["/api/admin/contact"],
     retry: false,
   });
 
-  const { data: newsletterSubscribers = [] } = useQuery<NewsletterSubscriber[]>({
+  const { data: newsletterSubscribers = [] } = useQuery<NewsletterSubscriber[] | null>({
     queryKey: ["/api/newsletter/subscribers"],
     retry: false,
   });
 
   // Load settings on component mount
   useEffect(() => {
-    if (settings) {
+    if (settings && Array.isArray(settings)) {
       const businessHoursSetting = settings.find((s: any) => s.key === 'business_hours');
       const temporaryClosureSetting = settings.find((s: any) => s.key === 'temporary_closure');
       
@@ -222,7 +252,7 @@ export default function AdminDashboard() {
   });
 
   // Team member state and queries
-  const { data: teamMembers = [] } = useQuery<TeamMember[]>({
+  const { data: teamMembers = [] } = useQuery<TeamMember[] | null>({
     queryKey: ["/api/team"],
   });
 
