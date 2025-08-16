@@ -1,22 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { useQueryClient } from "@tanstack/react-query";
 import { Menu, X } from "lucide-react";
 import logoPath from "@assets/438299493_734376465563424_2823652752500766968_n_1753941603539.jpg";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  const { isAuthenticated } = useAuth();
-  const queryClient = useQueryClient();
-
-  const handleLogout = async () => {
-    // Clear the auth query cache and navigate to logout
-    await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-    window.location.href = '/api/logout';
-  };
 
   const navigationItems = [
     { href: "/", label: "Home" },
@@ -61,33 +50,7 @@ export default function Navigation() {
                 </span>
               </Link>
             ))}
-            {isAuthenticated ? (
-              <>
-                <Link href="/admin">
-                  <span className={`font-medium transition-colors ${
-                    isActive("/admin")
-                      ? "text-white"
-                      : "text-bluebonnet-100 hover:text-white"
-                  }`}>
-                    Admin
-                  </span>
-                </Link>
-                <Button 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-bluebonnet-700"
-                  onClick={handleLogout}
-                >
-                  Log Out
-                </Button>
-              </>
-            ) : (
-              <Button 
-                className="bg-white text-bluebonnet-600 hover:bg-bluebonnet-50"
-                onClick={() => window.location.href = '/api/login'}
-              >
-                Log In
-              </Button>
-            )}
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -121,46 +84,7 @@ export default function Navigation() {
                   </span>
                 </Link>
               ))}
-              {isAuthenticated ? (
-                <>
-                  <Link href="/admin">
-                    <span
-                      className={`block px-3 py-2 font-medium ${
-                        isActive("/admin")
-                          ? "text-bluebonnet-900"
-                          : "text-gray-700 hover:text-bluebonnet-600"
-                      }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Admin
-                    </span>
-                  </Link>
-                  <div className="px-3 py-2">
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        handleLogout();
-                      }}
-                    >
-                      Log Out
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="px-3 py-2">
-                  <Button 
-                    className="w-full bg-bluebonnet-600 hover:bg-bluebonnet-700 text-white"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      window.location.href = '/api/login';
-                    }}
-                  >
-                    Log In
-                  </Button>
-                </div>
-              )}
+
             </div>
           </div>
         )}

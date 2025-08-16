@@ -76,13 +76,14 @@ Preferred communication style: Simple, everyday language.
 - **Comprehensive Admin Features**: Completed gallery image selection system, automatic image resizing with Sharp, team member management, review editing, newsletter subscriber management, and enhanced category management with collection images
 - **Gallery Tags and Names System**: Added comprehensive tagging system to gallery images with names and comma-separated tags for advanced filtering. Updated admin dashboard with enhanced gallery management showing tags and categories. Enhanced public gallery page with dual filtering by both categories and tags for improved user experience.
 - **Gallery Image Editing and Duplicate Prevention**: Implemented full CRUD operations for gallery images with edit functionality in admin dashboard. Added intelligent duplicate image checking to prevent the same image from being uploaded multiple times while avoiding false positives. Enhanced gallery management with edit/delete buttons and improved form handling for both create and update operations. Increased upload limit to 50 images with 15MB per file for bulk gallery management.
+- **Password-Protected Admin Access**: Removed login/logout buttons from navigation and implemented simple password protection for /admin route. Admin area is now accessible only via direct link with password authentication (default: admin123, configurable via ADMIN_PASSWORD environment variable). Uses sessionStorage for authentication state within browser session.
 
 ## External Dependencies
 
 ### Core Runtime
 - **Node.js**: Runtime environment with ES modules
 - **Database**: Neon serverless PostgreSQL
-- **Authentication**: Replit OIDC service
+- **Authentication**: Simple password protection for admin access (no external auth provider required)
 
 ### Key Libraries
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, React Hook Form, Zod
@@ -90,7 +91,7 @@ Preferred communication style: Simple, everyday language.
 - **Development**: tsx for TypeScript execution, various Replit development tools
 
 ### External Services
-- **Replit Authentication**: Provides user authentication and authorization
+- **Admin Authentication**: Simple password-based protection for admin dashboard
 - **Neon Database**: Serverless PostgreSQL hosting
 - **Image Storage**: Currently using external URLs (Unsplash for demo content)
 

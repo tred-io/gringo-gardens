@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth} from "./replitAuth";
+// Removed auth imports - using simple password protection instead
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import {
   insertProductSchema,
@@ -619,6 +619,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching newsletter subscribers:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Admin password authentication (simple password protection)
+  app.post('/api/admin/authenticate', async (req, res) => {
+    const { password } = req.body;
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123'; // Set a default password
+    
+    if (password === adminPassword) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ error: 'Invalid password' });
     }
   });
 

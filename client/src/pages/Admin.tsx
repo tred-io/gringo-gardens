@@ -1,26 +1,21 @@
-import { useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
 import AdminDashboard from "@/components/AdminDashboard";
+import AdminPasswordProtection from "@/components/AdminPasswordProtection";
 
 export default function Admin() {
-  const { toast } = useToast();
-  const { isAuthenticated, isLoading } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Redirect to home if not authenticated
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
+    // Check if user is already authenticated in this session
+    const authenticated = sessionStorage.getItem("adminAuthenticated");
+    setIsAuthenticated(authenticated === "true");
+    setIsLoading(false);
+  }, []);
+
+  const handleAuthenticate = () => {
+    setIsAuthenticated(true);
+  };
 
   if (isLoading) {
     return (
@@ -34,7 +29,7 @@ export default function Admin() {
   }
 
   if (!isAuthenticated) {
-    return null; // Will redirect via useEffect
+    return <AdminPasswordProtection onAuthenticate={handleAuthenticate} />;
   }
 
   return <AdminDashboard />;
