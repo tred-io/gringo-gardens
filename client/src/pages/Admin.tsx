@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import AdminDashboardSimple from "@/components/AdminDashboardSimple";
-import AdminPasswordProtection from "@/components/AdminPasswordProtection";
+import AdminDashboardSimple from "../components/AdminDashboardSimple";
+import AdminPasswordProtection from "../components/AdminPasswordProtection";
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
