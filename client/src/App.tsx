@@ -63,7 +63,11 @@ function App() {
     if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
       console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
     } else {
-      initGA();
+      try {
+        initGA();
+      } catch (error) {
+        console.warn('Failed to initialize Google Analytics:', error);
+      }
     }
   }, []);
 
