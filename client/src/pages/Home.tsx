@@ -54,6 +54,8 @@ export default function Home() {
   // Parse business settings
   const temporaryClosure = temporaryClosureSetting?.value ? JSON.parse(temporaryClosureSetting.value) : null;
   const businessHours = businessHoursSetting?.value ? JSON.parse(businessHoursSetting.value) : null;
+  
+
 
   const handleCategoryClick = (categoryName: string) => {
     trackEvent('view_category', 'engagement', categoryName);
@@ -266,14 +268,14 @@ export default function Home() {
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mr-3" />
                   <span className="text-gray-700">4041 FM 1715, Lampasas, TX 76550</span>
                 </div>
-                {temporaryClosure?.enabled ? (
+                {temporaryClosure?.closed ? (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
                     <div className="flex items-start">
                       <Clock className="text-red-600 w-6 h-6 mr-3 mt-0.5" />
                       <div>
                         <h4 className="text-red-800 font-semibold mb-2">Temporarily Closed</h4>
                         <p className="text-red-700 text-sm leading-relaxed">
-                          {temporaryClosure.description}
+                          {temporaryClosure.message}
                         </p>
                       </div>
                     </div>
