@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,7 +47,8 @@ import type {
   InsertProduct,
   InsertBlogPost,
   InsertGalleryImage,
-  InsertCategory
+  InsertCategory,
+  InsertReview
 } from "@shared/schema";
 
 // Form schemas
@@ -91,10 +93,19 @@ const categorySchema = z.object({
   imageUrl: z.string().optional(),
 });
 
+const reviewSchema = z.object({
+  customerName: z.string().min(1, "Customer name is required"),
+  rating: z.number().min(1, "Rating is required").max(5, "Rating must be 5 or less"),
+  content: z.string().min(1, "Review content is required"),
+  approved: z.boolean().default(true),
+  featured: z.boolean().default(false),
+});
+
 type ProductFormData = z.infer<typeof productSchema>;
 type BlogPostFormData = z.infer<typeof blogPostSchema>;
 type GalleryImageFormData = z.infer<typeof galleryImageSchema>;
 type CategoryFormData = z.infer<typeof categorySchema>;
+type ReviewFormData = z.infer<typeof reviewSchema>;
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products");
@@ -102,6 +113,7 @@ export default function AdminDashboard() {
   const [isBlogDialogOpen, setIsBlogDialogOpen] = useState(false);
   const [isGalleryDialogOpen, setIsGalleryDialogOpen] = useState(false);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -294,6 +306,17 @@ export default function AdminDashboard() {
       slug: "",
       description: "",
       imageUrl: "",
+    },
+  });
+
+  const reviewForm = useForm<ReviewFormData>({
+    resolver: zodResolver(reviewSchema),
+    defaultValues: {
+      customerName: "",
+      rating: 5,
+      content: "",
+      approved: true,
+      featured: false,
     },
   });
 
@@ -602,6 +625,32 @@ export default function AdminDashboard() {
     },
   });
 
+  const createReviewMutation = useMutation({
+    mutationFn: async (data: InsertReview) => {
+      return await apiRequest("POST", "/api/admin/reviews", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      toast({ title: "Review created successfully!" });
+      setIsReviewDialogOpen(false);
+      reviewForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error creating review", variant: "destructive" });
+    },
+  });
+
   const updateReviewMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: { featured?: boolean; approved?: boolean } }) => {
       return await apiRequest("PUT", `/api/admin/reviews/${id}`, data);
@@ -766,6 +815,10 @@ export default function AdminDashboard() {
     } else {
       createCategoryMutation.mutate(categoryData);
     }
+  };
+
+  const onReviewSubmit = (data: ReviewFormData) => {
+    createReviewMutation.mutate(data);
   };
 
   const handleEditGalleryImage = (image: GalleryImage) => {
@@ -1817,6 +1870,116 @@ export default function AdminDashboard() {
             <TabsContent value="reviews" className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-bluebonnet-900">Customer Reviews</h2>
+                <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Review
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Review</DialogTitle>
+                    </DialogHeader>
+                    <Form {...reviewForm}>
+                      <form onSubmit={reviewForm.handleSubmit(onReviewSubmit)} className="space-y-4">
+                        <FormField
+                          control={reviewForm.control}
+                          name="customerName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Customer Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Customer name" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={reviewForm.control}
+                          name="rating"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Rating</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  min="1" 
+                                  max="5" 
+                                  {...field}
+                                  onChange={(e) => field.onChange(Number(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={reviewForm.control}
+                          name="content"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Review Content</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} placeholder="Review content..." rows={4} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={reviewForm.control}
+                            name="approved"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                                <div className="space-y-0.5">
+                                  <FormLabel>Approved</FormLabel>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={reviewForm.control}
+                            name="featured"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                                <div className="space-y-0.5">
+                                  <FormLabel>Featured</FormLabel>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="flex justify-end space-x-2">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setIsReviewDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" disabled={createReviewMutation.isPending}>
+                            {createReviewMutation.isPending ? "Creating..." : "Create Review"}
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <div className="space-y-4">
