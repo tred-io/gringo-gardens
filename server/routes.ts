@@ -59,7 +59,7 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
         updateData.description = plantDetails.description;
       }
 
-      // Update category based on classification
+      // Update category and tags based on classification
       if (plantDetails.classification && plantDetails.classification !== "unknown") {
         const categoryMap: Record<string, string> = {
           'tree': 'trees',
@@ -77,6 +77,25 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
         if (mappedCategory) {
           updateData.category = mappedCategory;
         }
+      }
+
+      // Update tags with plant information
+      const newTags = [];
+      if (plantDetails.classification && plantDetails.classification !== "unknown") {
+        newTags.push(plantDetails.classification);
+      }
+      if (plantDetails.texasNative === true) {
+        newTags.push("texas-native");
+      }
+      if (plantDetails.sunPreference && plantDetails.sunPreference !== "unknown") {
+        newTags.push(plantDetails.sunPreference.replace(/\s+/g, '-').toLowerCase());
+      }
+      if (plantDetails.droughtTolerance && plantDetails.droughtTolerance !== "unknown") {
+        newTags.push(`${plantDetails.droughtTolerance}-drought-tolerance`.replace(/\s+/g, '-').toLowerCase());
+      }
+      
+      if (newTags.length > 0) {
+        updateData.tags = newTags;
       }
 
       await storage.updateGalleryImage(imageId, updateData);

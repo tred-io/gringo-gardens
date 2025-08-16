@@ -1885,27 +1885,7 @@ export default function AdminDashboard() {
                           </div>
                         )}
                         
-                        {/* Plant Information */}
-                        {(image as any).commonName && (
-                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
-                            <p className="text-green-700">
-                              <span className="font-medium">{(image as any).commonName}</span>
-                              {(image as any).latinName && (
-                                <span className="italic text-xs text-green-600"> ({(image as any).latinName})</span>
-                              )}
-                            </p>
-                            {(image as any).texasNative === true && (
-                              <Badge variant="default" className="bg-green-600 text-white text-xs mt-1">
-                                Texas Native
-                              </Badge>
-                            )}
-                            {(image as any).classification && (
-                              <p className="text-green-600 text-xs mt-1">
-                                Type: {(image as any).classification}
-                              </p>
-                            )}
-                          </div>
-                        )}
+
                         <div className="flex gap-2 flex-wrap">
                           <Button
                             size="sm"
