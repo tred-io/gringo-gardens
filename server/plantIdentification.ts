@@ -18,6 +18,24 @@ export interface PlantDetails {
 
 export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDetails | null> {
   try {
+    // Convert internal object storage URLs to publicly accessible ones
+    let publicImageUrl = imageUrl;
+    
+    if (imageUrl.startsWith('/objects/uploads/')) {
+      // For development, we can't use localhost URLs with OpenAI
+      // Skip object storage images for now and return null
+      console.log(`Skipping object storage image: ${imageUrl} (requires public URL for OpenAI)`);
+      return null;
+    }
+    
+    // Only process external URLs (like Unsplash URLs)
+    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+      console.log(`Skipping non-public URL: ${imageUrl}`);
+      return null;
+    }
+    
+    console.log(`Analyzing image URL: ${publicImageUrl}`);
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -45,7 +63,7 @@ Return ONLY the JSON object. Do not include any extra commentary.`
             {
               type: "image_url",
               image_url: {
-                url: imageUrl
+                url: publicImageUrl
               }
             }
           ]
@@ -62,7 +80,15 @@ Return ONLY the JSON object. Do not include any extra commentary.`
     }
 
     try {
-      const plantDetails = JSON.parse(content) as PlantDetails;
+      // Clean up the response by removing markdown code blocks if present
+      let cleanedContent = content.trim();
+      if (cleanedContent.startsWith('```json')) {
+        cleanedContent = cleanedContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (cleanedContent.startsWith('```')) {
+        cleanedContent = cleanedContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      
+      const plantDetails = JSON.parse(cleanedContent) as PlantDetails;
       
       // Validate required fields
       if (!plantDetails.common_name || !plantDetails.latin_name || !plantDetails.description) {
