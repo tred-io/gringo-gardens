@@ -80,9 +80,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.filter(category => category.showOnHomepage).slice(0, 4).map((category, index) => {
-              // Fallback images for categories
-              const categoryImages = [nativePlantsImage, fruitTreesImage, decorativeTreesImage, hangingBasketsImage];
+            {categories.filter(category => category.showOnHomepage && category.imageUrl).slice(0, 4).map((category, index) => {
               const gradients = ["from-bluebonnet-900", "from-texas-green-600", "from-earth-500", "from-bluebonnet-600"];
               
               return (
@@ -90,11 +88,11 @@ export default function Home() {
                   <div className="group cursor-pointer">
                     <div className="relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
                       <img 
-                        src={category.imageUrl || categoryImages[index]} 
+                        src={category.imageUrl} 
                         alt={category.name} 
                         className="w-full h-64 object-cover"
                       />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${gradients[index]} via-transparent to-transparent`}>
+                      <div className={`absolute inset-0 bg-gradient-to-t ${gradients[index % gradients.length]} via-transparent to-transparent`}>
                         <div className="absolute bottom-4 left-4 text-white">
                           <h3 className="text-xl font-bold mb-2">{category.name}</h3>
                           <p className="text-sm opacity-90">{category.description || "Discover our collection"}</p>
