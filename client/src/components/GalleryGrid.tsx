@@ -25,7 +25,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
             />
             {image.title && (
               <h3 className="mt-2 text-lg font-semibold text-bluebonnet-900">
-                {image.title}
+                {image.title.includes('.') ? image.title.split('.')[0] : image.title}
               </h3>
             )}
             {image.description && (

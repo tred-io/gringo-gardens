@@ -78,7 +78,7 @@ const blogPostSchema = z.object({
 const galleryImageSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  imageUrl: z.string().url("Valid image URL is required"),
+  imageUrl: z.string().min(1, "Image URL is required"),
   category: z.string().optional(),
   tags: z.string().optional(), // Comma-separated tags for filtering
   featured: z.boolean().default(false),
@@ -88,7 +88,7 @@ const categorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required"),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional().or(z.literal("")),
+  imageUrl: z.string().optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -401,6 +401,56 @@ export default function AdminDashboard() {
     },
   });
 
+  const updateCategoryMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<InsertCategory> }) => {
+      return await apiRequest("PUT", `/api/admin/categories/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      toast({ title: "Category updated successfully!" });
+      setIsCategoryDialogOpen(false);
+      categoryForm.reset();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error updating category", variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/categories/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      toast({ title: "Category deleted successfully!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error deleting category", variant: "destructive" });
+    },
+  });
+
   const createBlogPostMutation = useMutation({
     mutationFn: async (data: InsertBlogPost) => {
       return await apiRequest("POST", "/api/admin/blog", data);
@@ -681,6 +731,19 @@ export default function AdminDashboard() {
     }
   };
 
+  const onCategorySubmit = (data: CategoryFormData) => {
+    const categoryData = {
+      ...data,
+      active: true // Default to active for new categories
+    };
+
+    if (editingCategory) {
+      updateCategoryMutation.mutate({ id: editingCategory.id, data: categoryData });
+    } else {
+      createCategoryMutation.mutate(categoryData);
+    }
+  };
+
   const handleEditGalleryImage = (image: GalleryImage) => {
     setEditingGalleryImage(image);
     galleryForm.reset({
@@ -698,10 +761,6 @@ export default function AdminDashboard() {
     setIsGalleryDialogOpen(false);
     setEditingGalleryImage(null);
     galleryForm.reset();
-  };
-
-  const onCategorySubmit = (data: CategoryFormData) => {
-    createCategoryMutation.mutate(data);
   };
 
   const handleCloseProductDialog = () => {
