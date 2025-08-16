@@ -105,6 +105,7 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingGalleryImage, setEditingGalleryImage] = useState<GalleryImage | null>(null);
   const [filters, setFilters] = useState({
     productCategory: "",
     productSearch: "",
@@ -484,8 +485,7 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       toast({ title: "Gallery image added successfully!" });
-      setIsGalleryDialogOpen(false);
-      galleryForm.reset();
+      handleCloseGalleryDialog();
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -500,6 +500,31 @@ export default function AdminDashboard() {
         return;
       }
       toast({ title: "Error adding gallery image", variant: "destructive" });
+    },
+  });
+
+  const updateGalleryImageMutation = useMutation({
+    mutationFn: async ({ id, ...data }: { id: string } & GalleryImageFormData) => {
+      return await apiRequest("PUT", `/api/admin/gallery/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      toast({ title: "Gallery image updated successfully!" });
+      handleCloseGalleryDialog();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error updating gallery image", variant: "destructive" });
     },
   });
 
@@ -648,7 +673,31 @@ export default function AdminDashboard() {
       ...data,
       tags: data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : []
     };
-    createGalleryImageMutation.mutate(processedData);
+    
+    if (editingGalleryImage) {
+      updateGalleryImageMutation.mutate({ id: editingGalleryImage.id, ...processedData });
+    } else {
+      createGalleryImageMutation.mutate(processedData);
+    }
+  };
+
+  const handleEditGalleryImage = (image: GalleryImage) => {
+    setEditingGalleryImage(image);
+    galleryForm.reset({
+      title: image.title || "",
+      description: image.description || "",
+      imageUrl: image.imageUrl,
+      category: image.category || "",
+      tags: image.tags ? image.tags.join(", ") : "",
+      featured: image.featured,
+    });
+    setIsGalleryDialogOpen(true);
+  };
+
+  const handleCloseGalleryDialog = () => {
+    setIsGalleryDialogOpen(false);
+    setEditingGalleryImage(null);
+    galleryForm.reset();
   };
 
   const onCategorySubmit = (data: CategoryFormData) => {
@@ -1602,9 +1651,9 @@ export default function AdminDashboard() {
                         />
                         <div className="flex gap-4">
                           <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
-                            Add Image
+                            {editingGalleryImage ? "Update Image" : "Add Image"}
                           </Button>
-                          <Button type="button" variant="outline" onClick={() => setIsGalleryDialogOpen(false)}>
+                          <Button type="button" variant="outline" onClick={handleCloseGalleryDialog}>
                             Cancel
                           </Button>
                         </div>
@@ -1647,15 +1696,26 @@ export default function AdminDashboard() {
                             )}
                           </div>
                         )}
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => deleteGalleryImageMutation.mutate(image.id)}
-                          className="w-full"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditGalleryImage(image)}
+                            className="flex-1"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteGalleryImageMutation.mutate(image.id)}
+                            className="flex-1"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

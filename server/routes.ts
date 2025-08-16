@@ -342,11 +342,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/gallery', async (req, res) => {
     try {
       const validatedData = insertGalleryImageSchema.parse(req.body);
+      
+      // Check for duplicate images by URL
+      const existingImages = await storage.getGalleryImages();
+      const isDuplicate = existingImages.some(img => img.imageUrl === validatedData.imageUrl);
+      
+      if (isDuplicate) {
+        return res.status(400).json({ message: "This image already exists in the gallery" });
+      }
+      
       const image = await storage.createGalleryImage(validatedData);
       res.status(201).json(image);
     } catch (error) {
       console.error("Error creating gallery image:", error);
       res.status(500).json({ message: "Failed to create gallery image" });
+    }
+  });
+
+  app.put('/api/admin/gallery/:id', async (req, res) => {
+    try {
+      const validatedData = insertGalleryImageSchema.parse(req.body);
+      
+      // Check for duplicate images by URL (excluding current image)
+      const existingImages = await storage.getGalleryImages();
+      const isDuplicate = existingImages.some(img => 
+        img.imageUrl === validatedData.imageUrl && img.id !== req.params.id
+      );
+      
+      if (isDuplicate) {
+        return res.status(400).json({ message: "This image URL already exists in the gallery" });
+      }
+      
+      const image = await storage.updateGalleryImage(req.params.id, validatedData);
+      if (!image) {
+        return res.status(404).json({ message: "Gallery image not found" });
+      }
+      res.json(image);
+    } catch (error) {
+      console.error("Error updating gallery image:", error);
+      res.status(500).json({ message: "Failed to update gallery image" });
     }
   });
 
@@ -492,6 +526,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { imageProcessor } = await import("./imageProcessor");
       const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
 
+      // Check for duplicate images by URL before creating
+      const existingImages = await storage.getGalleryImages();
+      const finalImageUrl = optimizedUrl || objectPath;
+      const isDuplicate = existingImages.some(img => img.imageUrl === finalImageUrl);
+      
+      if (isDuplicate) {
+        return res.status(400).json({ error: "This image already exists in the gallery" });
+      }
+
       // Parse tags from comma-separated string to array
       let tagsArray: string[] = [];
       if (req.body.tags && typeof req.body.tags === 'string') {
@@ -501,7 +544,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create gallery image in database with optimized URL
       const galleryImage = await storage.createGalleryImage({
         title: req.body.title || "Uploaded Image",
-        imageUrl: optimizedUrl || objectPath,
+        imageUrl: finalImageUrl,
         description: req.body.altText || req.body.title || "Gallery Image",
         category: req.body.category || "general",
         tags: tagsArray,
