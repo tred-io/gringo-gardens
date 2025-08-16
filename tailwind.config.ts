@@ -44,6 +44,33 @@ export default {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        // Custom Bluebonnet Theme Colors
+        bluebonnet: {
+          50: "var(--bluebonnet-50)",
+          100: "var(--bluebonnet-100)",
+          200: "var(--bluebonnet-200)",
+          300: "var(--bluebonnet-300)",
+          400: "var(--bluebonnet-400)",
+          500: "var(--bluebonnet-500)",
+          600: "var(--bluebonnet-600)",
+          700: "var(--bluebonnet-700)",
+          800: "var(--bluebonnet-800)",
+          900: "var(--bluebonnet-900)",
+        },
+        // Texas Green Colors
+        "texas-green": {
+          100: "var(--texas-green-100)",
+          400: "var(--texas-green-400)",
+          500: "var(--texas-green-500)",
+          600: "var(--texas-green-600)",
+        },
+        // Earth Tone Colors
+        earth: {
+          100: "var(--earth-100)",
+          400: "var(--earth-400)",
+          500: "var(--earth-500)",
+          600: "var(--earth-600)",
+        },
         chart: {
           "1": "var(--chart-1)",
           "2": "var(--chart-2)",
