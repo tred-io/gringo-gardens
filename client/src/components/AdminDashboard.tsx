@@ -645,10 +645,7 @@ export default function AdminDashboard() {
         queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       }, 8000);
       
-      toast({ 
-        title: "Plant identification in progress", 
-        description: "Processing image... The page will update automatically when complete." 
-      });
+      // Plant identification starts silently - UI will update automatically when complete
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
