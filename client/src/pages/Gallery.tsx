@@ -8,18 +8,15 @@ import type { GalleryImage } from "@shared/schema";
 
 export default function Gallery() {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [selectedTag, setSelectedTag] = useState("all");
 
   const { data: allImages = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: ["/api/gallery"],
   });
 
-  // Filter by both category and tags
+  // Filter by category only
   const filteredImages = allImages.filter(image => {
     const matchesCategory = activeFilter === "all" || image.category === activeFilter;
-    const matchesTag = selectedTag === "all" || 
-      (image.tags && image.tags.some(tag => tag.toLowerCase().includes(selectedTag.toLowerCase())));
-    return matchesCategory && matchesTag;
+    return matchesCategory;
   });
 
   // Generate dynamic filters from actual data
@@ -31,25 +28,9 @@ export default function Gallery() {
     }))
   ];
 
-  // Generate tag filters from actual data
-  const allTags = allImages.flatMap(img => img.tags || []);
-  const uniqueTags = Array.from(new Set(allTags)).filter(Boolean);
-  const tagFilters = [
-    { id: "all", label: "All Tags" },
-    ...uniqueTags.slice(0, 8).map(tag => ({
-      id: tag,
-      label: tag.charAt(0).toUpperCase() + tag.slice(1)
-    }))
-  ];
-
   const handleCategoryFilter = (categoryId: string) => {
     setActiveFilter(categoryId);
     trackEvent('filter_gallery_category', 'engagement', categoryId);
-  };
-
-  const handleTagFilter = (tagId: string) => {
-    setSelectedTag(tagId);
-    trackEvent('filter_gallery_tag', 'engagement', tagId);
   };
 
   return (
@@ -93,28 +74,7 @@ export default function Gallery() {
             </div>
           </div>
 
-          {/* Tag Filters */}
-          {uniqueTags.length > 0 && (
-            <div className="text-center">
-              <h3 className="text-sm font-medium text-gray-600 mb-3">Filter by Tags</h3>
-              <div className="flex flex-wrap justify-center gap-2">
-                {tagFilters.map(filter => (
-                  <Button
-                    key={filter.id}
-                    variant={selectedTag === filter.id ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleTagFilter(filter.id)}
-                    className={selectedTag === filter.id 
-                      ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
-                      : "hover:bg-gray-100"
-                    }
-                  >
-                    {filter.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Photo Grid */}

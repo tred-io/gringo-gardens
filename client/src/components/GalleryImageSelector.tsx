@@ -18,7 +18,7 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedTag, setSelectedTag] = useState<string>("all");
+
 
   const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
     queryKey: ["/api/gallery"],
@@ -31,15 +31,10 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
     
     const matchesCategory = selectedCategory === "all" || image.category === selectedCategory;
     
-    const matchesTag = selectedTag === "all" || 
-      (image.tags && image.tags.some(tag => tag.toLowerCase().includes(selectedTag.toLowerCase())));
-    
-    return matchesSearch && matchesCategory && matchesTag;
+    return matchesSearch && matchesCategory;
   });
 
   const categories = Array.from(new Set(galleryImages.map(img => img.category))).filter(Boolean);
-  const allTags = galleryImages.flatMap(img => img.tags || []);
-  const uniqueTags = Array.from(new Set(allTags)).filter(Boolean);
 
   const handleSelect = (imageUrl: string, galleryImage: GalleryImage) => {
     onSelect(imageUrl, galleryImage);
@@ -75,50 +70,26 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
                 className="pl-9"
               />
             </div>
-            <div className="flex gap-2">
-              <div className="flex flex-col gap-1">
-                <span className="text-xs text-gray-500 px-2">Categories:</span>
-                <div className="flex gap-1 flex-wrap">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-500 px-2">Categories:</span>
+              <div className="flex gap-1 flex-wrap">
+                <Badge
+                  variant={selectedCategory === "all" ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedCategory("all")}
+                >
+                  All
+                </Badge>
+                {categories.map(category => (
                   <Badge
-                    variant={selectedCategory === "all" ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedCategory("all")}
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    className="cursor-pointer capitalize"
+                    onClick={() => setSelectedCategory(category)}
                   >
-                    All
+                    {category}
                   </Badge>
-                  {categories.map(category => (
-                    <Badge
-                      key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
-                      className="cursor-pointer capitalize"
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-xs text-gray-500 px-2">Tags:</span>
-                <div className="flex gap-1 flex-wrap">
-                  <Badge
-                    variant={selectedTag === "all" ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedTag("all")}
-                  >
-                    All
-                  </Badge>
-                  {uniqueTags.slice(0, 10).map(tag => (
-                    <Badge
-                      key={tag}
-                      variant={selectedTag === tag ? "default" : "outline"}
-                      className="cursor-pointer capitalize"
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -154,11 +125,7 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
                             {image.category}
                           </Badge>
                         )}
-                        {image.tags?.slice(0, 2).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs bg-white/20">
-                            {tag}
-                          </Badge>
-                        ))}
+
                       </div>
                     </div>
                   </div>
