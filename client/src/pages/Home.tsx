@@ -6,9 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Star, MapPin, Phone, Clock, Truck } from "lucide-react";
 import type { Product, GalleryImage, Review } from "@shared/schema";
-import nurseryImage1 from "@assets/image000000(43)_1755303507744.jpg";
 import nurseryImage2 from "@assets/image000000(15)_1755303561602.jpg";
-import nurseryImage3 from "@assets/image000000(21)_1755303565864.jpg";
 
 export default function Home() {
   const { data: featuredProducts = [] } = useQuery<Product[]>({
@@ -50,21 +48,11 @@ export default function Home() {
                 </Button>
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <img 
-                src={nurseryImage1} 
-                alt="Colorful mums and seasonal plants at Gringo Gardens" 
-                className="rounded-xl shadow-lg col-span-2 h-48 object-cover"
-              />
+            <div className="flex justify-center">
               <img 
                 src={nurseryImage2} 
-                alt="Vegetable seedlings and young plants" 
-                className="rounded-xl shadow-lg h-32 object-cover"
-              />
-              <img 
-                src={nurseryImage3} 
-                alt="Vibrant bougainvillea under shade structures" 
-                className="rounded-xl shadow-lg h-32 object-cover"
+                alt="Vegetable seedlings and young plants at Gringo Gardens" 
+                className="rounded-xl shadow-lg w-full max-w-md h-64 object-cover"
               />
             </div>
           </div>
