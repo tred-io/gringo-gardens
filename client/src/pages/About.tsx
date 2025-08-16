@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Leaf, Heart, Users } from "lucide-react";

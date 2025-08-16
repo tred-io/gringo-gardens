@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import AdminDashboardSimple from "../components/AdminDashboardSimple";
 import AdminPasswordProtection from "../components/AdminPasswordProtection";
