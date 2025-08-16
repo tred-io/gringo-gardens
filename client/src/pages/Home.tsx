@@ -31,9 +31,14 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
-  // Fetch temporary closure setting
+  // Fetch business settings
   const { data: temporaryClosureSetting } = useQuery({
     queryKey: ["/api/settings/temporary_closure"],
+    retry: false,
+  });
+
+  const { data: businessHoursSetting } = useQuery({
+    queryKey: ["/api/settings/business_hours"],
     retry: false,
   });
 
@@ -46,8 +51,9 @@ export default function Home() {
   
   const featuredReviews = getRandomReviews(reviews, 2);
 
-  // Parse temporary closure data
+  // Parse business settings
   const temporaryClosure = temporaryClosureSetting?.value ? JSON.parse(temporaryClosureSetting.value) : null;
+  const businessHours = businessHoursSetting?.value ? JSON.parse(businessHoursSetting.value) : null;
 
   const handleCategoryClick = (categoryName: string) => {
     trackEvent('view_category', 'engagement', categoryName);
@@ -260,7 +266,7 @@ export default function Home() {
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mr-3" />
                   <span className="text-gray-700">4041 FM 1715, Lampasas, TX 76550</span>
                 </div>
-                {temporaryClosure?.enabled && (
+                {temporaryClosure?.enabled ? (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
                     <div className="flex items-start">
                       <Clock className="text-red-600 w-6 h-6 mr-3 mt-0.5" />
@@ -271,6 +277,20 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <Clock className="text-bluebonnet-600 w-6 h-6 mr-3" />
+                    <span className="text-gray-700">
+                      {businessHours ? (
+                        Object.entries(businessHours)
+                          .filter(([_, hours]) => hours && hours !== 'Closed')
+                          .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours}`)
+                          .join(', ')
+                      ) : (
+                        'Mon-Sat 8AM-6PM, Sun 10AM-4PM'
+                      )}
+                    </span>
                   </div>
                 )}
 
