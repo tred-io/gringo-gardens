@@ -1186,7 +1186,39 @@ export default function AdminDashboard() {
                                   <Input {...field} placeholder="https://..." />
                                   <div className="flex gap-2">
                                     <GalleryImageSelector
-                                      onSelect={field.onChange}
+                                      onSelect={(imageUrl, galleryImage) => {
+                                        field.onChange(imageUrl);
+                                        // Transfer AI plant identification data to product fields
+                                        if (galleryImage) {
+                                          // Update product name with plant name
+                                          if (galleryImage.title && galleryImage.title !== "Untitled" && galleryImage.title !== "Uploaded Image") {
+                                            productForm.setValue('name', galleryImage.title);
+                                            // Auto-generate slug from plant name
+                                            const slug = galleryImage.title.toLowerCase()
+                                              .replace(/[^a-z0-9 -]/g, '') // Remove special characters
+                                              .replace(/\s+/g, '-') // Replace spaces with hyphens
+                                              .replace(/-+/g, '-'); // Remove duplicate hyphens
+                                            productForm.setValue('slug', slug);
+                                          }
+                                          
+                                          // Update description with plant details
+                                          if (galleryImage.description) {
+                                            productForm.setValue('description', galleryImage.description);
+                                          }
+                                          
+                                          // Map plant category to product category
+                                          if (galleryImage.category) {
+                                            // Try to find matching category or use the gallery category
+                                            const matchingCategory = categories.find(cat => 
+                                              cat.id === galleryImage.category || 
+                                              cat.name.toLowerCase().includes(galleryImage.category.toLowerCase())
+                                            );
+                                            if (matchingCategory) {
+                                              productForm.setValue('categoryId', matchingCategory.id);
+                                            }
+                                          }
+                                        }
+                                      }}
                                       selectedImageUrl={field.value}
                                     />
                                     <ObjectUploader

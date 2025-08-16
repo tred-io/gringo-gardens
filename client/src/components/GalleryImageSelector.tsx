@@ -9,7 +9,7 @@ import { Image, Search, Check } from "lucide-react";
 import type { GalleryImage } from "@shared/schema";
 
 interface GalleryImageSelectorProps {
-  onSelect: (imageUrl: string) => void;
+  onSelect: (imageUrl: string, galleryImage?: GalleryImage) => void;
   selectedImageUrl?: string;
   trigger?: React.ReactNode;
 }
@@ -41,8 +41,8 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
   const allTags = galleryImages.flatMap(img => img.tags || []);
   const uniqueTags = Array.from(new Set(allTags)).filter(Boolean);
 
-  const handleSelect = (imageUrl: string) => {
-    onSelect(imageUrl);
+  const handleSelect = (imageUrl: string, galleryImage: GalleryImage) => {
+    onSelect(imageUrl, galleryImage);
     setIsOpen(false);
   };
 
@@ -134,7 +134,7 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
                       ? "border-bluebonnet-500 shadow-lg" 
                       : "border-gray-200 hover:border-bluebonnet-300"
                   }`}
-                  onClick={() => handleSelect(image.imageUrl)}
+                  onClick={() => handleSelect(image.imageUrl, image)}
                 >
                   <div className="aspect-square">
                     <img
