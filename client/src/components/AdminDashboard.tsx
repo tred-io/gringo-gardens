@@ -1101,12 +1101,15 @@ export default function AdminDashboard() {
             {/* Categories Tab */}
             <TabsContent value="categories" className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-bluebonnet-900">Category Management</h2>
+                <div>
+                  <h2 className="text-xl font-bold text-bluebonnet-900">Plant Collections (Categories)</h2>
+                  <p className="text-gray-600">Manage categories that appear as plant collections on the home page</p>
+                </div>
                 <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
                   <DialogTrigger asChild>
                     <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
                       <Plus className="w-4 h-4 mr-2" />
-                      Add Category
+                      Add Collection
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -1146,9 +1149,52 @@ export default function AdminDashboard() {
                           name="description"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Description</FormLabel>
+                              <FormLabel>Description (shown on home page collections)</FormLabel>
                               <FormControl>
-                                <Textarea {...field} />
+                                <Textarea {...field} rows={3} placeholder="Brief description for the plant collection card" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={categoryForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Collection Image</FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  <Input {...field} placeholder="https://..." />
+                                  <div className="flex gap-2">
+                                    <GalleryImageSelector
+                                      onSelect={field.onChange}
+                                      selectedImageUrl={field.value}
+                                    />
+                                    <ObjectUploader
+                                      maxNumberOfFiles={1}
+                                      maxFileSize={10485760}
+                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onComplete={(result) => {
+                                        if (result.successful.length > 0) {
+                                          field.onChange(result.successful[0].uploadURL);
+                                        }
+                                      }}
+                                      buttonClassName="text-sm"
+                                    >
+                                      Upload New
+                                    </ObjectUploader>
+                                  </div>
+                                  {field.value && (
+                                    <div className="mt-2">
+                                      <img 
+                                        src={field.value} 
+                                        alt="Collection preview" 
+                                        className="w-32 h-24 object-cover rounded border" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1169,7 +1215,7 @@ export default function AdminDashboard() {
                         />
                         <div className="flex gap-4">
                           <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
-                            Create Category
+                            {editingCategory ? "Update Collection" : "Create Collection"}
                           </Button>
                           <Button type="button" variant="outline" onClick={handleCloseCategoryDialog}>
                             Cancel
@@ -1183,18 +1229,63 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categories.map(category => (
-                  <Card key={category.id}>
+                  <Card key={category.id} className="overflow-hidden">
+                    <div className="h-32 bg-gray-100">
+                      {category.imageUrl ? (
+                        <img 
+                          src={category.imageUrl} 
+                          alt={category.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-bluebonnet-50 flex items-center justify-center">
+                          <span className="text-bluebonnet-400 text-sm">No collection image</span>
+                        </div>
+                      )}
+                    </div>
                     <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold text-bluebonnet-900 mb-2">{category.name}</h3>
-                      <p className="text-gray-600 mb-4">{category.description}</p>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEditCategory(category)}>
-                          <Edit className="w-4 h-4" />
-                        </Button>
+                      <h3 className="font-semibold text-bluebonnet-900 mb-2">{category.name}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="text-xs">/{category.slug}</Badge>
+                        <Badge variant={category.active ? "default" : "secondary"} className="text-xs">
+                          {category.active ? "Active" : "Inactive"}
+                        </Badge>
+                      </div>
+                      {category.description && (
+                        <p className="text-gray-700 mb-4 text-sm line-clamp-2">{category.description}</p>
+                      )}
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">
+                          {products.filter(p => p.categoryId === category.id).length} products
+                        </span>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditCategory(category)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => deleteCategoryMutation.mutate(category.id)}
+                            disabled={products.some(p => p.categoryId === category.id)}
+                            title={products.some(p => p.categoryId === category.id) ? "Cannot delete - has products" : "Delete category"}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
+                {categories.length === 0 && (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-gray-500 mb-4">No plant collections created yet.</p>
+                    <p className="text-sm text-gray-400">Collections you create here will appear as plant collections on your home page.</p>
+                  </div>
+                )}
               </div>
             </TabsContent>
 

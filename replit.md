@@ -72,6 +72,8 @@ Preferred communication style: Simple, everyday language.
 - **UI/Visual Improvements (Latest Session)**: Updated copyright to 2025, changed navbar to bluebonnet background with white text for better visibility, removed "delivery available statewide" text from home page, fixed map coordinates for Lampasas address
 - **Database Schema Updates**: Added team members table and storage methods, fixed settings table schema errors, made home page categories dynamic from backend data
 - **Navigation Styling**: Updated navbar to bluebonnet theme with proper contrast for admin buttons and mobile menu styling
+- **Plant Collections Integration**: Successfully tied categories to plant collections on home page - categories automatically appear as collection cards with images and descriptions, creating a dynamic content management system
+- **Comprehensive Admin Features**: Completed gallery image selection system, automatic image resizing with Sharp, team member management, review editing, newsletter subscriber management, and enhanced category management with collection images
 
 ## External Dependencies
 
