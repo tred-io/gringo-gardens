@@ -42,6 +42,7 @@ export const categories = pgTable("categories", {
   slug: varchar("slug", { length: 100 }).notNull().unique(),
   description: text("description"),
   imageUrl: varchar("image_url"),
+  showOnHomepage: boolean("show_on_homepage").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

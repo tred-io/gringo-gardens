@@ -91,6 +91,7 @@ const categorySchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
+  showOnHomepage: z.boolean().default(false),
 });
 
 const reviewSchema = z.object({
@@ -306,6 +307,7 @@ export default function AdminDashboard() {
       slug: "",
       description: "",
       imageUrl: "",
+      showOnHomepage: false,
     },
   });
 
@@ -764,6 +766,7 @@ export default function AdminDashboard() {
       slug: category.slug,
       description: category.description || "",
       imageUrl: category.imageUrl || "",
+      showOnHomepage: category.showOnHomepage || false,
     });
     setIsCategoryDialogOpen(true);
   };
@@ -1393,14 +1396,23 @@ export default function AdminDashboard() {
                         />
                         <FormField
                           control={categoryForm.control}
-                          name="imageUrl"
+                          name="showOnHomepage"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Image URL</FormLabel>
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                              <div className="space-y-0.5">
+                                <FormLabel className="text-base">
+                                  Show on Home Page
+                                </FormLabel>
+                                <p className="text-sm text-muted-foreground">
+                                  Display this collection on the home page (max 4 categories)
+                                </p>
+                              </div>
                               <FormControl>
-                                <Input {...field} placeholder="https://..." />
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -1438,9 +1450,11 @@ export default function AdminDashboard() {
                       <h3 className="font-semibold text-bluebonnet-900 mb-2">{category.name}</h3>
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline" className="text-xs">/{category.slug}</Badge>
-                        <Badge variant={category.active ? "default" : "secondary"} className="text-xs">
-                          {category.active ? "Active" : "Inactive"}
-                        </Badge>
+                        {category.showOnHomepage && (
+                          <Badge variant="default" className="text-xs bg-bluebonnet-600">
+                            Homepage
+                          </Badge>
+                        )}
                       </div>
                       {category.description && (
                         <p className="text-gray-700 mb-4 text-sm line-clamp-2">{category.description}</p>

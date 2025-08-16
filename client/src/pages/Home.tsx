@@ -80,7 +80,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.slice(0, 4).map((category, index) => {
+            {categories.filter(category => category.showOnHomepage).slice(0, 4).map((category, index) => {
               // Fallback images for categories
               const categoryImages = [nativePlantsImage, fruitTreesImage, decorativeTreesImage, hangingBasketsImage];
               const gradients = ["from-bluebonnet-900", "from-texas-green-600", "from-earth-500", "from-bluebonnet-600"];
