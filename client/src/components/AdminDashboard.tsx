@@ -110,13 +110,15 @@ type ReviewFormData = z.infer<typeof reviewSchema>;
 
 export default function AdminDashboard() {
   // Check if APIs are working by testing a simple query
-  const { data: apiTest, isLoading: isApiLoading } = useQuery({
+  const { data: apiTest, isLoading: isApiLoading, error: apiError } = useQuery({
     queryKey: ["/api/admin/settings"],
     retry: false,
   });
 
+  console.log("Admin API test:", { apiTest, isApiLoading, apiError });
+
   // If APIs aren't working (deployment scenario), show simple interface
-  if (!isApiLoading && !apiTest) {
+  if (!isApiLoading && apiError && !apiTest) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

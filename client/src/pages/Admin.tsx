@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import AdminDashboard from "@/components/AdminDashboard";
+import AdminDashboardSimple from "@/components/AdminDashboardSimple";
 import AdminPasswordProtection from "@/components/AdminPasswordProtection";
 
 export default function Admin() {
@@ -32,5 +32,5 @@ export default function Admin() {
     return <AdminPasswordProtection onAuthenticate={handleAuthenticate} />;
   }
 
-  return <AdminDashboard />;
+  return <AdminDashboardSimple />;
 }
