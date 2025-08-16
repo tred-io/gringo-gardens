@@ -29,6 +29,7 @@ jobs:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
           
       - name: Update database schema
-        run: npx drizzle-kit push --force
+        run: echo "y" | npx drizzle-kit push
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        timeout-minutes: 5
