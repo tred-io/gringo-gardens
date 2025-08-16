@@ -26,9 +26,10 @@ Vercel will automatically detect your build configuration from `vercel.json`:
 - **Output Directory**: `dist/public` (configured in vercel.json)
 - **Install Command**: `npm install` (auto-detected)
 
-### 3. Environment Variables (Optional)
+### 3. Environment Variables
 Add these in Vercel dashboard Settings → Environment Variables:
-- `VITE_GA_MEASUREMENT_ID`: Your Google Analytics 4 Measurement ID (for tracking)
+- `ADMIN_PASSWORD`: Admin dashboard password (default: GringoGardens2025!)
+- `VITE_GA_MEASUREMENT_ID`: Your Google Analytics 4 Measurement ID (optional)
 
 ### 4. Deploy
 Click "Deploy" - your site will be live at `your-project-name.vercel.app`
@@ -51,13 +52,13 @@ Click "Deploy" - your site will be live at `your-project-name.vercel.app`
 - **Content management**: Works in development environment only
 - **Database operations**: Requires backend server (not included in static build)
 
-## Production Deployment Strategy
+## Full-Stack Production Deployment
 
-Your site deploys as a **static website** on Vercel with graceful degradation:
-- ✅ **Complete Frontend**: All pages work perfectly without backend
-- ✅ **Admin Dashboard**: Shows appropriate "backend required" message in production
-- ✅ **Contact Form**: Works with local storage (client-side)
-- ✅ **Full Development Environment**: All backend features work locally
+Your site now deploys as a **complete full-stack application** on Vercel:
+- ✅ **Backend APIs**: All admin functionality works via serverless functions
+- ✅ **Admin Dashboard**: Complete content management system in production
+- ✅ **Contact Form**: Messages processed by backend API
+- ✅ **Database**: Simple in-memory storage for demo (can be upgraded to Neon)
 
 ## Post-Deployment Steps
 
