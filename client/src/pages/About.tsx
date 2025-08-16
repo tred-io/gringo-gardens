@@ -2,34 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Leaf, Heart, Users } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
+import { useQuery } from "@tanstack/react-query";
+import type { TeamMember } from "@shared/schema";
 
 export default function About() {
-  const teamMembers = [
-    {
-      name: "Ellis Baty",
-      role: "Founder & Head Horticulturist",
-      description: "Native plant expert with 15+ years of experience in Texas flora. Passionate advocate for sustainable landscaping.",
-      initials: "EB",
-      bgColor: "bg-bluebonnet-100",
-      textColor: "text-bluebonnet-600",
-    },
-    {
-      name: "Jess",
-      role: "Plant Specialist",
-      description: "Helps customers select the perfect trees for their landscape goals.",
-      initials: "J",
-      bgColor: "bg-texas-green-100",
-      textColor: "text-texas-green-600",
-    },
-    // {
-    //   name: "",
-    //   role: "Customer Care Manager",
-    //   description: "Your first point of contact for plant care questions, order assistance, and design consultations. Always ready to help you succeed.",
-    //   initials: "SR",
-    //   bgColor: "bg-earth-100",
-    //   textColor: "text-earth-500",
-    // },
-  ];
+  const { data: teamMembers = [] } = useQuery<TeamMember[]>({
+    queryKey: ["/api/team"],
+  });
 
   return (
     <section className="py-12">
@@ -110,18 +89,33 @@ export default function About() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-          {teamMembers.map((member) => (
-            <Card key={member.name} className="shadow-lg">
+          {teamMembers.map((member, index) => (
+            <Card key={member.id} className="shadow-lg">
               <CardContent className="p-8 text-center">
-                <div className={`w-24 h-24 ${member.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                  <span className={`text-2xl font-bold ${member.textColor}`}>{member.initials}</span>
-                </div>
+                {member.imageUrl ? (
+                  <img
+                    src={member.imageUrl}
+                    alt={member.name}
+                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                  />
+                ) : (
+                  <div className={`w-24 h-24 ${index % 2 === 0 ? 'bg-bluebonnet-100' : 'bg-texas-green-100'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <span className={`text-2xl font-bold ${index % 2 === 0 ? 'text-bluebonnet-600' : 'text-texas-green-600'}`}>
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                )}
                 <h3 className="text-xl font-bold text-bluebonnet-900 mb-2">{member.name}</h3>
-                <p className="text-bluebonnet-600 font-medium mb-3">{member.role}</p>
-                <p className="text-gray-600">{member.description}</p>
+                <p className="text-bluebonnet-600 font-medium mb-3">{member.position}</p>
+                <p className="text-gray-600">{member.bio}</p>
               </CardContent>
             </Card>
           ))}
+          {teamMembers.length === 0 && (
+            <div className="col-span-full text-center py-8">
+              <p className="text-gray-500">Team member information is being updated.</p>
+            </div>
+          )}
         </div>
       </div>
     </section>

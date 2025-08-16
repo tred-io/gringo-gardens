@@ -15,6 +15,8 @@ export default function Products() {
     hardinessZone: "all",
     sunRequirements: "all",
     priceRange: "all",
+    texasNative: "all",
+    droughtTolerance: "all",
   });
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
@@ -64,7 +66,7 @@ export default function Products() {
 
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
               <Select value={filters.category} onValueChange={(value) => updateFilter("category", value)}>
@@ -93,6 +95,8 @@ export default function Products() {
                   <SelectItem value="8b">Zone 8b</SelectItem>
                   <SelectItem value="9a">Zone 9a</SelectItem>
                   <SelectItem value="9b">Zone 9b</SelectItem>
+                  <SelectItem value="10a">Zone 10a</SelectItem>
+                  <SelectItem value="10b">Zone 10b</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -104,13 +108,41 @@ export default function Products() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Sun Requirements</SelectItem>
-                  <SelectItem value="full">Full Sun</SelectItem>
-                  <SelectItem value="partial">Partial Sun</SelectItem>
+                  <SelectItem value="full sun">Full Sun</SelectItem>
+                  <SelectItem value="partial sun">Partial Sun</SelectItem>
+                  <SelectItem value="partial shade">Partial Shade</SelectItem>
                   <SelectItem value="shade">Shade</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Texas Native</label>
+              <Select value={filters.texasNative} onValueChange={(value) => updateFilter("texasNative", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Plants" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Plants</SelectItem>
+                  <SelectItem value="true">Texas Native Only</SelectItem>
+                  <SelectItem value="false">Non-Native</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Drought Tolerance</label>
+              <Select value={filters.droughtTolerance} onValueChange={(value) => updateFilter("droughtTolerance", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Tolerance" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Tolerance</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="moderate">Moderate</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
               <Input
                 type="text"

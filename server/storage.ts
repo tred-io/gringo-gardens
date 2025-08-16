@@ -31,7 +31,7 @@ import {
   type InsertTeamMember,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, asc, like, and, or } from "drizzle-orm";
+import { eq, desc, asc, like, and, or, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -170,6 +170,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCategory(id: string): Promise<boolean> {
+    // First check if any products reference this category
+    const productsUsingCategory = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .where(eq(products.categoryId, id));
+    
+    if (productsUsingCategory[0]?.count > 0) {
+      throw new Error(`Cannot delete category: ${productsUsingCategory[0].count} products are still using this category. Please reassign or delete those products first.`);
+    }
+    
     const result = await db.delete(categories).where(eq(categories.id, id));
     return result.rowCount > 0;
   }
@@ -183,6 +193,8 @@ export class DatabaseStorage implements IStorage {
     priceRange?: string;
     featured?: boolean;
     active?: boolean;
+    texasNative?: string;
+    droughtTolerance?: string;
   }): Promise<Product[]> {
     let query = db.select().from(products);
     
@@ -206,7 +218,15 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (filters?.sunRequirements) {
-      conditions.push(eq(products.sunRequirements, filters.sunRequirements));
+      conditions.push(like(products.sunRequirements, `%${filters.sunRequirements}%`));
+    }
+    
+    if (filters?.texasNative && filters.texasNative !== 'all') {
+      conditions.push(eq(products.texasNative, filters.texasNative === 'true'));
+    }
+    
+    if (filters?.droughtTolerance && filters.droughtTolerance !== 'all') {
+      conditions.push(like(products.droughtTolerance, `%${filters.droughtTolerance}%`));
     }
     
     if (filters?.featured !== undefined) {

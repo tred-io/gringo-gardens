@@ -1125,9 +1125,9 @@ export default function AdminDashboard() {
                             name="price"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Price</FormLabel>
+                                <FormLabel>Price (Optional)</FormLabel>
                                 <FormControl>
-                                  <Input {...field} />
+                                  <Input {...field} placeholder="Leave empty for 'Contact for Price'" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1138,12 +1138,13 @@ export default function AdminDashboard() {
                             name="stock"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Stock</FormLabel>
+                                <FormLabel>Stock (Optional)</FormLabel>
                                 <FormControl>
                                   <Input 
                                     type="number" 
                                     {...field} 
-                                    onChange={e => field.onChange(Number(e.target.value))}
+                                    placeholder="Leave empty for 'Available'"
+                                    onChange={e => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1332,8 +1333,12 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 text-sm text-gray-900">
                           {categories.find(c => c.id === product.categoryId)?.name || "Unknown"}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900">${product.price}</td>
-                        <td className="px-6 py-4 text-sm text-gray-900">{product.stock || 0}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {product.price ? `$${product.price}` : 'Contact for Price'}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {product.stock !== null && product.stock !== undefined ? product.stock : 'Available'}
+                        </td>
                         <td className="px-6 py-4">
                           <Badge variant={product.active ? "default" : "destructive"}>
                             {product.active ? "Active" : "Inactive"}
