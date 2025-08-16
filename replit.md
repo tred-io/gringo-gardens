@@ -66,7 +66,8 @@ Preferred communication style: Simple, everyday language.
 - **Settings API**: Implemented backend API routes for settings management with database storage
 - **Hero Image Update**: Successfully integrated client's Adobe Stock wildflower image as hero background, replacing placeholder with authentic Texas wildflower field imagery
 - **Social Media Integration**: Updated footer social media links to point to actual Gringo Gardens accounts (Facebook, Instagram, YouTube, TikTok, X/Twitter, Google Maps)
-- **Home Page Photo Update**: Replaced placeholder images in "Rooted in Texas Tradition" section with authentic nursery photos showing colorful mums, vegetable seedlings, and vibrant bougainvillea under shade structures
+- **Home Page Photo Update**: Replaced placeholder images in "Rooted in Texas Tradition" section with authentic garden photo showing orange blooms and native plants
+- **Plant Collections Images**: Updated all four category images with authentic nursery photos - native plants (orange flowering vines), fruit trees (container trees), decorative trees (potted trees under shade), and hanging baskets (colorful mixed flower arrangements)
 
 ## External Dependencies
 

@@ -7,6 +7,10 @@ import { Link } from "wouter";
 import { Star, MapPin, Phone, Clock, Truck } from "lucide-react";
 import type { Product, GalleryImage, Review } from "@shared/schema";
 import nurseryImage from "@assets/image000001(2)_1755303882674.jpg";
+import nativePlantsImage from "@assets/image000000(30)_1755304019590.jpg";
+import fruitTreesImage from "@assets/image000000(38)_1755304075716.jpg";
+import decorativeTreesImage from "@assets/image000000(41)_1755304108789.jpg";
+import hangingBasketsImage from "@assets/image000000(17)_1755304126698.jpg";
 
 export default function Home() {
   const { data: featuredProducts = [] } = useQuery<Product[]>({
@@ -76,25 +80,25 @@ export default function Home() {
               {
                 title: "Native Plants & Trees",
                 description: "Texas wildflowers & native species",
-                image: "https://pixabay.com/get/ga89e6f12e04c4383e69881ec9d2eb4779924c3f11688c3e04dcba1bceadba167b0404b04866e6522c18d32af97f4ae8ecefced568f0fdeca43b8084c6d8e7329_1280.jpg",
+                image: nativePlantsImage,
                 gradient: "from-bluebonnet-900",
               },
               {
                 title: "Fruit Trees",
                 description: "Peaches, apples, citrus & more",
-                image: "https://images.unsplash.com/photo-1528821128474-27f963b062bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                image: fruitTreesImage,
                 gradient: "from-texas-green-600",
               },
               {
                 title: "Decorative Trees",
                 description: "Shade trees & ornamental varieties",
-                image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                image: decorativeTreesImage,
                 gradient: "from-earth-500",
               },
               {
                 title: "Hanging Baskets",
                 description: "Indoor & outdoor arrangements",
-                image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                image: hangingBasketsImage,
                 gradient: "from-bluebonnet-600",
               },
             ].map((category, index) => (
