@@ -31,7 +31,14 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
-  const featuredReviews = reviews.filter(review => review.featured).slice(0, 2);
+  // Select 2 random reviews instead of featured ones
+  const getRandomReviews = (reviewsArray: Review[], count: number) => {
+    if (reviewsArray.length <= count) return reviewsArray;
+    const shuffled = [...reviewsArray].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+  
+  const featuredReviews = getRandomReviews(reviews, 2);
 
   const handleCategoryClick = (categoryName: string) => {
     trackEvent('view_category', 'engagement', categoryName);
@@ -245,8 +252,8 @@ export default function Home() {
                   <span className="text-gray-700">4041 FM 1715, Lampasas, TX 76550</span>
                 </div>
                 <div className="flex items-center">
-                  <Clock className="text-bluebonnet-600 w-6 h-6 mr-3" />
-                  <span className="text-gray-700">Mon-Sat 8AM-6PM, Sun 10AM-4PM</span>
+                  <Clock className="text-red-600 w-6 h-6 mr-3" />
+                  <span className="text-red-700 font-medium">Temporarily Closed</span>
                 </div>
 
               </div>
