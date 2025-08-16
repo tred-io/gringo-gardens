@@ -81,7 +81,7 @@ export default function Footer() {
               <a href="https://www.facebook.com/gringogardens" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
                 <Facebook className="w-6 h-6" />
               </a>
-              <a href="#" className="text-bluebonnet-200 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/gringogardens/" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
                 <Instagram className="w-6 h-6" />
               </a>
               <a href="https://www.youtube.com/@gringogardens" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
