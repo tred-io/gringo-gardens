@@ -9,12 +9,12 @@ import type { GalleryImage } from "@shared/schema";
 export default function Gallery() {
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const { data: allImages = [], isLoading } = useQuery<GalleryImage[]>({
+  const { data: allImages = [], isLoading } = useQuery<GalleryImage[] | null>({
     queryKey: ["/api/gallery"],
   });
 
   // Filter by category only
-  const filteredImages = allImages.filter(image => {
+  const filteredImages = (allImages || []).filter(image => {
     const matchesCategory = activeFilter === "all" || image.category === activeFilter;
     return matchesCategory;
   });
@@ -22,7 +22,7 @@ export default function Gallery() {
   // Generate dynamic filters from actual data
   const categoryFilters = [
     { id: "all", label: "All Categories" },
-    ...Array.from(new Set(allImages.map(img => img.category))).filter(Boolean).map(category => ({
+    ...Array.from(new Set((allImages || []).map(img => img.category))).filter(Boolean).map(category => ({
       id: category!,
       label: category!.charAt(0).toUpperCase() + category!.slice(1).replace('-', ' ')
     }))

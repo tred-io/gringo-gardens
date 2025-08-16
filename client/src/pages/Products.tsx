@@ -19,7 +19,7 @@ export default function Products() {
     droughtTolerance: "all",
   });
 
-  const { data: products = [], isLoading } = useQuery<Product[]>({
+  const { data: products = [], isLoading } = useQuery<Product[] | null>({
     queryKey: ["/api/products", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -36,7 +36,7 @@ export default function Products() {
     },
   });
 
-  const { data: categories = [] } = useQuery<Category[]>({
+  const { data: categories = [] } = useQuery<Category[] | null>({
     queryKey: ["/api/categories"],
   });
 
@@ -75,7 +75,7 @@ export default function Products() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map(category => (
+                  {(categories || []).map(category => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
@@ -164,13 +164,13 @@ export default function Products() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map(product => (
+            {(products || []).map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
 
-        {products.length === 0 && !isLoading && (
+        {(products || []).length === 0 && !isLoading && (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">No products found matching your criteria.</p>
           </div>

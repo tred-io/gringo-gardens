@@ -9,15 +9,15 @@ import type { BlogPost } from "@shared/schema";
 export default function Blog() {
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const { data: allPosts = [], isLoading } = useQuery<BlogPost[]>({
+  const { data: allPosts = [], isLoading } = useQuery<BlogPost[] | null>({
     queryKey: ["/api/blog"],
   });
 
   const filteredPosts = activeFilter === "all" 
-    ? allPosts 
-    : allPosts.filter(post => post.category === activeFilter);
+    ? (allPosts || []) 
+    : (allPosts || []).filter(post => post.category === activeFilter);
 
-  const featuredPost = allPosts.find(post => post.id === allPosts[0]?.id);
+  const featuredPost = (allPosts || [])[0];
 
   const filters = [
     { id: "all", label: "All Posts" },

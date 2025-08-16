@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { TeamMember } from "@shared/schema";
 
 export default function About() {
-  const { data: teamMembers = [] } = useQuery<TeamMember[]>({
+  const { data: teamMembers = [] } = useQuery<TeamMember[] | null>({
     queryKey: ["/api/team"],
   });
 
@@ -89,7 +89,7 @@ export default function About() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-          {teamMembers.map((member, index) => (
+          {(teamMembers || []).map((member, index) => (
             <Card key={member.id} className="shadow-lg">
               <CardContent className="p-8 text-center">
                 {member.imageUrl ? (
@@ -111,7 +111,7 @@ export default function About() {
               </CardContent>
             </Card>
           ))}
-          {teamMembers.length === 0 && (
+          {(teamMembers || []).length === 0 && (
             <div className="col-span-full text-center py-8">
               <p className="text-gray-500">Team member information is being updated.</p>
             </div>
