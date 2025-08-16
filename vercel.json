@@ -7,22 +7,30 @@
       "config": {
         "distDir": "dist/public"
       }
+    },
+    {
+      "src": "server/index.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/dist/index.js"
+      "dest": "/server/index.ts"
+    },
+    {
+      "src": "/assets/(.*)",
+      "headers": { "cache-control": "s-maxage=31536000, immutable" },
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2))",
+      "headers": { "cache-control": "s-maxage=31536000, immutable" },
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
       "dest": "/index.html"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/((?!api).*)",
-      "destination": "/index.html"
     }
   ]
 }
