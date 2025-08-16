@@ -14,12 +14,12 @@ export default function Footer() {
   const { toast } = useToast();
 
   // Fetch business hours and closure settings
-  const { data: businessHoursSetting } = useQuery({
+  const { data: businessHoursSetting } = useQuery<any>({
     queryKey: ["/api/settings/business_hours"],
     retry: false,
   });
 
-  const { data: temporaryClosureSetting } = useQuery({
+  const { data: temporaryClosureSetting } = useQuery<any>({
     queryKey: ["/api/settings/temporary_closure"],
     retry: false,
   });

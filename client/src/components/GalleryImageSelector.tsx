@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
-// import { ScrollArea } from "@/components/ui/scroll-area";
+// import { ScrollArea } from "./ui/scroll-area";
 import { Image, Search, Check } from "lucide-react";
 import type { GalleryImage } from "@shared/schema";
 

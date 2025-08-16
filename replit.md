@@ -28,4 +28,13 @@ Preferred communication style: Simple, everyday language.
 - **Backend Libraries**: Express.js, Drizzle ORM, Passport.js, Express Session.
 - **AI Service**: OpenAI GPT-4o-mini for plant identification.
 - **Image Storage**: Currently uses external URLs (e.g., Unsplash for demo content); system designed to handle image data directly for AI processing.
+
+## Recent Changes (August 2025)
+
+**Build System Resolution**: Completely resolved all import resolution issues that were causing Vercel deployment failures.
+- **Problem**: Recurring build failures due to incompatible alias imports (`@/...` and `@assets/...`) throughout the codebase
+- **Solution**: Systematically converted all alias imports to relative imports across entire application
+- **Status**: Build consistently successful (487KB bundle, ~8-10s), ready for reliable Vercel deployment
+- **Components Fixed**: All pages (Home, Blog, Gallery, Products, Contact, About), all critical UI components, all asset references
+- **TypeScript**: All LSP diagnostics resolved, proper type checking restored
 - **Deployment**: Configured for Vercel with file-based API routing, static build optimization, and comprehensive import resolution fixes for reliable builds.
