@@ -84,14 +84,14 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string, res?: a
       if (plantDetails.classification && plantDetails.classification !== "unknown") {
         newTags.push(plantDetails.classification);
       }
-      if (plantDetails.texasNative === true) {
+      if (plantDetails.texas_native === true) {
         newTags.push("texas-native");
       }
-      if (plantDetails.sunPreference && plantDetails.sunPreference !== "unknown") {
-        newTags.push(plantDetails.sunPreference.replace(/\s+/g, '-').toLowerCase());
+      if (plantDetails.sun_preference && plantDetails.sun_preference !== "unknown") {
+        newTags.push(plantDetails.sun_preference.replace(/\s+/g, '-').toLowerCase());
       }
-      if (plantDetails.droughtTolerance && plantDetails.droughtTolerance !== "unknown") {
-        newTags.push(`${plantDetails.droughtTolerance}-drought-tolerance`.replace(/\s+/g, '-').toLowerCase());
+      if (plantDetails.drought_tolerance && plantDetails.drought_tolerance !== "unknown") {
+        newTags.push(`${plantDetails.drought_tolerance}-drought-tolerance`.replace(/\s+/g, '-').toLowerCase());
       }
       
       if (newTags.length > 0) {
@@ -135,7 +135,7 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string, res?: a
       res.status(500).json({ 
         success: false,
         message: "Plant identification failed",
-        error: error.message 
+        error: (error as any).message 
       });
       return;
     }
@@ -147,14 +147,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log("Using development authentication only");
   
   // Use a simple in-memory session for development
-  const sessions = new Map();
+  const sessions = new Map<string, { devAuth: boolean }>();
   
   app.use((req: any, res, next) => {
-    const sessionId = req.headers['x-session-id'] || 'dev-session';
+    const sessionId = (req.headers['x-session-id'] as string) || 'dev-session';
     if (!sessions.has(sessionId)) {
       sessions.set(sessionId, { devAuth: false });
     }
-    req.session = sessions.get(sessionId);
+    req.session = sessions.get(sessionId)!;
     next();
   });
 
@@ -185,16 +185,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/login', (req, res) => {
     console.log('Development login - setting session');
     console.log('Session before:', req.session);
-    req.session.devAuth = true;
+    (req as any).session.devAuth = true;
     console.log('Session after:', req.session);
     res.redirect('/');
   });
 
   app.get('/api/logout', (req, res) => {
     console.log('Development logout - clearing session');
-    if (req.session) {
-      req.session.devAuth = false;
-      delete req.session.devAuth;
+    if ((req as any).session) {
+      (req as any).session.devAuth = false;
+      delete (req as any).session.devAuth;
     }
     res.redirect('/');
   });
@@ -573,7 +573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error in manual plant identification:", error);
         if (!res.headersSent) {
-          res.status(500).json({ message: "Plant identification failed", error: error.message });
+          res.status(500).json({ message: "Plant identification failed", error: (error as any).message });
         }
       }
     } catch (error) {
@@ -844,9 +844,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Handle 404 for API routes that don't exist
-  app.use('/api/*', (req: Request, res: Response) => {
+  app.use('/api/*', (req: any, res: any) => {
     res.status(404).json({ 
-      message: `API endpoint not found: ${req.method} ${req.path}` 
+      message: `API endpoint not found: ${req.method} ${req.originalUrl}` 
     });
   });
 

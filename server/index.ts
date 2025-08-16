@@ -61,8 +61,9 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  // For Vercel deployment, export the app
+  // For Vercel deployment, just setup routes and return
   if (process.env.VERCEL) {
+    // Don't start server, just return the configured app
     return app;
   }
 
