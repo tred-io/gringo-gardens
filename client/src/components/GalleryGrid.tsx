@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import type { GalleryImage } from "@shared/schema";
