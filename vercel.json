@@ -7,20 +7,24 @@
       "config": {
         "distDir": "dist/public"
       }
-    },
-    {
-      "src": "api/index.ts",
-      "use": "@vercel/node"
     }
   ],
+  "functions": {
+    "api/admin/authenticate.ts": {
+      "runtime": "@vercel/node@3"
+    },
+    "api/404.ts": {
+      "runtime": "@vercel/node@3"
+    }
+  },
   "routes": [
     {
       "src": "/api/admin/authenticate",
-      "dest": "/api/admin/authenticate.ts"
+      "dest": "/api/admin/authenticate"
     },
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.ts"
+      "dest": "/api/404"
     },
     {
       "src": "/assets/(.*)",
