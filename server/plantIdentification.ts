@@ -18,23 +18,51 @@ export interface PlantDetails {
 
 export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDetails | null> {
   try {
-    // Convert internal object storage URLs to publicly accessible ones
-    let publicImageUrl = imageUrl;
+    console.log(`Starting plant identification for: ${imageUrl}`);
+    
+    let imageContent: string;
+    let isBase64 = false;
     
     if (imageUrl.startsWith('/objects/uploads/')) {
-      // For development, we can't use localhost URLs with OpenAI
-      // Skip object storage images for now and return null
-      console.log(`Skipping object storage image: ${imageUrl} (requires public URL for OpenAI)`);
+      // For object storage images, fetch the binary data and convert to base64
+      console.log(`Fetching object storage image data: ${imageUrl}`);
+      try {
+        const response = await fetch(`http://localhost:5000${imageUrl}`);
+        if (!response.ok) {
+          console.error(`Failed to fetch object storage image: ${response.status}`);
+          return null;
+        }
+        
+        const buffer = await response.arrayBuffer();
+        const base64Data = Buffer.from(buffer).toString('base64');
+        
+        // Detect image type from the first few bytes (magic numbers)
+        const uint8Array = new Uint8Array(buffer);
+        let mimeType = 'image/jpeg'; // default
+        
+        if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50 && uint8Array[2] === 0x4E && uint8Array[3] === 0x47) {
+          mimeType = 'image/png';
+        } else if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8 && uint8Array[2] === 0xFF) {
+          mimeType = 'image/jpeg';
+        } else if (uint8Array[0] === 0x47 && uint8Array[1] === 0x49 && uint8Array[2] === 0x46) {
+          mimeType = 'image/gif';
+        }
+        
+        imageContent = `data:${mimeType};base64,${base64Data}`;
+        isBase64 = true;
+        console.log(`Converted object storage image to base64 (${mimeType})`);
+      } catch (fetchError) {
+        console.error(`Error fetching object storage image:`, fetchError);
+        return null;
+      }
+    } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // For external URLs, use them directly
+      imageContent = imageUrl;
+      console.log(`Using external URL: ${imageContent}`);
+    } else {
+      console.log(`Unsupported image URL format: ${imageUrl}`);
       return null;
     }
-    
-    // Only process external URLs (like Unsplash URLs)
-    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-      console.log(`Skipping non-public URL: ${imageUrl}`);
-      return null;
-    }
-    
-    console.log(`Analyzing image URL: ${publicImageUrl}`);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -63,7 +91,7 @@ Return ONLY the JSON object. Do not include any extra commentary.`
             {
               type: "image_url",
               image_url: {
-                url: publicImageUrl
+                url: imageContent
               }
             }
           ]
