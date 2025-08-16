@@ -31,6 +31,12 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
+  // Fetch temporary closure setting
+  const { data: temporaryClosureSetting } = useQuery({
+    queryKey: ["/api/settings/temporary_closure"],
+    retry: false,
+  });
+
   // Select 2 random reviews instead of featured ones
   const getRandomReviews = (reviewsArray: Review[], count: number) => {
     if (reviewsArray.length <= count) return reviewsArray;
@@ -39,6 +45,9 @@ export default function Home() {
   };
   
   const featuredReviews = getRandomReviews(reviews, 2);
+
+  // Parse temporary closure data
+  const temporaryClosure = temporaryClosureSetting?.value ? JSON.parse(temporaryClosureSetting.value) : null;
 
   const handleCategoryClick = (categoryName: string) => {
     trackEvent('view_category', 'engagement', categoryName);
@@ -251,19 +260,19 @@ export default function Home() {
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mr-3" />
                   <span className="text-gray-700">4041 FM 1715, Lampasas, TX 76550</span>
                 </div>
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                  <div className="flex items-start">
-                    <Clock className="text-red-600 w-6 h-6 mr-3 mt-0.5" />
-                    <div>
-                      <h4 className="text-red-800 font-semibold mb-2">Temporarily Closed</h4>
-                      <p className="text-red-700 text-sm leading-relaxed">
-                        We're currently taking a break to prepare for the upcoming growing season. 
-                        Please check back soon or contact us for plant availability and reopening updates. 
-                        Thank you for your patience!
-                      </p>
+                {temporaryClosure?.enabled && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                    <div className="flex items-start">
+                      <Clock className="text-red-600 w-6 h-6 mr-3 mt-0.5" />
+                      <div>
+                        <h4 className="text-red-800 font-semibold mb-2">Temporarily Closed</h4>
+                        <p className="text-red-700 text-sm leading-relaxed">
+                          {temporaryClosure.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
               </div>
 
