@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { MapPin, Phone, Mail, Facebook, Instagram } from "lucide-react";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaYoutube, FaTiktok, FaTwitter } from "react-icons/fa";
 import logoPath from "@assets/438299493_734376465563424_2823652752500766968_n_1753941603539.jpg";
 
 export default function Footer() {
@@ -78,13 +78,22 @@ export default function Footer() {
               Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-bluebonnet-200 hover:text-white transition-colors">
+              <a href="https://www.facebook.com/gringogardens" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
                 <Facebook className="w-6 h-6" />
               </a>
               <a href="#" className="text-bluebonnet-200 hover:text-white transition-colors">
                 <Instagram className="w-6 h-6" />
               </a>
-              <a href="#" className="text-bluebonnet-200 hover:text-white transition-colors">
+              <a href="https://www.youtube.com/@gringogardens" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
+                <FaYoutube className="w-6 h-6" />
+              </a>
+              <a href="https://www.tiktok.com/@gringo.gardens" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
+                <FaTiktok className="w-6 h-6" />
+              </a>
+              <a href="https://x.com/gringogardens" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
+                <FaTwitter className="w-6 h-6" />
+              </a>
+              <a href="https://maps.app.goo.gl/CUMm2TaSBKDaVszGA" target="_blank" rel="noopener noreferrer" className="text-bluebonnet-200 hover:text-white transition-colors">
                 <FaGoogle className="w-6 h-6" />
               </a>
             </div>
