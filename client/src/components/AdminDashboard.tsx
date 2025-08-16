@@ -40,6 +40,9 @@ import type {
   Review, 
   ContactMessage,
   Category,
+  TeamMember,
+  NewsletterSubscriber,
+  Setting,
   InsertProduct,
   InsertBlogPost,
   InsertGalleryImage,
@@ -159,6 +162,11 @@ export default function AdminDashboard() {
     retry: false,
   });
 
+  const { data: newsletterSubscribers = [] } = useQuery<NewsletterSubscriber[]>({
+    queryKey: ["/api/newsletter/subscribers"],
+    retry: false,
+  });
+
   // Load settings on component mount
   useEffect(() => {
     if (settings) {
@@ -195,6 +203,42 @@ export default function AdminDashboard() {
         description: error.message || "Failed to update settings",
         variant: "destructive",
       });
+    },
+  });
+
+  // Team member state and queries
+  const { data: teamMembers = [] } = useQuery<TeamMember[]>({
+    queryKey: ["/api/team"],
+  });
+
+  const [isTeamDialogOpen, setIsTeamDialogOpen] = useState(false);
+  const [editingTeamMember, setEditingTeamMember] = useState<TeamMember | null>(null);
+
+  // Team member form schema
+  const teamMemberSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    position: z.string().min(1, "Position is required"),
+    bio: z.string().optional(),
+    imageUrl: z.string().url().optional().or(z.literal("")),
+    email: z.string().email().optional().or(z.literal("")),
+    phone: z.string().optional(),
+    order: z.number().min(0).default(0),
+    active: z.boolean().default(true),
+  });
+
+  type TeamMemberFormData = z.infer<typeof teamMemberSchema>;
+
+  const teamMemberForm = useForm<TeamMemberFormData>({
+    resolver: zodResolver(teamMemberSchema),
+    defaultValues: {
+      name: "",
+      position: "",
+      bio: "",
+      imageUrl: "",
+      email: "",
+      phone: "",
+      order: 0,
+      active: true,
     },
   });
 
@@ -621,6 +665,80 @@ export default function AdminDashboard() {
     setIsCategoryDialogOpen(false);
     setEditingCategory(null);
     categoryForm.reset();
+  };
+
+  const handleCloseTeamDialog = () => {
+    setIsTeamDialogOpen(false);
+    setEditingTeamMember(null);
+    teamMemberForm.reset();
+  };
+
+  const handleEditTeamMember = (member: TeamMember) => {
+    setEditingTeamMember(member);
+    teamMemberForm.reset({
+      name: member.name,
+      position: member.position,
+      bio: member.bio || "",
+      imageUrl: member.imageUrl || "",
+      email: member.email || "",
+      phone: member.phone || "",
+      order: member.order,
+      active: member.active,
+    });
+    setIsTeamDialogOpen(true);
+  };
+
+  // Team member mutations
+  const createTeamMemberMutation = useMutation({
+    mutationFn: async (data: TeamMemberFormData) => {
+      return await apiRequest("POST", "/api/team", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/team"] });
+      toast({ title: "Team member added successfully!" });
+      setIsTeamDialogOpen(false);
+      teamMemberForm.reset();
+    },
+    onError: () => {
+      toast({ title: "Error adding team member", variant: "destructive" });
+    },
+  });
+
+  const updateTeamMemberMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: TeamMemberFormData }) => {
+      return await apiRequest("PUT", `/api/team/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/team"] });
+      toast({ title: "Team member updated successfully!" });
+      setIsTeamDialogOpen(false);
+      setEditingTeamMember(null);
+      teamMemberForm.reset();
+    },
+    onError: () => {
+      toast({ title: "Error updating team member", variant: "destructive" });
+    },
+  });
+
+  const deleteTeamMemberMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/team/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/team"] });
+      toast({ title: "Team member removed successfully!" });
+    },
+    onError: () => {
+      toast({ title: "Error removing team member", variant: "destructive" });
+    },
+  });
+
+  const onTeamMemberSubmit = (data: TeamMemberFormData) => {
+    if (editingTeamMember) {
+      updateTeamMemberMutation.mutate({ id: editingTeamMember.id, data });
+    } else {
+      createTeamMemberMutation.mutate(data);
+    }
   };
 
   const updateFilter = (key: string, value: string) => {
@@ -1422,6 +1540,7 @@ export default function AdminDashboard() {
                               id: review.id, 
                               data: { featured: !review.featured } 
                             })}
+                            title={review.featured ? "Remove from featured" : "Add to featured"}
                           >
                             {review.featured ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                           </Button>
@@ -1432,8 +1551,17 @@ export default function AdminDashboard() {
                               id: review.id, 
                               data: { approved: !review.approved } 
                             })}
+                            title={review.approved ? "Unapprove review" : "Approve review"}
                           >
                             {review.approved ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => deleteReviewMutation.mutate(review.id)}
+                            title="Delete review"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
@@ -1484,32 +1612,201 @@ export default function AdminDashboard() {
             <TabsContent value="team" className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-bluebonnet-900">Team Management</h2>
-                <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Team Member
-                </Button>
+                <Dialog open={isTeamDialogOpen} onOpenChange={setIsTeamDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Team Member
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingTeamMember ? "Edit Team Member" : "Add Team Member"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <Form {...teamMemberForm}>
+                      <form onSubmit={teamMemberForm.handleSubmit(onTeamMemberSubmit)} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={teamMemberForm.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={teamMemberForm.control}
+                            name="position"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Position/Title</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={teamMemberForm.control}
+                          name="bio"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Bio</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} rows={3} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={teamMemberForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Profile Image</FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  <Input {...field} placeholder="https://..." />
+                                  <div className="flex gap-2">
+                                    <GalleryImageSelector
+                                      onSelect={field.onChange}
+                                      selectedImageUrl={field.value}
+                                    />
+                                    <ObjectUploader
+                                      maxNumberOfFiles={1}
+                                      maxFileSize={10485760}
+                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onComplete={(result) => {
+                                        if (result.successful.length > 0) {
+                                          field.onChange(result.successful[0].uploadURL);
+                                        }
+                                      }}
+                                      buttonClassName="text-sm"
+                                    >
+                                      Upload New
+                                    </ObjectUploader>
+                                  </div>
+                                  {field.value && (
+                                    <div className="mt-2">
+                                      <img 
+                                        src={field.value} 
+                                        alt="Preview" 
+                                        className="w-20 h-20 object-cover rounded-full border" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={teamMemberForm.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Email (Optional)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="email" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={teamMemberForm.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Phone (Optional)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="tel" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={teamMemberForm.control}
+                          name="order"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Display Order</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  {...field} 
+                                  onChange={e => field.onChange(Number(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex gap-4">
+                          <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                            {editingTeamMember ? "Update Member" : "Add Member"}
+                          </Button>
+                          <Button type="button" variant="outline" onClick={handleCloseTeamDialog}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Placeholder team members */}
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <div className="w-20 h-20 bg-bluebonnet-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-bluebonnet-600 text-xl font-bold">JD</span>
-                    </div>
-                    <h3 className="font-semibold text-bluebonnet-900 mb-1">John Doe</h3>
-                    <p className="text-gray-600 text-sm mb-2">Owner & Founder</p>
-                    <p className="text-gray-500 text-xs">Expert in native Texas plants with 20+ years experience</p>
-                    <div className="flex gap-2 mt-4 justify-center">
-                      <Button size="sm" variant="outline">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                {teamMembers.map(member => (
+                  <Card key={member.id}>
+                    <CardContent className="p-6 text-center">
+                      <div className="w-20 h-20 bg-bluebonnet-100 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                        {member.imageUrl ? (
+                          <img 
+                            src={member.imageUrl} 
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-bluebonnet-600 text-xl font-bold">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-bluebonnet-900 mb-1">{member.name}</h3>
+                      <p className="text-gray-600 text-sm mb-2">{member.position}</p>
+                      {member.bio && <p className="text-gray-500 text-xs mb-2">{member.bio}</p>}
+                      {member.email && <p className="text-gray-400 text-xs">{member.email}</p>}
+                      <div className="flex gap-2 mt-4 justify-center">
+                        <Button size="sm" variant="outline" onClick={() => handleEditTeamMember(member)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteTeamMemberMutation.mutate(member.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                {teamMembers.length === 0 && (
+                  <div className="col-span-full text-center py-8">
+                    <p className="text-gray-500">No team members added yet. Click "Add Team Member" to get started.</p>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -1518,6 +1815,38 @@ export default function AdminDashboard() {
               <div className="space-y-8">
                 <div>
                   <h2 className="text-xl font-bold text-bluebonnet-900 mb-6">Business Settings</h2>
+                  
+                  {/* Newsletter Subscribers */}
+                  <Card className="mb-6">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold text-bluebonnet-900 mb-4">Newsletter Subscribers</h3>
+                      <div className="space-y-4">
+                        {newsletterSubscribers && newsletterSubscribers.length > 0 ? (
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {newsletterSubscribers.map((subscriber) => (
+                              <Card key={subscriber.id} className="border-gray-200">
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <p className="text-sm font-medium text-gray-900">{subscriber.email}</p>
+                                      <p className="text-xs text-gray-500">
+                                        {subscriber.subscribedAt ? new Date(subscriber.subscribedAt).toLocaleDateString() : 'Unknown date'}
+                                      </p>
+                                    </div>
+                                    <Badge variant={subscriber.active ? "default" : "secondary"}>
+                                      {subscriber.active ? "Active" : "Inactive"}
+                                    </Badge>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500">No newsletter subscribers yet.</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
                   
                   {/* Business Hours */}
                   <Card className="mb-6">

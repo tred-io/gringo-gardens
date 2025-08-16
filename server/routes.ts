@@ -485,19 +485,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body.imageURL,
       );
 
-      // TODO: Add automatic image resizing here
-      // const imageProcessor = new ImageProcessor();
-      // const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
+      // Get the uploaded file for processing
+      const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+      
+      // Automatically resize and optimize the image
+      const { imageProcessor } = await import("./imageProcessor");
+      const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
 
-      // Create gallery image in database
+      // Create gallery image in database with optimized URL
       const galleryImage = await storage.createGalleryImage({
         title: req.body.title || "Uploaded Image",
-        imageUrl: objectPath,
+        imageUrl: optimizedUrl || objectPath,
         altText: req.body.altText || req.body.title || "Gallery Image",
         category: req.body.category || "general",
         featured: req.body.featured || false,
-        // TODO: Add tags support when schema is updated
-        // tags: req.body.tags || []
       });
 
       res.status(200).json({
@@ -561,6 +562,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting team member:", error);
       res.status(500).json({ message: "Failed to delete team member" });
+    }
+  });
+
+
+
+  // Newsletter subscribers route
+  app.get("/api/newsletter/subscribers", async (req, res) => {
+    try {
+      const subscribers = await storage.getNewsletterSubscribers();
+      res.json(subscribers);
+    } catch (error) {
+      console.error("Error fetching newsletter subscribers:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 

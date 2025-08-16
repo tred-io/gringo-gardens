@@ -1,4 +1,6 @@
 import { File } from "@google-cloud/storage";
+import sharp from "sharp";
+import { objectStorageClient } from "./objectStorage";
 
 export interface ImageProcessingOptions {
   maxWidth?: number;
@@ -28,18 +30,54 @@ export class ImageProcessor {
       format = 'jpeg'
     } = options;
     
-    // For now, return the original file URL
-    // TODO: Implement actual image processing with Sharp or similar library
-    // This would involve:
-    // 1. Downloading the source file
-    // 2. Processing with Sharp (resize, compress, format conversion)
-    // 3. Uploading the processed version back to storage
-    // 4. Returning the new URL
-    
-    console.log(`Image processing requested: ${maxWidth}x${maxHeight}, quality: ${quality}, format: ${format}`);
-    
-    // Return the original file's public URL for now
-    return sourceFile.publicUrl();
+    try {
+      // Download the original image
+      const [imageBuffer] = await sourceFile.download();
+      
+      // Process with Sharp
+      let sharpInstance = sharp(imageBuffer);
+      
+      // Resize while maintaining aspect ratio
+      sharpInstance = sharpInstance.resize(maxWidth, maxHeight, {
+        fit: 'inside',
+        withoutEnlargement: true
+      });
+      
+      // Set format and quality
+      if (format === 'jpeg') {
+        sharpInstance = sharpInstance.jpeg({ quality });
+      } else if (format === 'png') {
+        sharpInstance = sharpInstance.png({ quality: Math.round(quality / 10) });
+      } else if (format === 'webp') {
+        sharpInstance = sharpInstance.webp({ quality });
+      }
+      
+      const processedBuffer = await sharpInstance.toBuffer();
+      
+      // Create a new file name for the processed image
+      const originalName = sourceFile.name;
+      const baseName = originalName.substring(0, originalName.lastIndexOf('.'));
+      const processedName = `${baseName}_processed.${format}`;
+      
+      // Upload the processed image to the same bucket
+      const bucket = sourceFile.bucket;
+      const processedFile = bucket.file(processedName);
+      
+      await processedFile.save(processedBuffer, {
+        metadata: {
+          contentType: `image/${format}`,
+          cacheControl: 'public, max-age=31536000', // 1 year cache
+        }
+      });
+      
+      console.log(`Image processed: ${originalName} -> ${processedName} (${maxWidth}x${maxHeight}, ${quality}% quality)`);
+      
+      return processedFile.publicUrl();
+    } catch (error) {
+      console.error('Error processing image:', error);
+      // Return original file URL if processing fails
+      return sourceFile.publicUrl();
+    }
   }
 
   /**
@@ -53,21 +91,65 @@ export class ImageProcessor {
     large: string;
     original: string;
   }> {
-    // TODO: Implement actual responsive image creation
-    // This would create multiple sizes:
-    // - thumbnail: 150x150
-    // - medium: 600x400
-    // - large: 1200x800
-    // - original: as uploaded (up to max size)
-    
-    const originalUrl = sourceFile.publicUrl();
-    
-    return {
-      thumbnail: originalUrl,
-      medium: originalUrl,
-      large: originalUrl,
-      original: originalUrl
-    };
+    try {
+      const [imageBuffer] = await sourceFile.download();
+      const bucket = sourceFile.bucket;
+      const originalName = sourceFile.name;
+      const baseName = originalName.substring(0, originalName.lastIndexOf('.'));
+      
+      // Create thumbnail (150x150, cropped to square)
+      const thumbnailBuffer = await sharp(imageBuffer)
+        .resize(150, 150, { fit: 'cover' })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+      
+      // Create medium size (600x400, fit inside)
+      const mediumBuffer = await sharp(imageBuffer)
+        .resize(600, 400, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85 })
+        .toBuffer();
+      
+      // Create large size (1200x800, fit inside)
+      const largeBuffer = await sharp(imageBuffer)
+        .resize(1200, 800, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85 })
+        .toBuffer();
+      
+      // Upload all sizes
+      const thumbnailFile = bucket.file(`${baseName}_thumb.jpg`);
+      const mediumFile = bucket.file(`${baseName}_medium.jpg`);
+      const largeFile = bucket.file(`${baseName}_large.jpg`);
+      
+      await Promise.all([
+        thumbnailFile.save(thumbnailBuffer, {
+          metadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
+        }),
+        mediumFile.save(mediumBuffer, {
+          metadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
+        }),
+        largeFile.save(largeBuffer, {
+          metadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
+        })
+      ]);
+      
+      console.log(`Created responsive sizes for: ${originalName}`);
+      
+      return {
+        thumbnail: thumbnailFile.publicUrl(),
+        medium: mediumFile.publicUrl(),
+        large: largeFile.publicUrl(),
+        original: sourceFile.publicUrl()
+      };
+    } catch (error) {
+      console.error('Error creating responsive sizes:', error);
+      const originalUrl = sourceFile.publicUrl();
+      return {
+        thumbnail: originalUrl,
+        medium: originalUrl,
+        large: originalUrl,
+        original: originalUrl
+      };
+    }
   }
 
   /**

@@ -103,6 +103,7 @@ export interface IStorage {
   getSetting(key: string): Promise<Setting | undefined>;
   setSetting(key: string, value: string): Promise<Setting>;
   getAllSettings(): Promise<Setting[]>;
+  upsertSetting(key: string, value: string): Promise<Setting>;
 
   // Team member operations
   getTeamMembers(): Promise<TeamMember[]>;
