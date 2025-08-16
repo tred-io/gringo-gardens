@@ -625,7 +625,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin password authentication (simple password protection)
   app.post('/api/admin/authenticate', async (req, res) => {
     const { password } = req.body;
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123'; // Set a default password
+    const adminPassword = process.env.ADMIN_PASSWORD || 'GringoGardens2025!'; // Secure default password
     
     if (password === adminPassword) {
       res.json({ success: true });
