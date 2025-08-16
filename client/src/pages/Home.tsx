@@ -15,19 +15,19 @@ import decorativeTreesImage from "@assets/image000000(41)_1755304108789.jpg";
 import hangingBasketsImage from "@assets/image000000(17)_1755304126698.jpg";
 
 export default function Home() {
-  const { data: featuredProducts = [] } = useQuery<Product[]>({
+  const { data: featuredProducts = [] } = useQuery<Product[] | null>({
     queryKey: ["/api/products", { featured: true }],
   });
 
-  const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
+  const { data: galleryImages = [] } = useQuery<GalleryImage[] | null>({
     queryKey: ["/api/gallery", { featured: true }],
   });
 
-  const { data: reviews = [] } = useQuery<Review[]>({
+  const { data: reviews = [] } = useQuery<Review[] | null>({
     queryKey: ["/api/reviews"],
   });
 
-  const { data: categories = [] } = useQuery<Category[]>({
+  const { data: categories = [] } = useQuery<Category[] | null>({
     queryKey: ["/api/categories"],
   });
 
@@ -43,17 +43,17 @@ export default function Home() {
   });
 
   // Select 2 random reviews instead of featured ones
-  const getRandomReviews = (reviewsArray: Review[], count: number) => {
-    if (reviewsArray.length <= count) return reviewsArray;
+  const getRandomReviews = (reviewsArray: Review[] | null, count: number) => {
+    if (!reviewsArray || reviewsArray.length <= count) return reviewsArray || [];
     const shuffled = [...reviewsArray].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   };
   
   const featuredReviews = getRandomReviews(reviews, 2);
 
-  // Parse business settings
-  const temporaryClosure = temporaryClosureSetting?.value ? JSON.parse(temporaryClosureSetting.value) : null;
-  const businessHours = businessHoursSetting?.value ? JSON.parse(businessHoursSetting.value) : null;
+  // Parse business settings with safe access
+  const temporaryClosure = (temporaryClosureSetting as any)?.value ? JSON.parse((temporaryClosureSetting as any).value) : null;
+  const businessHours = (businessHoursSetting as any)?.value ? JSON.parse((businessHoursSetting as any).value) : null;
   
 
 
@@ -122,7 +122,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.filter(category => category.showOnHomepage && category.imageUrl).slice(0, 4).map((category, index) => {
+            {(categories || []).filter(category => category.showOnHomepage && category.imageUrl).slice(0, 4).map((category, index) => {
               const gradients = ["from-bluebonnet-900", "from-texas-green-600", "from-earth-500", "from-bluebonnet-600"];
               
               return (
@@ -130,7 +130,7 @@ export default function Home() {
                   <div className="group cursor-pointer">
                     <div className="relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
                       <img 
-                        src={category.imageUrl} 
+                        src={category.imageUrl || ""} 
                         alt={category.name} 
                         className="w-full h-64 object-cover"
                       />
@@ -169,10 +169,10 @@ export default function Home() {
             </p>
           </div>
 
-          {galleryImages.length > 0 && (
+          {(galleryImages || []).length > 0 && (
             <div className="relative overflow-hidden rounded-2xl shadow-2xl">
               <img 
-                src={galleryImages[0]?.imageUrl || "https://pixabay.com/get/gba534e36b616ba6e8d00279eb62c12e7e3bcaa573f5b5e662ed0a534cb14dd9501eee8aa8dc616645188438e0f893a867348d80ebb6a8d116f54647dd2e5009e_1280.jpg"} 
+                src={(galleryImages || [])[0]?.imageUrl || "https://pixabay.com/get/gba534e36b616ba6e8d00279eb62c12e7e3bcaa573f5b5e662ed0a534cb14dd9501eee8aa8dc616645188438e0f893a867348d80ebb6a8d116f54647dd2e5009e_1280.jpg"} 
                 alt="Featured gallery image" 
                 className="w-full h-96 lg:h-[500px] object-cover"
               />
