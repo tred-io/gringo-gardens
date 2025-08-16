@@ -28,4 +28,4 @@ Preferred communication style: Simple, everyday language.
 - **Backend Libraries**: Express.js, Drizzle ORM, Passport.js, Express Session.
 - **AI Service**: OpenAI GPT-4o-mini for plant identification.
 - **Image Storage**: Currently uses external URLs (e.g., Unsplash for demo content); system designed to handle image data directly for AI processing.
-- **Deployment**: Configured for Vercel with file-based API routing and static build optimization.
+- **Deployment**: Configured for Vercel with file-based API routing, static build optimization, and comprehensive import resolution fixes for reliable builds.

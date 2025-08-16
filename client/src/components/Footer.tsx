@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "../hooks/use-toast";
+import { apiRequest } from "../lib/queryClient";
 import { MapPin, Phone, Mail, Facebook, Instagram } from "lucide-react";
 import { FaGoogle, FaYoutube, FaTiktok, FaTwitter } from "react-icons/fa";
-import logoPath from "@assets/gringogardens_logo_1755358597034.png";
+import logoPath from "../../../attached_assets/gringogardens_logo_1755358597034.png";
 
 export default function Footer() {
   const [email, setEmail] = useState("");

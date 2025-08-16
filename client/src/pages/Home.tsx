@@ -8,11 +8,11 @@ import { Star, MapPin, Phone, Clock } from "lucide-react";
 import { SEOHead } from "../components/SEOHead";
 import { trackEvent } from "../lib/analytics";
 import type { Product, GalleryImage, Review, Category } from "@shared/schema";
-import nurseryImage from "@assets/image000001(2)_1755303882674.jpg";
-import nativePlantsImage from "@assets/image000000(30)_1755304019590.jpg";
-import fruitTreesImage from "@assets/image000000(38)_1755304075716.jpg";
-import decorativeTreesImage from "@assets/image000000(41)_1755304108789.jpg";
-import hangingBasketsImage from "@assets/image000000(17)_1755304126698.jpg";
+import nurseryImage from "../../../attached_assets/image000001(2)_1755303882674.jpg";
+import nativePlantsImage from "../../../attached_assets/image000000(30)_1755304019590.jpg";
+import fruitTreesImage from "../../../attached_assets/image000000(38)_1755304075716.jpg";
+import decorativeTreesImage from "../../../attached_assets/image000000(41)_1755304108789.jpg";
+import hangingBasketsImage from "../../../attached_assets/image000000(17)_1755304126698.jpg";
 
 export default function Home() {
   const { data: featuredProducts = [] } = useQuery<Product[] | null>({

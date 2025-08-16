@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
-import logoPath from "@assets/gringogardens_logo_1755358597034.png";
+import logoPath from "../../../attached_assets/gringogardens_logo_1755358597034.png";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
