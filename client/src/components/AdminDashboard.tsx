@@ -1169,9 +1169,7 @@ export default function AdminDashboard() {
                     maxNumberOfFiles={10}
                     maxFileSize={10485760}
                     onGetUploadParameters={async () => {
-                      const response = await apiRequest("/api/objects/upload", {
-                        method: "POST",
-                      });
+                      const response = await apiRequest("POST", "/api/objects/upload");
                       return {
                         method: "PUT" as const,
                         url: response.uploadURL,
@@ -1181,15 +1179,12 @@ export default function AdminDashboard() {
                       // Process each uploaded file
                       result.successful.forEach(async (file) => {
                         try {
-                          await apiRequest("/api/gallery-images", {
-                            method: "PUT",
-                            body: {
-                              imageURL: file.uploadURL,
-                              title: file.name || "Uploaded Image",
-                              altText: file.name || "Gallery Image",
-                              category: "general",
-                              featured: false,
-                            },
+                          await apiRequest("PUT", "/api/gallery-images", {
+                            imageURL: file.uploadURL,
+                            title: file.name || "Uploaded Image",
+                            altText: file.name || "Gallery Image",
+                            category: "general",
+                            featured: false,
                           });
                         } catch (error) {
                           console.error("Error saving gallery image:", error);
