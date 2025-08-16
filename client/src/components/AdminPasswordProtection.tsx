@@ -19,27 +19,21 @@ export default function AdminPasswordProtection({ onAuthenticate }: AdminPasswor
     setIsLoading(true);
     setError("");
 
-    try {
-      const response = await fetch("/api/admin/authenticate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password }),
-      });
+    // Temporary client-side authentication for deployment
+    const adminPassword = "GringoGardens2025!";
+    
+    // Simulate network delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (response.ok) {
-        // Store authentication in session storage
-        sessionStorage.setItem("adminAuthenticated", "true");
-        onAuthenticate();
-      } else {
-        setError("Incorrect password. Please try again.");
-      }
-    } catch (error) {
-      setError("Authentication failed. Please try again.");
-    } finally {
-      setIsLoading(false);
+    if (password === adminPassword) {
+      // Store authentication in session storage
+      sessionStorage.setItem("adminAuthenticated", "true");
+      onAuthenticate();
+    } else {
+      setError("Incorrect password. Please try again.");
     }
+    
+    setIsLoading(false);
   };
 
   return (
