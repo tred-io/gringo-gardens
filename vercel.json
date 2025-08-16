@@ -1,38 +1,12 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "package.json",
+      "src": "package.json", 
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist/public"
       }
     }
   ],
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.js)$",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        }
-      ]
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
+  "buildCommand": "vite build"
 }

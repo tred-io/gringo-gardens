@@ -1,0 +1,13 @@
+node_modules
+server
+tests
+*.md
+.replit
+.git
+.env*
+tsconfig.json
+vite.config.ts
+tailwind.config.ts
+postcss.config.js
+jest.config.js
+drizzle.config.ts
