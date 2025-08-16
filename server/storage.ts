@@ -8,6 +8,7 @@ import {
   contactMessages,
   newsletterSubscribers,
   settings,
+  teamMembers,
   type User,
   type UpsertUser,
   type Category,
@@ -26,6 +27,8 @@ import {
   type InsertNewsletterSubscriber,
   type Setting,
   type InsertSetting,
+  type TeamMember,
+  type InsertTeamMember,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or } from "drizzle-orm";
@@ -100,6 +103,12 @@ export interface IStorage {
   getSetting(key: string): Promise<Setting | undefined>;
   setSetting(key: string, value: string): Promise<Setting>;
   getAllSettings(): Promise<Setting[]>;
+
+  // Team member operations
+  getTeamMembers(): Promise<TeamMember[]>;
+  createTeamMember(member: InsertTeamMember): Promise<TeamMember>;
+  updateTeamMember(id: string, member: Partial<InsertTeamMember>): Promise<TeamMember | undefined>;
+  deleteTeamMember(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -426,6 +435,30 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSettings(): Promise<Setting[]> {
     return await db.select().from(settings);
+  }
+
+  // Team member operations
+  async getTeamMembers(): Promise<TeamMember[]> {
+    return await db.select().from(teamMembers).where(eq(teamMembers.active, true)).orderBy(teamMembers.order);
+  }
+
+  async createTeamMember(memberData: InsertTeamMember): Promise<TeamMember> {
+    const [member] = await db.insert(teamMembers).values(memberData).returning();
+    return member;
+  }
+
+  async updateTeamMember(id: string, memberData: Partial<InsertTeamMember>): Promise<TeamMember | undefined> {
+    const [member] = await db
+      .update(teamMembers)
+      .set(memberData)
+      .where(eq(teamMembers.id, id))
+      .returning();
+    return member;
+  }
+
+  async deleteTeamMember(id: string): Promise<boolean> {
+    const result = await db.delete(teamMembers).where(eq(teamMembers.id, id));
+    return result.rowCount > 0;
   }
 }
 

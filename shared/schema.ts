@@ -86,6 +86,7 @@ export const galleryImages = pgTable("gallery_images", {
   description: text("description"),
   imageUrl: varchar("image_url").notNull(),
   category: varchar("category", { length: 50 }),
+  tags: text("tags").array().default(sql`'{}'::text[]`),
   featured: boolean("featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -123,11 +124,24 @@ export const newsletterSubscribers = pgTable("newsletter_subscribers", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Website settings
+// Team members
+export const teamMembers = pgTable("team_members", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 100 }).notNull(),
+  position: varchar("position", { length: 100 }).notNull(),
+  bio: text("bio"),
+  imageUrl: varchar("image_url"),
+  order: integer("order").default(0),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Settings table for dynamic configuration
 export const settings = pgTable("settings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   key: varchar("key", { length: 100 }).notNull().unique(),
   value: text("value"),
+  description: text("description"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
@@ -169,6 +183,11 @@ export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSub
   createdAt: true,
 });
 
+export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertSettingSchema = createInsertSchema(settings).omit({
   id: true,
   updatedAt: true,
@@ -198,6 +217,9 @@ export type ContactMessage = typeof contactMessages.$inferSelect;
 
 export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+
+export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
+export type TeamMember = typeof teamMembers.$inferSelect;
 
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
 export type Setting = typeof settings.$inferSelect;

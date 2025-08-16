@@ -34,7 +34,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-bluebonnet-600 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-20">
           {/* Logo */}
@@ -54,8 +54,8 @@ export default function Navigation() {
               <Link key={item.href} href={item.href}>
                 <span className={`font-medium transition-colors ${
                   isActive(item.href)
-                    ? "text-bluebonnet-900"
-                    : "text-gray-700 hover:text-bluebonnet-600"
+                    ? "text-white"
+                    : "text-bluebonnet-100 hover:text-white"
                 }`}>
                   {item.label}
                 </span>
@@ -66,15 +66,15 @@ export default function Navigation() {
                 <Link href="/admin">
                   <span className={`font-medium transition-colors ${
                     isActive("/admin")
-                      ? "text-bluebonnet-900"
-                      : "text-gray-700 hover:text-bluebonnet-600"
+                      ? "text-white"
+                      : "text-bluebonnet-100 hover:text-white"
                   }`}>
                     Admin
                   </span>
                 </Link>
                 <Button 
                   variant="outline" 
-                  className="border-bluebonnet-600 text-bluebonnet-600 hover:bg-bluebonnet-50"
+                  className="border-white text-white hover:bg-bluebonnet-700"
                   onClick={handleLogout}
                 >
                   Log Out
@@ -82,7 +82,7 @@ export default function Navigation() {
               </>
             ) : (
               <Button 
-                className="bg-bluebonnet-600 hover:bg-bluebonnet-700 text-white"
+                className="bg-white text-bluebonnet-600 hover:bg-bluebonnet-50"
                 onClick={() => window.location.href = '/api/login'}
               >
                 Log In
@@ -92,7 +92,7 @@ export default function Navigation() {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 rounded-md text-gray-700 hover:text-bluebonnet-600"
+            className="lg:hidden p-2 rounded-md text-white hover:text-bluebonnet-200"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (

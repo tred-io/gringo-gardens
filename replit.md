@@ -69,6 +69,9 @@ Preferred communication style: Simple, everyday language.
 - **Home Page Photo Update**: Replaced placeholder images in "Rooted in Texas Tradition" section with authentic garden photo showing orange blooms and native plants
 - **Plant Collections Images**: Updated all four category images with authentic nursery photos - native plants (orange flowering vines), fruit trees (container trees), decorative trees (potted trees under shade), and hanging baskets (colorful mixed flower arrangements)
 - **Gallery Upload System Fixed**: Resolved critical JSON parsing issue preventing gallery image uploads from working. Fixed apiRequest response handling to properly parse JSON responses, enabling successful file uploads to object storage and database creation.
+- **UI/Visual Improvements (Latest Session)**: Updated copyright to 2025, changed navbar to bluebonnet background with white text for better visibility, removed "delivery available statewide" text from home page, fixed map coordinates for Lampasas address
+- **Database Schema Updates**: Added team members table and storage methods, fixed settings table schema errors, made home page categories dynamic from backend data
+- **Navigation Styling**: Updated navbar to bluebonnet theme with proper contrast for admin buttons and mobile menu styling
 
 ## External Dependencies
 

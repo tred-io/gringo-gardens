@@ -12,6 +12,7 @@ import {
   insertNewsletterSubscriberSchema,
   insertCategorySchema,
   insertSettingSchema,
+  insertTeamMemberSchema,
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -500,6 +501,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating gallery image:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Team member routes
+  app.get("/api/team", async (req, res) => {
+    try {
+      const teamMembers = await storage.getTeamMembers();
+      res.json(teamMembers);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      res.status(500).json({ message: "Failed to fetch team members" });
+    }
+  });
+
+  app.post("/api/team", async (req, res) => {
+    try {
+      const memberData = insertTeamMemberSchema.parse(req.body);
+      const member = await storage.createTeamMember(memberData);
+      res.json(member);
+    } catch (error) {
+      console.error("Error creating team member:", error);
+      res.status(400).json({ message: "Failed to create team member" });
+    }
+  });
+
+  app.put("/api/team/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const memberData = insertTeamMemberSchema.partial().parse(req.body);
+      const member = await storage.updateTeamMember(id, memberData);
+      if (member) {
+        res.json(member);
+      } else {
+        res.status(404).json({ message: "Team member not found" });
+      }
+    } catch (error) {
+      console.error("Error updating team member:", error);
+      res.status(400).json({ message: "Failed to update team member" });
+    }
+  });
+
+  app.delete("/api/team/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteTeamMember(id);
+      if (success) {
+        res.json({ message: "Team member deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Team member not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting team member:", error);
+      res.status(500).json({ message: "Failed to delete team member" });
     }
   });
 

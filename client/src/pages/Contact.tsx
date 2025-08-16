@@ -238,14 +238,14 @@ export default function Contact() {
             {/* Interactive Map */}
             <div className="bg-gray-200 rounded-2xl h-64 overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3444.5678901234567!2d-98.1734567!3d31.0645678!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z4041+FM+1715%2C+Lampasas%2C+TX+76550!5e0!3m2!1sen!2sus!4v1234567890123"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3396.8!2d-98.1721!3d31.0642!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864e5b7c123456789%3A0x123456789abcdef!2s4041%20FM%201715%2C%20Lampasas%2C%20TX%2076550!5e0!3m2!1sen!2sus!4v1645000000000"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Gringo Gardens Location"
+                title="Gringo Gardens Location - 4041 FM 1715, Lampasas, TX 76550"
               />
             </div>
 

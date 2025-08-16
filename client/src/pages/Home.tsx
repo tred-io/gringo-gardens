@@ -4,8 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Star, MapPin, Phone, Clock, Truck } from "lucide-react";
-import type { Product, GalleryImage, Review } from "@shared/schema";
+import { Star, MapPin, Phone, Clock } from "lucide-react";
+import type { Product, GalleryImage, Review, Category } from "@shared/schema";
 import nurseryImage from "@assets/image000001(2)_1755303882674.jpg";
 import nativePlantsImage from "@assets/image000000(30)_1755304019590.jpg";
 import fruitTreesImage from "@assets/image000000(38)_1755304075716.jpg";
@@ -23,6 +23,10 @@ export default function Home() {
 
   const { data: reviews = [] } = useQuery<Review[]>({
     queryKey: ["/api/reviews"],
+  });
+
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
   });
 
   const featuredReviews = reviews.filter(review => review.featured).slice(0, 2);
@@ -76,48 +80,31 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                title: "Native Plants & Trees",
-                description: "Texas wildflowers & native species",
-                image: nativePlantsImage,
-                gradient: "from-bluebonnet-900",
-              },
-              {
-                title: "Fruit Trees",
-                description: "Peaches, apples, citrus & more",
-                image: fruitTreesImage,
-                gradient: "from-texas-green-600",
-              },
-              {
-                title: "Decorative Trees",
-                description: "Shade trees & ornamental varieties",
-                image: decorativeTreesImage,
-                gradient: "from-earth-500",
-              },
-              {
-                title: "Hanging Baskets",
-                description: "Indoor & outdoor arrangements",
-                image: hangingBasketsImage,
-                gradient: "from-bluebonnet-600",
-              },
-            ].map((category, index) => (
-              <div key={index} className="group cursor-pointer">
-                <div className="relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
-                  <img 
-                    src={category.image} 
-                    alt={category.title} 
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} via-transparent to-transparent`}>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h3 className="text-xl font-bold mb-2">{category.title}</h3>
-                      <p className="text-sm opacity-90">{category.description}</p>
+            {categories.slice(0, 4).map((category, index) => {
+              // Fallback images for categories
+              const categoryImages = [nativePlantsImage, fruitTreesImage, decorativeTreesImage, hangingBasketsImage];
+              const gradients = ["from-bluebonnet-900", "from-texas-green-600", "from-earth-500", "from-bluebonnet-600"];
+              
+              return (
+                <Link key={category.id} href={`/products?category=${category.slug}`}>
+                  <div className="group cursor-pointer">
+                    <div className="relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
+                      <img 
+                        src={category.imageUrl || categoryImages[index]} 
+                        alt={category.name} 
+                        className="w-full h-64 object-cover"
+                      />
+                      <div className={`absolute inset-0 bg-gradient-to-t ${gradients[index]} via-transparent to-transparent`}>
+                        <div className="absolute bottom-4 left-4 text-white">
+                          <h3 className="text-xl font-bold mb-2">{category.name}</h3>
+                          <p className="text-sm opacity-90">{category.description || "Discover our collection"}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="text-center mt-12">
@@ -245,10 +232,7 @@ export default function Home() {
                   <Clock className="text-bluebonnet-600 w-6 h-6 mr-3" />
                   <span className="text-gray-700">Mon-Sat 8AM-6PM, Sun 10AM-4PM</span>
                 </div>
-                <div className="flex items-center">
-                  <Truck className="text-bluebonnet-600 w-6 h-6 mr-3" />
-                  <span className="text-gray-700">Delivery Available Statewide</span>
-                </div>
+
               </div>
 
               <div className="mt-6 pt-6 border-t border-bluebonnet-200">
