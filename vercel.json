@@ -7,36 +7,12 @@
       "config": {
         "distDir": "dist/public"
       }
-    },
-    {
-      "src": "api/[...catchall].js",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 30
-      }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/[...catchall].js"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
-      "dest": "/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "functions": {
-    "api/[...catchall].js": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
