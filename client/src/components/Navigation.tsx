@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
-import logoPath from "@assets/438299493_734376465563424_2823652752500766968_n_1753941603539.jpg";
+import logoPath from "@assets/gringogardens_logo_1755358597034.png";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,8 +31,8 @@ export default function Navigation() {
             <Link href="/">
               <img 
                 src={logoPath} 
-                alt="Gringo Gardens Logo" 
-                className="h-20 lg:h-20 object-contain"
+                alt="Gringo Gardens - A Texas Plant Nursery" 
+                className="h-12 lg:h-14 object-contain"
               />
             </Link>
           </div>

@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { MapPin, Phone, Mail, Facebook, Instagram } from "lucide-react";
 import { FaGoogle, FaYoutube, FaTiktok, FaTwitter } from "react-icons/fa";
-import logoPath from "@assets/438299493_734376465563424_2823652752500766968_n_1753941603539.jpg";
+import logoPath from "@assets/gringogardens_logo_1755358597034.png";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -71,8 +71,8 @@ export default function Footer() {
           <div>
             <img 
               src={logoPath} 
-              alt="Gringo Gardens Logo" 
-              className="h-12 mb-4"
+              alt="Gringo Gardens - A Texas Plant Nursery" 
+              className="h-16 mb-4 object-contain"
             />
             <p className="text-bluebonnet-200 mb-4">
               Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice.
