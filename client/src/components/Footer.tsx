@@ -72,7 +72,7 @@ export default function Footer() {
             <img 
               src={logoPath} 
               alt="Gringo Gardens Logo" 
-              className="h-12 mb-4 brightness-0 invert"
+              className="h-12 mb-4"
             />
             <p className="text-bluebonnet-200 mb-4">
               Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice.
