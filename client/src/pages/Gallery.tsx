@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import GalleryGrid from "@/components/GalleryGrid";
+import { SEOHead } from "@/components/SEOHead";
+import { trackEvent } from "@/lib/analytics";
 import type { GalleryImage } from "@shared/schema";
 
 export default function Gallery() {
@@ -40,8 +42,24 @@ export default function Gallery() {
     }))
   ];
 
+  const handleCategoryFilter = (categoryId: string) => {
+    setActiveFilter(categoryId);
+    trackEvent('filter_gallery_category', 'engagement', categoryId);
+  };
+
+  const handleTagFilter = (tagId: string) => {
+    setSelectedTag(tagId);
+    trackEvent('filter_gallery_tag', 'engagement', tagId);
+  };
+
   return (
     <section className="py-12">
+      <SEOHead
+        title="Texas Native Plant Gallery - Landscaping Inspiration"
+        description="Browse our gallery of beautiful Texas native plant installations and landscaping projects. Get inspired for your own drought-tolerant garden design."
+        keywords="Texas native plant gallery, landscaping inspiration, drought tolerant garden design, native plant landscaping, Texas garden photos"
+        url="/gallery"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-12">
@@ -63,7 +81,7 @@ export default function Gallery() {
                 <Button
                   key={filter.id}
                   variant={activeFilter === filter.id ? "default" : "outline"}
-                  onClick={() => setActiveFilter(filter.id)}
+                  onClick={() => handleCategoryFilter(filter.id)}
                   className={activeFilter === filter.id 
                     ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
                     : "hover:bg-gray-100"
@@ -85,7 +103,7 @@ export default function Gallery() {
                     key={filter.id}
                     variant={selectedTag === filter.id ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setSelectedTag(filter.id)}
+                    onClick={() => handleTagFilter(filter.id)}
                     className={selectedTag === filter.id 
                       ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
                       : "hover:bg-gray-100"

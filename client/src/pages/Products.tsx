@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ProductCard";
+import { SEOHead } from "@/components/SEOHead";
+import { trackEvent } from "@/lib/analytics";
 import type { Product, Category } from "@shared/schema";
 
 export default function Products() {
@@ -38,10 +40,17 @@ export default function Products() {
 
   const updateFilter = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    trackEvent('filter_products', 'search', `${key}:${value}`);
   };
 
   return (
     <section className="py-12">
+      <SEOHead
+        title="Texas Native Plants & Trees for Sale"
+        description="Shop our extensive collection of native Texas plants, fruit trees, and drought-tolerant varieties. Perfect for Central Texas landscaping with expert growing advice."
+        keywords="buy Texas native plants, native trees for sale, drought tolerant plants, Texas wildflowers, native fruit trees, Central Texas plants, plant nursery"
+        url="/products"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-12">

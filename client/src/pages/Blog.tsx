@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import BlogCard from "@/components/BlogCard";
+import { SEOHead } from "@/components/SEOHead";
+import { trackEvent } from "@/lib/analytics";
 import type { BlogPost } from "@shared/schema";
 
 export default function Blog() {
@@ -25,8 +27,19 @@ export default function Blog() {
     { id: "seasonal-care", label: "Seasonal Care" },
   ];
 
+  const handleFilterChange = (filterId: string) => {
+    setActiveFilter(filterId);
+    trackEvent('filter_blog', 'engagement', filterId);
+  };
+
   return (
     <section className="py-12">
+      <SEOHead
+        title="Texas Native Plant Care Blog - Expert Tips & Advice"
+        description="Expert gardening tips, plant care guides, and seasonal advice for growing native Texas plants. Learn from Gringo Gardens' horticultural experts."
+        keywords="Texas plant care, native plant gardening tips, drought tolerant garden advice, Central Texas gardening blog, seasonal plant care"
+        url="/blog"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-12">
@@ -44,7 +57,7 @@ export default function Blog() {
             <Button
               key={filter.id}
               variant={activeFilter === filter.id ? "default" : "outline"}
-              onClick={() => setActiveFilter(filter.id)}
+              onClick={() => handleFilterChange(filter.id)}
               className={activeFilter === filter.id 
                 ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
                 : "hover:bg-gray-100"

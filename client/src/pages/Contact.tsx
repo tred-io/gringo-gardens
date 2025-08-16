@@ -11,6 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
+import { trackEvent } from "@/lib/analytics";
 
 const contactSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -63,11 +65,18 @@ export default function Contact() {
 
   const onSubmit = (data: ContactFormData) => {
     setIsSubmitting(true);
+    trackEvent('contact_form_submit', 'engagement', data.subject);
     contactMutation.mutate(data);
   };
 
   return (
     <section className="py-12">
+      <SEOHead
+        title="Contact Gringo Gardens - Expert Plant Advice"
+        description="Contact Gringo Gardens for native plant advice, orders, and landscaping consultation. Visit our nursery at 4041 FM 1715, Lampasas, TX 76550."
+        keywords="contact Gringo Gardens, plant nursery Lampasas, native plant advice, Texas plant consultation, nursery location"
+        url="/contact"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-12">

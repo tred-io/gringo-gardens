@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Leaf, Heart, Users } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function About() {
   const teamMembers = [
@@ -32,6 +33,12 @@ export default function About() {
 
   return (
     <section className="py-12">
+      <SEOHead
+        title="About Gringo Gardens - Native Plant Experts"
+        description="Learn about Gringo Gardens, Central Texas's trusted native plant nursery in Lampasas. Meet our expert team and discover our commitment to sustainable landscaping."
+        keywords="Gringo Gardens, native plant experts, Lampasas nursery, Ellis Baty, Texas plant specialists, sustainable landscaping"
+        url="/about"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-16">
