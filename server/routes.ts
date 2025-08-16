@@ -24,7 +24,7 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
     const plantDetails = await identifyPlantFromImage(imageUrl);
     
     if (plantDetails) {
-      console.log(`Plant identified for image ${imageId}:`, plantDetails.common_name);
+      console.log(`Plant identified for image ${imageId}:`, plantDetails.common_name !== 'unknown' ? plantDetails.common_name : `${plantDetails.classification || 'plant'} - ${plantDetails.description}`);
       
       // Update gallery image with plant details, overwriting main fields
       const updateData: any = {
@@ -47,6 +47,9 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
         if (plantDetails.latin_name !== "unknown") {
           updateData.title = `${plantDetails.common_name} (${plantDetails.latin_name})`;
         }
+      } else if (plantDetails.classification && plantDetails.classification !== "unknown") {
+        // For multiple species or unclear ID, use classification + description
+        updateData.title = plantDetails.classification.charAt(0).toUpperCase() + plantDetails.classification.slice(1) + " Collection";
       }
 
       if (plantDetails.description) {
@@ -54,7 +57,7 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
       }
 
       // Update category based on classification
-      if (plantDetails.classification !== "unknown") {
+      if (plantDetails.classification && plantDetails.classification !== "unknown") {
         const categoryMap: Record<string, string> = {
           'tree': 'trees',
           'shrub': 'shrubs', 

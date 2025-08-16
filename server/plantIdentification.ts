@@ -78,6 +78,8 @@ Return ONLY the JSON object. Do not include any extra commentary.`
       console.error("No content returned from OpenAI");
       return null;
     }
+    
+    console.log("OpenAI response content:", content);
 
     try {
       // Clean up the response by removing markdown code blocks if present
@@ -90,11 +92,13 @@ Return ONLY the JSON object. Do not include any extra commentary.`
       
       const plantDetails = JSON.parse(cleanedContent) as PlantDetails;
       
-      // Validate required fields
-      if (!plantDetails.common_name || !plantDetails.latin_name || !plantDetails.description) {
+      // Validate required fields (allow "unknown" values)
+      if (!plantDetails.common_name || !plantDetails.description) {
         console.error("Missing required fields in plant identification response");
         return null;
       }
+      
+      console.log("Successfully parsed plant details:", plantDetails);
 
       return plantDetails;
     } catch (parseError) {
