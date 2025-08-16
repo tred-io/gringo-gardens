@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Star, MapPin, Phone, Clock, Truck } from "lucide-react";
 import type { Product, GalleryImage, Review } from "@shared/schema";
-import nurseryImage2 from "@assets/image000000(15)_1755303561602.jpg";
+import nurseryImage from "@assets/image000001(2)_1755303882674.jpg";
 
 export default function Home() {
   const { data: featuredProducts = [] } = useQuery<Product[]>({
@@ -50,8 +50,8 @@ export default function Home() {
             </div>
             <div className="flex justify-center">
               <img 
-                src={nurseryImage2} 
-                alt="Vegetable seedlings and young plants at Gringo Gardens" 
+                src={nurseryImage} 
+                alt="Beautiful garden with orange blooms and native plants at Gringo Gardens" 
                 className="rounded-xl shadow-lg w-full max-w-md h-64 object-cover"
               />
             </div>
