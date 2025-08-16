@@ -17,7 +17,7 @@ import {
 import { identifyPlantFromImage, type PlantDetails } from "./plantIdentification";
 
 // Background function to identify plant and update gallery image
-async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
+async function identifyAndUpdatePlant(imageId: string, imageUrl: string, res?: any) {
   try {
     console.log(`Starting AI plant identification for image ${imageId}`);
     
@@ -98,9 +98,20 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
         updateData.tags = newTags;
       }
 
-      await storage.updateGalleryImage(imageId, updateData);
+      const updatedImage = await storage.updateGalleryImage(imageId, updateData);
       
       console.log(`Successfully updated plant details for image ${imageId}`);
+      
+      // Return success response with updated data if res is available
+      if (res) {
+        res.json({ 
+          success: true, 
+          message: "Plant identification completed",
+          plantName: plantDetails.common_name !== 'unknown' ? plantDetails.common_name : 'Mixed Plant Collection',
+          updated: updatedImage
+        });
+        return;
+      }
     } else {
       console.log(`No plant identification available for image ${imageId}`);
       
@@ -108,9 +119,26 @@ async function identifyAndUpdatePlant(imageId: string, imageUrl: string) {
       await storage.updateGalleryImage(imageId, {
         aiIdentified: false,
       });
+      
+      if (res) {
+        res.json({ 
+          success: false,
+          message: "Plant could not be identified",
+          error: "No plant details available"
+        });
+        return;
+      }
     }
   } catch (error) {
     console.error(`Error in plant identification for image ${imageId}:`, error);
+    if (res) {
+      res.status(500).json({ 
+        success: false,
+        message: "Plant identification failed",
+        error: error.message 
+      });
+      return;
+    }
   }
 }
 
@@ -539,12 +567,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Gallery image not found" });
       }
 
-      // Trigger AI identification
-      identifyAndUpdatePlant(image.id, image.imageUrl).catch(error => {
+      // Trigger AI identification and wait for result to send proper response
+      try {
+        await identifyAndUpdatePlant(image.id, image.imageUrl, res);
+      } catch (error) {
         console.error("Error in manual plant identification:", error);
-      });
-
-      res.json({ message: "Plant identification started", imageId: image.id });
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Plant identification failed", error: error.message });
+        }
+      }
     } catch (error) {
       console.error("Error starting plant identification:", error);
       res.status(500).json({ message: "Failed to start plant identification" });

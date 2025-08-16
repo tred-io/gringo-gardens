@@ -632,10 +632,22 @@ export default function AdminDashboard() {
       return await apiRequest("POST", `/api/admin/gallery/${id}/identify`, {});
     },
     onSuccess: () => {
+      // Invalidate immediately and then again after a delay to catch the backend update
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      
+      // Refresh again after the identification should be complete
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      }, 3000);
+      
+      // Final refresh to ensure we catch any delayed updates
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+      }, 8000);
+      
       toast({ 
-        title: "Plant identification started!", 
-        description: "Analyzing the image. Results will appear shortly." 
+        title: "Plant identification in progress", 
+        description: "Processing image... The page will update automatically when complete." 
       });
     },
     onError: (error) => {
