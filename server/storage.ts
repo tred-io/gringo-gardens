@@ -438,6 +438,18 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(settings);
   }
 
+  async upsertSetting(key: string, value: string): Promise<Setting> {
+    const [setting] = await db
+      .insert(settings)
+      .values({ key, value })
+      .onConflictDoUpdate({
+        target: settings.key,
+        set: { value, updatedAt: new Date() }
+      })
+      .returning();
+    return setting;
+  }
+
   // Team member operations
   async getTeamMembers(): Promise<TeamMember[]> {
     return await db.select().from(teamMembers).where(eq(teamMembers.active, true)).orderBy(teamMembers.order);
