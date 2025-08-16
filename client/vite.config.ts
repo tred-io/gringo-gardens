@@ -20,12 +20,5 @@ export default defineConfig({
   build: {
     outDir: "../public",
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        assetFileNames: `assets/[name]-${Date.now()}.[ext]`,
-        chunkFileNames: `assets/[name]-${Date.now()}.js`,
-        entryFileNames: `assets/[name]-${Date.now()}.js`,
-      }
-    }
   },
 });
