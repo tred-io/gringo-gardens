@@ -626,6 +626,30 @@ export default function AdminDashboard() {
     },
   });
 
+  const deleteReviewMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/reviews/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      toast({ title: "Review deleted successfully!" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error deleting review", variant: "destructive" });
+    },
+  });
+
   const markMessageReadMutation = useMutation({
     mutationFn: async (id: string) => {
       return await apiRequest("PUT", `/api/admin/contact/${id}/read`, {});
