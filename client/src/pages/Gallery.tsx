@@ -6,21 +6,38 @@ import type { GalleryImage } from "@shared/schema";
 
 export default function Gallery() {
   const [activeFilter, setActiveFilter] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("all");
 
   const { data: allImages = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: ["/api/gallery"],
   });
 
-  const filteredImages = activeFilter === "all" 
-    ? allImages 
-    : allImages.filter(image => image.category === activeFilter);
+  // Filter by both category and tags
+  const filteredImages = allImages.filter(image => {
+    const matchesCategory = activeFilter === "all" || image.category === activeFilter;
+    const matchesTag = selectedTag === "all" || 
+      (image.tags && image.tags.some(tag => tag.toLowerCase().includes(selectedTag.toLowerCase())));
+    return matchesCategory && matchesTag;
+  });
 
-  const filters = [
-    { id: "all", label: "All Photos" },
-    { id: "wildflowers", label: "Wildflowers" },
-    { id: "landscapes", label: "Landscapes" },
-    { id: "nursery", label: "Nursery" },
-    { id: "trees", label: "Trees" },
+  // Generate dynamic filters from actual data
+  const categoryFilters = [
+    { id: "all", label: "All Categories" },
+    ...Array.from(new Set(allImages.map(img => img.category))).filter(Boolean).map(category => ({
+      id: category!,
+      label: category!.charAt(0).toUpperCase() + category!.slice(1).replace('-', ' ')
+    }))
+  ];
+
+  // Generate tag filters from actual data
+  const allTags = allImages.flatMap(img => img.tags || []);
+  const uniqueTags = Array.from(new Set(allTags)).filter(Boolean);
+  const tagFilters = [
+    { id: "all", label: "All Tags" },
+    ...uniqueTags.slice(0, 8).map(tag => ({
+      id: tag,
+      label: tag.charAt(0).toUpperCase() + tag.slice(1)
+    }))
   ];
 
   return (
@@ -36,21 +53,50 @@ export default function Gallery() {
           </p>
         </div>
 
-        {/* Gallery Filter */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {filters.map(filter => (
-            <Button
-              key={filter.id}
-              variant={activeFilter === filter.id ? "default" : "outline"}
-              onClick={() => setActiveFilter(filter.id)}
-              className={activeFilter === filter.id 
-                ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
-                : "hover:bg-gray-100"
-              }
-            >
-              {filter.label}
-            </Button>
-          ))}
+        {/* Gallery Filters */}
+        <div className="space-y-6 mb-12">
+          {/* Category Filters */}
+          <div className="text-center">
+            <h3 className="text-sm font-medium text-gray-600 mb-3">Filter by Category</h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              {categoryFilters.map(filter => (
+                <Button
+                  key={filter.id}
+                  variant={activeFilter === filter.id ? "default" : "outline"}
+                  onClick={() => setActiveFilter(filter.id)}
+                  className={activeFilter === filter.id 
+                    ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
+                    : "hover:bg-gray-100"
+                  }
+                >
+                  {filter.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tag Filters */}
+          {uniqueTags.length > 0 && (
+            <div className="text-center">
+              <h3 className="text-sm font-medium text-gray-600 mb-3">Filter by Tags</h3>
+              <div className="flex flex-wrap justify-center gap-2">
+                {tagFilters.map(filter => (
+                  <Button
+                    key={filter.id}
+                    variant={selectedTag === filter.id ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedTag(filter.id)}
+                    className={selectedTag === filter.id 
+                      ? "bg-bluebonnet-600 hover:bg-bluebonnet-700" 
+                      : "hover:bg-gray-100"
+                    }
+                  >
+                    {filter.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Photo Grid */}

@@ -80,6 +80,7 @@ const galleryImageSchema = z.object({
   description: z.string().optional(),
   imageUrl: z.string().url("Valid image URL is required"),
   category: z.string().optional(),
+  tags: z.string().optional(), // Comma-separated tags for filtering
   featured: z.boolean().default(false),
 });
 
@@ -642,7 +643,12 @@ export default function AdminDashboard() {
   };
 
   const onGalleryImageSubmit = (data: GalleryImageFormData) => {
-    createGalleryImageMutation.mutate(data);
+    // Convert comma-separated tags string to array for backend processing
+    const processedData = {
+      ...data,
+      tags: data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : []
+    };
+    createGalleryImageMutation.mutate(processedData);
   };
 
   const onCategorySubmit = (data: CategoryFormData) => {
@@ -1567,6 +1573,33 @@ export default function AdminDashboard() {
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={galleryForm.control}
+                          name="category"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="e.g., native-plants, trees, flowers" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={galleryForm.control}
+                          name="tags"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tags</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="e.g., bluebonnet, native, wildflower, spring" />
+                              </FormControl>
+                              <p className="text-xs text-gray-500">Comma-separated tags for easy filtering</p>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                         <div className="flex gap-4">
                           <Button type="submit" className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
                             Add Image
@@ -1582,24 +1615,50 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {galleryImages.map(image => (
-                  <div key={image.id} className="relative group">
-                    <img 
-                      src={image.imageUrl} 
-                      alt={image.title || "Gallery image"}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => deleteGalleryImageMutation.mutate(image.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  <Card key={image.id} className="relative group">
+                    <CardContent className="p-3">
+                      <img 
+                        src={image.imageUrl} 
+                        alt={image.title || "Gallery image"}
+                        className="w-full h-32 object-cover rounded-lg mb-2"
+                      />
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-bluebonnet-900">
+                          {image.title || "Untitled"}
+                        </p>
+                        {image.category && (
+                          <Badge variant="secondary" className="text-xs">
+                            {image.category}
+                          </Badge>
+                        )}
+                        {image.tags && image.tags.length > 0 && (
+                          <div className="flex gap-1 flex-wrap">
+                            {image.tags.slice(0, 3).map(tag => (
+                              <Badge key={tag} variant="outline" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {image.tags.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{image.tags.length - 3}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => deleteGalleryImageMutation.mutate(image.id)}
+                          className="w-full"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </TabsContent>

@@ -492,12 +492,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { imageProcessor } = await import("./imageProcessor");
       const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
 
+      // Parse tags from comma-separated string to array
+      let tagsArray: string[] = [];
+      if (req.body.tags && typeof req.body.tags === 'string') {
+        tagsArray = req.body.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0);
+      }
+
       // Create gallery image in database with optimized URL
       const galleryImage = await storage.createGalleryImage({
         title: req.body.title || "Uploaded Image",
         imageUrl: optimizedUrl || objectPath,
-        altText: req.body.altText || req.body.title || "Gallery Image",
+        description: req.body.altText || req.body.title || "Gallery Image",
         category: req.body.category || "general",
+        tags: tagsArray,
         featured: req.body.featured || false,
       });
 
