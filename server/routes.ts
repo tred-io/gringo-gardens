@@ -485,6 +485,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body.imageURL,
       );
 
+      // TODO: Add automatic image resizing here
+      // const imageProcessor = new ImageProcessor();
+      // const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
+
       // Create gallery image in database
       const galleryImage = await storage.createGalleryImage({
         title: req.body.title || "Uploaded Image",
@@ -492,11 +496,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         altText: req.body.altText || req.body.title || "Gallery Image",
         category: req.body.category || "general",
         featured: req.body.featured || false,
+        // TODO: Add tags support when schema is updated
+        // tags: req.body.tags || []
       });
 
       res.status(200).json({
         objectPath: objectPath,
         galleryImage: galleryImage,
+        message: "Image uploaded successfully. Automatic resizing will be implemented in a future update."
       });
     } catch (error) {
       console.error("Error creating gallery image:", error);

@@ -32,6 +32,7 @@ import {
   X
 } from "lucide-react";
 import { ObjectUploader } from "./ObjectUploader";
+import { GalleryImageSelector } from "./GalleryImageSelector";
 import type { 
   Product, 
   BlogPost, 
@@ -694,13 +695,14 @@ export default function AdminDashboard() {
         <Card>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <div className="border-b border-gray-200">
-              <TabsList className="grid w-full grid-cols-7">
+              <TabsList className="grid w-full grid-cols-8">
                 <TabsTrigger value="products">Products</TabsTrigger>
                 <TabsTrigger value="categories">Categories</TabsTrigger>
                 <TabsTrigger value="blog">Blog Posts</TabsTrigger>
                 <TabsTrigger value="gallery">Gallery</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
                 <TabsTrigger value="messages">Messages</TabsTrigger>
+                <TabsTrigger value="team">Team</TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
             </div>
@@ -826,9 +828,39 @@ export default function AdminDashboard() {
                           name="imageUrl"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Image URL</FormLabel>
+                              <FormLabel>Product Image</FormLabel>
                               <FormControl>
-                                <Input {...field} placeholder="https://..." />
+                                <div className="space-y-2">
+                                  <Input {...field} placeholder="https://..." />
+                                  <div className="flex gap-2">
+                                    <GalleryImageSelector
+                                      onSelect={field.onChange}
+                                      selectedImageUrl={field.value}
+                                    />
+                                    <ObjectUploader
+                                      maxNumberOfFiles={1}
+                                      maxFileSize={10485760}
+                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onComplete={(result) => {
+                                        if (result.successful.length > 0) {
+                                          field.onChange(result.successful[0].uploadURL);
+                                        }
+                                      }}
+                                      buttonClassName="text-sm"
+                                    >
+                                      Upload New
+                                    </ObjectUploader>
+                                  </div>
+                                  {field.value && (
+                                    <div className="mt-2">
+                                      <img 
+                                        src={field.value} 
+                                        alt="Preview" 
+                                        className="w-20 h-20 object-cover rounded border" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1101,6 +1133,49 @@ export default function AdminDashboard() {
                               <FormLabel>Excerpt</FormLabel>
                               <FormControl>
                                 <Textarea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={blogForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Featured Image</FormLabel>
+                              <FormControl>
+                                <div className="space-y-2">
+                                  <Input {...field} placeholder="https://..." />
+                                  <div className="flex gap-2">
+                                    <GalleryImageSelector
+                                      onSelect={field.onChange}
+                                      selectedImageUrl={field.value}
+                                    />
+                                    <ObjectUploader
+                                      maxNumberOfFiles={1}
+                                      maxFileSize={10485760}
+                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onComplete={(result) => {
+                                        if (result.successful.length > 0) {
+                                          field.onChange(result.successful[0].uploadURL);
+                                        }
+                                      }}
+                                      buttonClassName="text-sm"
+                                    >
+                                      Upload New
+                                    </ObjectUploader>
+                                  </div>
+                                  {field.value && (
+                                    <div className="mt-2">
+                                      <img 
+                                        src={field.value} 
+                                        alt="Preview" 
+                                        className="w-20 h-20 object-cover rounded border" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1402,6 +1477,39 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            </TabsContent>
+
+            {/* Team Tab */}
+            <TabsContent value="team" className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900">Team Management</h2>
+                <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Team Member
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Placeholder team members */}
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <div className="w-20 h-20 bg-bluebonnet-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                      <span className="text-bluebonnet-600 text-xl font-bold">JD</span>
+                    </div>
+                    <h3 className="font-semibold text-bluebonnet-900 mb-1">John Doe</h3>
+                    <p className="text-gray-600 text-sm mb-2">Owner & Founder</p>
+                    <p className="text-gray-500 text-xs">Expert in native Texas plants with 20+ years experience</p>
+                    <div className="flex gap-2 mt-4 justify-center">
+                      <Button size="sm" variant="outline">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
