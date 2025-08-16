@@ -34,8 +34,10 @@ export const getQueryFn: <T>(options: {
         credentials: "include",
       });
 
-      // Handle deployment scenario where APIs don't exist
-      if (res.status === 500 || res.status === 404) {
+      // Handle deployment scenario where APIs don't exist or return HTML
+      const contentType = res.headers.get('content-type');
+      if (res.status === 500 || res.status === 404 || 
+          (contentType && contentType.includes('text/html'))) {
         console.warn(`API endpoint ${queryKey.join("/")} not available in deployment mode`);
         return null;
       }
@@ -45,7 +47,20 @@ export const getQueryFn: <T>(options: {
       }
 
       await throwIfResNotOk(res);
-      return await res.json();
+      
+      // Additional check for HTML responses that passed status checks
+      const text = await res.text();
+      if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+        console.warn(`API endpoint ${queryKey.join("/")} returned HTML in deployment mode`);
+        return null;
+      }
+      
+      try {
+        return JSON.parse(text);
+      } catch (parseError) {
+        console.warn(`API endpoint ${queryKey.join("/")} returned invalid JSON`);
+        return null;
+      }
     } catch (error) {
       // Gracefully handle API failures in deployment
       console.warn(`API call failed: ${queryKey.join("/")}`, error);
