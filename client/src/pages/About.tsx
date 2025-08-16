@@ -5,29 +5,29 @@ import { Leaf, Heart, Users } from "lucide-react";
 export default function About() {
   const teamMembers = [
     {
-      name: "Maria Garcia",
+      name: "Ellis Baty",
       role: "Founder & Head Horticulturist",
-      description: "Native plant expert with 15+ years of experience in Texas flora. Certified Master Gardener and passionate advocate for sustainable landscaping.",
-      initials: "MG",
+      description: "Native plant expert with 15+ years of experience in Texas flora. Passionate advocate for sustainable landscaping.",
+      initials: "EB",
       bgColor: "bg-bluebonnet-100",
       textColor: "text-bluebonnet-600",
     },
     {
-      name: "Jake Thompson",
-      role: "Tree Specialist",
-      description: "Arborist specializing in fruit trees and native Texas shade trees. Helps customers select the perfect trees for their landscape goals.",
-      initials: "JT",
+      name: "Jess",
+      role: "Plant Specialist",
+      description: "Helps customers select the perfect trees for their landscape goals.",
+      initials: "J",
       bgColor: "bg-texas-green-100",
       textColor: "text-texas-green-600",
     },
-    {
-      name: "Sarah Rodriguez",
-      role: "Customer Care Manager",
-      description: "Your first point of contact for plant care questions, order assistance, and design consultations. Always ready to help you succeed.",
-      initials: "SR",
-      bgColor: "bg-earth-100",
-      textColor: "text-earth-500",
-    },
+    // {
+    //   name: "",
+    //   role: "Customer Care Manager",
+    //   description: "Your first point of contact for plant care questions, order assistance, and design consultations. Always ready to help you succeed.",
+    //   initials: "SR",
+    //   bgColor: "bg-earth-100",
+    //   textColor: "text-earth-500",
+    // },
   ];
 
   return (
@@ -55,13 +55,13 @@ export default function About() {
           <div>
             <h2 className="text-3xl font-bold text-bluebonnet-900 mb-6">Growing Texas Heritage</h2>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              Founded in 2010 in the heart of Lampasas, Gringo Gardens began as a small family operation with a big dream: to help Texans create beautiful, sustainable landscapes using the incredible diversity of native plants that call the Lone Star State home.
+              Founded in 2019 in the heart of Lampasas, Gringo Gardens began as a small operation with a big dream: to help Texans create beautiful, sustainable landscapes using the incredible diversity of native plants that call the Lone Star State home.
             </p>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              What started as a weekend hobby of propagating bluebonnets and other wildflowers has grown into Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice. We've remained committed to our original mission: promoting the beauty and ecological benefits of native Texas flora.
+              What started as a weekend hobby of propagating plants and other wildflowers has grown into Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice. We've remained committed to our original mission: promoting the beauty and ecological benefits of native Texas flora.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">
-              Today, we serve customers across Texas and beyond, shipping our carefully cultivated plants to gardeners who share our passion for authentic Texas landscapes that support local wildlife and thrive in our unique climate.
+              Today, we serve customers across Texas and beyond, offering our carefully cultivated plants to gardeners who share our passion for authentic Texas landscapes that support local wildlife and thrive in our unique climate.
             </p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function About() {
           <p className="text-xl text-gray-600">The passionate people behind Gringo Gardens</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
           {teamMembers.map((member) => (
             <Card key={member.name} className="shadow-lg">
               <CardContent className="p-8 text-center">

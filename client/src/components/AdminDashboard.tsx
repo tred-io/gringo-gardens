@@ -121,25 +121,12 @@ export default function AdminDashboard() {
   const [isTemporarilyClosed, setIsTemporarilyClosed] = useState(false);
   const [closureMessage, setClosureMessage] = useState("");
 
-  // Load settings on component mount
-  useEffect(() => {
-    if (settings) {
-      const businessHoursSetting = settings.find((s: any) => s.key === 'business_hours');
-      const temporaryClosureSetting = settings.find((s: any) => s.key === 'temporary_closure');
-      
-      if (businessHoursSetting?.value) {
-        setBusinessHours(JSON.parse(businessHoursSetting.value));
-      }
-      
-      if (temporaryClosureSetting?.value) {
-        const closure = JSON.parse(temporaryClosureSetting.value);
-        setIsTemporarilyClosed(closure.closed);
-        setClosureMessage(closure.message || "");
-      }
-    }
-  }, [settings]);
+  // Queries - settings must come first for useEffect
+  const { data: settings = [] } = useQuery({
+    queryKey: ["/api/admin/settings"],
+    retry: false,
+  });
 
-  // Queries
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/admin/products", filters],
     retry: false,
@@ -170,10 +157,23 @@ export default function AdminDashboard() {
     retry: false,
   });
 
-  const { data: settings = [] } = useQuery({
-    queryKey: ["/api/admin/settings"],
-    retry: false,
-  });
+  // Load settings on component mount
+  useEffect(() => {
+    if (settings) {
+      const businessHoursSetting = settings.find((s: any) => s.key === 'business_hours');
+      const temporaryClosureSetting = settings.find((s: any) => s.key === 'temporary_closure');
+      
+      if (businessHoursSetting?.value) {
+        setBusinessHours(JSON.parse(businessHoursSetting.value));
+      }
+      
+      if (temporaryClosureSetting?.value) {
+        const closure = JSON.parse(temporaryClosureSetting.value);
+        setIsTemporarilyClosed(closure.closed);
+        setClosureMessage(closure.message || "");
+      }
+    }
+  }, [settings]);
 
   // Settings mutations
   const updateSettingMutation = useMutation({
