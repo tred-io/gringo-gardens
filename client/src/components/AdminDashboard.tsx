@@ -1167,13 +1167,14 @@ export default function AdminDashboard() {
                     maxFileSize={10485760}
                     onGetUploadParameters={async () => {
                       const response = await apiRequest("POST", "/api/objects/upload");
-                      console.log("Upload parameters response:", response);
-                      if (!response.uploadURL) {
+                      const data = await response.json();
+                      console.log("Upload parameters response:", data);
+                      if (!data.uploadURL) {
                         throw new Error("No upload URL received from server");
                       }
                       return {
                         method: "PUT" as const,
-                        url: response.uploadURL,
+                        url: data.uploadURL,
                       };
                     }}
                     onComplete={async (result) => {
@@ -1192,7 +1193,8 @@ export default function AdminDashboard() {
                             category: "general",
                             featured: false,
                           });
-                          console.log("Gallery image created:", response);
+                          const data = await response.json();
+                          console.log("Gallery image created:", data);
                           successCount++;
                         } catch (error) {
                           console.error("Error saving gallery image:", error);
