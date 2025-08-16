@@ -64,13 +64,22 @@ export function ObjectUploader({
       restrictions: {
         maxNumberOfFiles,
         maxFileSize,
-        allowedFileTypes: ['image/*'],
       },
       autoProceed: false,
     })
       .use(AwsS3, {
         shouldUseMultipart: false,
-        getUploadParameters: onGetUploadParameters,
+        getUploadParameters: async (file) => {
+          console.log("Getting upload parameters for file:", file);
+          try {
+            const params = await onGetUploadParameters();
+            console.log("Received upload parameters:", params);
+            return params;
+          } catch (error) {
+            console.error("Error getting upload parameters:", error);
+            throw error;
+          }
+        },
       })
       .on("complete", (result) => {
         onComplete?.(result);

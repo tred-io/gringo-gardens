@@ -1167,6 +1167,10 @@ export default function AdminDashboard() {
                     maxFileSize={10485760}
                     onGetUploadParameters={async () => {
                       const response = await apiRequest("POST", "/api/objects/upload");
+                      console.log("Upload parameters response:", response);
+                      if (!response.uploadURL) {
+                        throw new Error("No upload URL received from server");
+                      }
                       return {
                         method: "PUT" as const,
                         url: response.uploadURL,
