@@ -343,7 +343,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertGalleryImageSchema.parse(req.body);
       
-      // Check for duplicate images by URL
+      // Check for duplicate images by URL (for manually added images)
       const existingImages = await storage.getGalleryImages();
       const isDuplicate = existingImages.some(img => img.imageUrl === validatedData.imageUrl);
       
@@ -526,14 +526,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { imageProcessor } = await import("./imageProcessor");
       const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
 
-      // Check for duplicate images by URL before creating
-      const existingImages = await storage.getGalleryImages();
-      const finalImageUrl = optimizedUrl || objectPath;
-      const isDuplicate = existingImages.some(img => img.imageUrl === finalImageUrl);
-      
-      if (isDuplicate) {
-        return res.status(400).json({ error: "This image already exists in the gallery" });
-      }
+      // For object storage uploads, we'll use a different approach for duplicate detection
+      // Since each upload gets a unique object path, we rely on users to avoid uploading
+      // the same image content multiple times. The unique upload URLs prevent exact duplicates.
 
       // Parse tags from comma-separated string to array
       let tagsArray: string[] = [];

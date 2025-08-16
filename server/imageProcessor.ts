@@ -54,12 +54,13 @@ export class ImageProcessor {
       
       const processedBuffer = await sharpInstance.toBuffer();
       
-      // Create a new file name for the processed image
+      // Create a unique file name for the processed image to avoid conflicts
       const originalName = sourceFile.name;
-      const baseName = originalName.substring(0, originalName.lastIndexOf('.'));
-      const processedName = `${baseName}_processed.${format}`;
+      const timestamp = Date.now();
+      const baseName = originalName.substring(0, originalName.lastIndexOf('.')) || originalName;
+      const processedName = `${baseName}_processed_${timestamp}.${format}`;
       
-      // Upload the processed image to the same bucket
+      // Upload the processed image to the same bucket  
       const bucket = sourceFile.bucket;
       const processedFile = bucket.file(processedName);
       

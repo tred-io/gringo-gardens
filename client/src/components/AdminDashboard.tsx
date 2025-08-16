@@ -1528,10 +1528,17 @@ export default function AdminDashboard() {
                           const response = await apiRequest("PUT", "/api/gallery-images", {
                             imageURL: file.uploadURL,
                             title: file.name || "Uploaded Image",
-                            altText: file.name || "Gallery Image",
+                            altText: file.name || "Gallery Image", 
                             category: "general",
+                            tags: [], // Empty tags array for bulk uploads
                             featured: false,
                           });
+                          
+                          if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+                          }
+                          
                           const data = await response.json();
                           console.log("Gallery image created:", data);
                           successCount++;
