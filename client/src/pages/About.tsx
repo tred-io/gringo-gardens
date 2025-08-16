@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 import { Leaf, Heart, Users } from "lucide-react";
-import { SEOHead } from "@/components/SEOHead";
+import { SEOHead } from "../components/SEOHead";
 import { useQuery } from "@tanstack/react-query";
 import type { TeamMember } from "@shared/schema";
 

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import BlogCard from "@/components/BlogCard";
-import { SEOHead } from "@/components/SEOHead";
-import { trackEvent } from "@/lib/analytics";
+import { Button } from "../components/ui/button";
+import BlogCard from "../components/BlogCard";
+import { SEOHead } from "../components/SEOHead";
+import { trackEvent } from "../lib/analytics";
 import type { BlogPost } from "@shared/schema";
 
 export default function Blog() {

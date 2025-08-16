@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import ProductCard from "@/components/ProductCard";
-import { SEOHead } from "@/components/SEOHead";
-import { trackEvent } from "@/lib/analytics";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Button } from "../components/ui/button";
+import ProductCard from "../components/ProductCard";
+import { SEOHead } from "../components/SEOHead";
+import { trackEvent } from "../lib/analytics";
 import type { Product, Category } from "@shared/schema";
 
 export default function Products() {

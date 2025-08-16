@@ -1,12 +1,12 @@
-import HeroSection from "@/components/HeroSection";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import HeroSection from "../components/HeroSection";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Star, MapPin, Phone, Clock } from "lucide-react";
-import { SEOHead } from "@/components/SEOHead";
-import { trackEvent } from "@/lib/analytics";
+import { SEOHead } from "../components/SEOHead";
+import { trackEvent } from "../lib/analytics";
 import type { Product, GalleryImage, Review, Category } from "@shared/schema";
 import nurseryImage from "@assets/image000001(2)_1755303882674.jpg";
 import nativePlantsImage from "@assets/image000000(30)_1755304019590.jpg";

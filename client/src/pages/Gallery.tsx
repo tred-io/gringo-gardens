@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import GalleryGrid from "@/components/GalleryGrid";
-import { SEOHead } from "@/components/SEOHead";
-import { trackEvent } from "@/lib/analytics";
+import { Button } from "../components/ui/button";
+import GalleryGrid from "../components/GalleryGrid";
+import { SEOHead } from "../components/SEOHead";
+import { trackEvent } from "../lib/analytics";
 import type { GalleryImage } from "@shared/schema";
 
 export default function Gallery() {
