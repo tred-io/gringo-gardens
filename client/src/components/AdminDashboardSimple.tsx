@@ -18,13 +18,48 @@ import {
 export default function AdminDashboardSimple() {
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Test API connectivity first
+  // All hooks must be called at the top level - before any conditional returns
   const { data: apiTest, isLoading: isApiLoading, error: apiError } = useQuery({
     queryKey: ["/api/admin/settings"],
     retry: false,
   });
 
-  // Show deployment message only if API completely fails
+  const { data: products } = useQuery({
+    queryKey: ["/api/admin/products"],
+    retry: false,
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["/api/admin/categories"], 
+    retry: false,
+  });
+
+  const { data: blogPosts } = useQuery({
+    queryKey: ["/api/admin/blog"],
+    retry: false,
+  });
+
+  const { data: galleryImages } = useQuery({
+    queryKey: ["/api/admin/gallery"],
+    retry: false,
+  });
+
+  const { data: reviews } = useQuery({
+    queryKey: ["/api/admin/reviews"],
+    retry: false,
+  });
+
+  const { data: contactMessages } = useQuery({
+    queryKey: ["/api/admin/contact"],
+    retry: false,
+  });
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("adminAuthenticated");
+    window.location.href = "/";
+  };
+
+  // Conditional rendering logic moved after all hooks
   if (!isApiLoading && !apiTest && apiError) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -64,42 +99,6 @@ export default function AdminDashboardSimple() {
       </div>
     );
   }
-
-  // Simple queries with null handling
-  const { data: products } = useQuery({
-    queryKey: ["/api/admin/products"],
-    retry: false,
-  });
-
-  const { data: categories } = useQuery({
-    queryKey: ["/api/admin/categories"], 
-    retry: false,
-  });
-
-  const { data: blogPosts } = useQuery({
-    queryKey: ["/api/admin/blog"],
-    retry: false,
-  });
-
-  const { data: galleryImages } = useQuery({
-    queryKey: ["/api/admin/gallery"],
-    retry: false,
-  });
-
-  const { data: reviews } = useQuery({
-    queryKey: ["/api/admin/reviews"],
-    retry: false,
-  });
-
-  const { data: contactMessages } = useQuery({
-    queryKey: ["/api/admin/contact"],
-    retry: false,
-  });
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("adminAuthenticated");
-    window.location.href = "/";
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
