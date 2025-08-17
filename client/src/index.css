@@ -1,5 +1,5 @@
 @tailwind base;
-@tailwind components;
+@tailwind components; 
 @tailwind utilities;
 
 :root {
@@ -28,7 +28,7 @@
   --chart-4: hsl(43, 74%, 66%);
   --chart-5: hsl(27, 87%, 67%);
   
-  /* Custom Bluebonnet Color Variables */
+  /* Custom Bluebonnet Colors */
   --bluebonnet-50: hsl(224, 100%, 98%);
   --bluebonnet-100: hsl(221, 91%, 91%);
   --bluebonnet-200: hsl(221, 83%, 83%);
@@ -40,13 +40,13 @@
   --bluebonnet-800: hsl(209, 71%, 29%);
   --bluebonnet-900: hsl(207, 64%, 24%);
 
-  /* Texas Green Color Variables */
+  /* Texas Green Colors */
   --texas-green-100: hsl(142, 39%, 85%);
   --texas-green-400: hsl(142, 52%, 45%);
   --texas-green-500: hsl(142, 60%, 35%);
   --texas-green-600: hsl(142, 70%, 25%);
 
-  /* Earth Tone Color Variables */
+  /* Earth Tone Colors */
   --earth-100: hsl(30, 25%, 85%);
   --earth-400: hsl(30, 35%, 55%);
   --earth-500: hsl(30, 45%, 45%);
@@ -75,90 +75,16 @@
   --border: hsl(12, 6.5%, 15.1%);
   --input: hsl(12, 6.5%, 15.1%);
   --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
 }
 
 @layer base {
   * {
     border-color: var(--border);
   }
-
   body {
-    font-family: ui-sans-serif, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
     background-color: var(--background);
     color: var(--foreground);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
-}
-
-/* Custom Bluebonnet Theme Classes */
-.text-bluebonnet-50 { color: var(--bluebonnet-50); }
-.text-bluebonnet-100 { color: var(--bluebonnet-100); }
-.text-bluebonnet-200 { color: var(--bluebonnet-200); }
-.text-bluebonnet-300 { color: var(--bluebonnet-300); }
-.text-bluebonnet-400 { color: var(--bluebonnet-400); }
-.text-bluebonnet-500 { color: var(--bluebonnet-500); }
-.text-bluebonnet-600 { color: var(--bluebonnet-600); }
-.text-bluebonnet-700 { color: var(--bluebonnet-700); }
-.text-bluebonnet-800 { color: var(--bluebonnet-800); }
-.text-bluebonnet-900 { color: var(--bluebonnet-900); }
-
-.bg-bluebonnet-50 { background-color: var(--bluebonnet-50); }
-.bg-bluebonnet-100 { background-color: var(--bluebonnet-100); }
-.bg-bluebonnet-200 { background-color: var(--bluebonnet-200); }
-.bg-bluebonnet-300 { background-color: var(--bluebonnet-300); }
-.bg-bluebonnet-400 { background-color: var(--bluebonnet-400); }
-.bg-bluebonnet-500 { background-color: var(--bluebonnet-500); }
-.bg-bluebonnet-600 { background-color: var(--bluebonnet-600); }
-.bg-bluebonnet-700 { background-color: var(--bluebonnet-700); }
-.bg-bluebonnet-800 { background-color: var(--bluebonnet-800); }
-.bg-bluebonnet-900 { background-color: var(--bluebonnet-900); }
-
-.border-bluebonnet-200 { border-color: var(--bluebonnet-200); }
-.border-bluebonnet-600 { border-color: var(--bluebonnet-600); }
-.border-bluebonnet-700 { border-color: var(--bluebonnet-700); }
-
-.text-texas-green-100 { color: var(--texas-green-100); }
-.text-texas-green-400 { color: var(--texas-green-400); }
-.text-texas-green-500 { color: var(--texas-green-500); }
-.text-texas-green-600 { color: var(--texas-green-600); }
-
-.bg-texas-green-100 { background-color: var(--texas-green-100); }
-.bg-texas-green-400 { background-color: var(--texas-green-400); }
-.bg-texas-green-500 { background-color: var(--texas-green-500); }
-.bg-texas-green-600 { background-color: var(--texas-green-600); }
-
-.text-earth-100 { color: var(--earth-100); }
-.text-earth-400 { color: var(--earth-400); }
-.text-earth-500 { color: var(--earth-500); }
-.text-earth-600 { color: var(--earth-600); }
-
-.bg-earth-100 { background-color: var(--earth-100); }
-.bg-earth-400 { background-color: var(--earth-400); }
-.bg-earth-500 { background-color: var(--earth-500); }
-.bg-earth-600 { background-color: var(--earth-600); }
-
-.hover\:bg-bluebonnet-700:hover { background-color: var(--bluebonnet-700); }
-.hover\:bg-bluebonnet-800:hover { background-color: var(--bluebonnet-800); }
-.hover\:bg-texas-green-500:hover { background-color: var(--texas-green-500); }
-.hover\:text-bluebonnet-600:hover { color: var(--bluebonnet-600); }
-
-/* Focus styles */
-.focus\:ring-bluebonnet-500:focus {
-  --tw-ring-color: var(--bluebonnet-500);
-}
-
-/* Line clamp utilities */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
