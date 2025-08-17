@@ -31,6 +31,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 2025)
 
+**CSS Configuration Resolution (August 17, 2025)**: Completely resolved local/Vercel styling inconsistencies.
+- **Problem**: Local development showed broken styling while Vercel displayed correctly due to configuration conflicts
+- **Root Cause**: Conflicting Tailwind configs between root and client directories, causing inconsistent build behavior
+- **Solution**: Created delegation config system where root `tailwind.config.ts` delegates to `client/tailwind.config.ts`
+- **Key Fixes**: Updated content paths to work from both directories, simplified PostCSS config, removed .vercelignore exclusions
+- **Status**: Both local and Vercel now generate consistent 70KB CSS files with full bluebonnet theme
+- **Result**: Reliable styling with bluebonnet blue (#004bac), Texas green (#7ed856), and earth tones across all environments
+
 **Build System Resolution**: Completely resolved all import resolution issues that were causing Vercel deployment failures.
 - **Problem**: Recurring build failures due to incompatible alias imports (`@/...` and `@assets/...`) throughout the codebase
 - **Solution**: Systematically converted all alias imports to relative imports across entire application

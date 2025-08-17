@@ -29,8 +29,27 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Build URL with query parameters
+    let url = queryKey[0] as string;
+    if (queryKey.length > 1 && typeof queryKey[1] === 'object' && queryKey[1] !== null) {
+      const params = new URLSearchParams();
+      const queryParams = queryKey[1] as Record<string, any>;
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value));
+        }
+      });
+      if (params.toString()) {
+        url += '?' + params.toString();
+      }
+    } else if (queryKey.length > 1) {
+      // Handle array-style queryKeys like ["/api/products", "slug"]
+      url = queryKey.join("/");
+    }
+    
     try {
-      const res = await fetch(queryKey.join("/") as string, {
+      
+      const res = await fetch(url, {
         credentials: "include",
       });
 
@@ -38,7 +57,7 @@ export const getQueryFn: <T>(options: {
       const contentType = res.headers.get('content-type');
       if (res.status === 500 || 
           (res.status === 404 && contentType && contentType.includes('text/html'))) {
-        console.warn(`API endpoint ${queryKey.join("/")} not available in deployment mode`);
+        console.warn(`API endpoint ${url} not available in deployment mode`);
         return null;
       }
 
@@ -51,19 +70,19 @@ export const getQueryFn: <T>(options: {
       // Additional check for HTML responses that passed status checks
       const text = await res.text();
       if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-        console.warn(`API endpoint ${queryKey.join("/")} returned HTML in deployment mode`);
+        console.warn(`API endpoint ${url} returned HTML in deployment mode`);
         return null;
       }
       
       try {
         return JSON.parse(text);
       } catch (parseError) {
-        console.warn(`API endpoint ${queryKey.join("/")} returned invalid JSON`);
+        console.warn(`API endpoint ${url} returned invalid JSON`);
         return null;
       }
     } catch (error) {
       // Gracefully handle API failures in deployment
-      console.warn(`API call failed: ${queryKey.join("/")}`, error);
+      console.warn(`API call failed: ${url}`, error);
       return null;
     }
   };
