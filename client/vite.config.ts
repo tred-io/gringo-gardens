@@ -10,6 +10,9 @@ export default defineConfig({
     jsxImportSource: 'react',
   })],
   root: ".",
+  css: {
+    postcss: './tailwind.config.ts'
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
