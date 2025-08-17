@@ -4,9 +4,19 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./src/pages/**/*.tsx",
-    "./src/components/**/*.tsx",
-    "../shared/**/*.{js,jsx,ts,tsx}"
+    "../shared/**/*.{js,jsx,ts,tsx}",
+    // Force include critical files
+    "./src/App.tsx",
+    "./src/main.tsx", 
+    "./src/pages/Home.tsx",
+    "./src/pages/Products.tsx",
+    "./src/pages/Gallery.tsx",
+    "./src/pages/Contact.tsx",
+    "./src/pages/About.tsx",
+    "./src/pages/Blog.tsx",
+    "./src/pages/Admin.tsx",
+    "./src/components/ui/button.tsx",
+    "./src/components/ui/card.tsx"
   ],
   safelist: [
     'bg-bluebonnet-600',
