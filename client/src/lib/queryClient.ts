@@ -36,8 +36,8 @@ export const getQueryFn: <T>(options: {
 
       // Handle deployment scenario where APIs don't exist or return HTML
       const contentType = res.headers.get('content-type');
-      if (res.status === 500 || res.status === 404 || 
-          (contentType && contentType.includes('text/html'))) {
+      if (res.status === 500 || 
+          (res.status === 404 && contentType && contentType.includes('text/html'))) {
         console.warn(`API endpoint ${queryKey.join("/")} not available in deployment mode`);
         return null;
       }
