@@ -29,28 +29,28 @@
   --chart-5: hsl(27, 87%, 67%);
   
   /* Custom Bluebonnet Colors */
-  --bluebonnet-50: hsl(224, 100%, 98%);
-  --bluebonnet-100: hsl(221, 91%, 91%);
-  --bluebonnet-200: hsl(221, 83%, 83%);
-  --bluebonnet-300: hsl(219, 80%, 73%);
-  --bluebonnet-400: hsl(217, 75%, 61%);
-  --bluebonnet-500: hsl(215, 70%, 50%);
-  --bluebonnet-600: hsl(213, 73%, 42%);
-  --bluebonnet-700: hsl(211, 75%, 35%);
-  --bluebonnet-800: hsl(209, 71%, 29%);
-  --bluebonnet-900: hsl(207, 64%, 24%);
+  --bluebonnet-50: #f8faff;
+  --bluebonnet-100: #e6edff;
+  --bluebonnet-200: #c7d7ff;
+  --bluebonnet-300: #9cb5ff;
+  --bluebonnet-400: #6a8cff;
+  --bluebonnet-500: #4c6fff;
+  --bluebonnet-600: #3b5ae6;
+  --bluebonnet-700: #2e47cc;
+  --bluebonnet-800: #243aa6;
+  --bluebonnet-900: #1f3085;
 
   /* Texas Green Colors */
-  --texas-green-100: hsl(142, 39%, 85%);
-  --texas-green-400: hsl(142, 52%, 45%);
-  --texas-green-500: hsl(142, 60%, 35%);
-  --texas-green-600: hsl(142, 70%, 25%);
+  --texas-green-100: #dcf4e6;
+  --texas-green-400: #4ade80;
+  --texas-green-500: #22c55e;
+  --texas-green-600: #16a34a;
 
   /* Earth Tone Colors */
-  --earth-100: hsl(30, 25%, 85%);
-  --earth-400: hsl(30, 35%, 55%);
-  --earth-500: hsl(30, 45%, 45%);
-  --earth-600: hsl(30, 55%, 35%);
+  --earth-100: #f5f1eb;
+  --earth-400: #b8a082;
+  --earth-500: #a18a6b;
+  --earth-600: #8b7355;
   
   --radius: 0.5rem;
 }
