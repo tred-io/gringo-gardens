@@ -1,10 +1,9 @@
-import type { Config } from "tailwindcss";
-
+/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
   content: [
-    "./index.html", 
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
     "./src/**/*.{html,tsx,ts}",
     "../shared/**/*.{js,jsx,ts,tsx}",
     "../server/**/*.{js,ts}"
@@ -50,7 +49,13 @@ export default {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
-        // Custom Bluebonnet Theme Colors
+        chart: {
+          1: "var(--chart-1)",
+          2: "var(--chart-2)",
+          3: "var(--chart-3)",
+          4: "var(--chart-4)",
+          5: "var(--chart-5)",
+        },
         bluebonnet: {
           50: "var(--bluebonnet-50)",
           100: "var(--bluebonnet-100)",
@@ -63,61 +68,20 @@ export default {
           800: "var(--bluebonnet-800)",
           900: "var(--bluebonnet-900)",
         },
-        // Texas Green Colors
         "texas-green": {
           100: "var(--texas-green-100)",
           400: "var(--texas-green-400)",
           500: "var(--texas-green-500)",
           600: "var(--texas-green-600)",
         },
-        // Earth Tone Colors
         earth: {
           100: "var(--earth-100)",
           400: "var(--earth-400)",
           500: "var(--earth-500)",
           600: "var(--earth-600)",
         },
-        chart: {
-          "1": "var(--chart-1)",
-          "2": "var(--chart-2)",
-          "3": "var(--chart-3)",
-          "4": "var(--chart-4)",
-          "5": "var(--chart-5)",
-        },
-        sidebar: {
-          DEFAULT: "var(--sidebar-background)",
-          foreground: "var(--sidebar-foreground)",
-          primary: "var(--sidebar-primary)",
-          "primary-foreground": "var(--sidebar-primary-foreground)",
-          accent: "var(--sidebar-accent)",
-          "accent-foreground": "var(--sidebar-accent-foreground)",
-          border: "var(--sidebar-border)",
-          ring: "var(--sidebar-ring)",
-        },
-      },
-      keyframes: {
-        "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
-        },
-        "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-} satisfies Config;
+  plugins: [],
+};
