@@ -10,7 +10,6 @@ export default defineConfig({
     jsxImportSource: 'react',
   })],
   root: ".",
-
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
