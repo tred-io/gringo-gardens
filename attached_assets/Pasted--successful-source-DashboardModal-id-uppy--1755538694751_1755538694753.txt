@@ -1,0 +1,53 @@
+{
+    "successful": [
+        {
+            "source": "DashboardModal",
+            "id": "uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000",
+            "name": "image000000(14).jpg",
+            "extension": "jpg",
+            "meta": {
+                "relativePath": null,
+                "name": "image000000(14).jpg",
+                "type": "image/jpeg"
+            },
+            "type": "image/jpeg",
+            "data": {},
+            "progress": {
+                "uploadStarted": 1755538477432,
+                "uploadComplete": true,
+                "bytesUploaded": 295712,
+                "bytesTotal": 295712,
+                "percentage": 100
+            },
+            "size": 295712,
+            "isGhost": false,
+            "isRemote": false,
+            "preview": "blob:https://gringo-gardens.vercel.app/72f468f6-7b1b-4709-ad02-23b25543efc5",
+            "s3Multipart": {},
+            "response": {
+                "body": {
+                    "access-control-allow-headers": "Content-Type, Authorization",
+                    "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+                    "access-control-allow-origin": "*",
+                    "cache-control": "public, max-age=0, must-revalidate",
+                    "content-length": "556",
+                    "content-type": "application/json; charset=utf-8",
+                    "date": "Mon, 18 Aug 2025 17:34:38 GMT",
+                    "etag": "W/\"22c-gv8b+GYbXYZX1TlgqJDvszMz1mY\"",
+                    "server": "Vercel",
+                    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+                    "x-vercel-cache": "MISS",
+                    "x-vercel-id": "cle1::iad1::s9vfv-1755538476482-809250a0206c",
+                    "ETag": "W/\"22c-gv8b+GYbXYZX1TlgqJDvszMz1mY\"",
+                    "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+                },
+                "status": 200,
+                "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+            },
+            "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload",
+            "isPaused": false
+        }
+    ],
+    "failed": [],
+    "uploadID": "49ClotdQ-OlYkhyEue2wQ"
+}

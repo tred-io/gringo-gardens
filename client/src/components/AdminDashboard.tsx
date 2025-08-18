@@ -1795,32 +1795,22 @@ export default function AdminDashboard() {
                           const isVercel = file.uploadURL && file.uploadURL.includes('/api/blob/upload');
                           
                           if (isVercel) {
-                            // For Vercel: Extract object name from upload URL and construct blob URL
+                            // For Vercel uploads, construct blob URL from the object name
+                            // Since Uppy doesn't properly capture our JSON response
                             try {
                               const uploadUrl = new URL(file.uploadURL, window.location.origin);
                               const objectName = uploadUrl.searchParams.get('objectName');
                               
                               if (objectName) {
-                                // For Vercel, the blob URL format is: https://<domain>.public.blob.vercel-storage.com/<object-name>
-                                // But we should get it from the API response
-                                if (file.response?.body) {
-                                  let responseData = file.response.body;
-                                  if (typeof responseData === 'string') {
-                                    responseData = JSON.parse(responseData);
-                                  }
-                                  
-                                  if (responseData.url) {
-                                    actualImageURL = responseData.url;
-                                    console.log("Got Vercel blob URL from API response:", actualImageURL);
-                                  }
-                                }
+                                console.log("Constructing Vercel blob URL for object:", objectName);
                                 
-                                if (!actualImageURL) {
-                                  console.error("Vercel upload succeeded but no blob URL in response");
-                                }
+                                // Use the confirmed Vercel blob domain pattern
+                                const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
+                                actualImageURL = `https://${blobDomain}/${objectName}`;
+                                console.log("Constructed Vercel blob URL:", actualImageURL);
                               }
                             } catch (error) {
-                              console.error("Error processing Vercel upload:", error);
+                              console.error("Error constructing Vercel blob URL:", error);
                             }
                           } else {
                             // For Replit: Use the upload URL directly (signed URL approach)
