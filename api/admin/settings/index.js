@@ -2,10 +2,11 @@
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // Set CORS headers + prevent static optimization
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -40,3 +41,8 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// Prevent static optimization
+export const config = {
+  runtime: 'nodejs',
+};

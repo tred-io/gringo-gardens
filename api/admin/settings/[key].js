@@ -2,10 +2,11 @@
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // Set CORS headers + prevent static optimization (fixes Vercel 405 issue)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -77,3 +78,14 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// Prevent static optimization - forces dynamic behavior in production
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+    externalResolver: true,
+  },
+  runtime: 'nodejs',
+};
