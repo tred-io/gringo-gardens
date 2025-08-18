@@ -85,13 +85,20 @@ export default async function handler(req, res) {
     };
 
     console.log('Upload successful - Blob URL:', result.url);
+    console.log('Blob object returned by Vercel:', blob);
+    console.log('blob.url value:', blob.url);
     console.log('Response being sent:', { url: result.url, uploadURL: result.url, objectPath: result.objectPath });
 
     res.status(200).json({
       url: result.url,
       uploadURL: result.url,
       objectPath: result.objectPath,
-      message: result.message
+      message: result.message,
+      debug: {
+        blobUrl: blob.url,
+        filename: filename,
+        objectName: req.query.objectName
+      }
     });
 
   } catch (error) {
