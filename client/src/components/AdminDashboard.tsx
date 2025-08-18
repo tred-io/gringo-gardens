@@ -1858,8 +1858,8 @@ export default function AdminDashboard() {
                           
                           console.log("Final image URL for gallery:", actualImageURL);
                           
-                          const response = await apiRequest("PUT", "/api/gallery-images", {
-                            imageURL: actualImageURL,
+                          const response = await apiRequest("POST", "/api/admin/gallery", {
+                            imageUrl: actualImageURL,
                             title: file.name || "Uploaded Image",
                             altText: file.name || "Gallery Image", 
                             category: "general",
@@ -1887,7 +1887,7 @@ export default function AdminDashboard() {
                       }
                       
                       // Refresh gallery images
-                      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
+                      queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
                       
                       if (successCount > 0) {
                         toast({
