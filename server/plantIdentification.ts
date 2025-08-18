@@ -29,16 +29,13 @@ export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDet
       // For object storage or Vercel Blob images, fetch and optimize for AI
       console.log(`Fetching image data: ${imageUrl}`);
       try {
-        const vercelBlobService = new VercelBlobStorageService();
         let fetchUrl = imageUrl;
         
-        // For Vercel Blob images, try to get the AI-optimized version first
-        if (vercelBlobService.isAvailable() && imageUrl.startsWith('/blob/')) {
-          const originalUrl = imageUrl.replace('/blob/', '');
-          fetchUrl = vercelBlobService.getAIImageUrl(`https://placeholder${originalUrl}`);
-        } else if (imageUrl.startsWith('/objects/')) {
+        // For object storage images, use local server
+        if (imageUrl.startsWith('/objects/')) {
           fetchUrl = `http://localhost:5000${imageUrl}`;
         }
+        // For Vercel Blob images, they should be full URLs already stored in the database
         
         const response = await fetch(fetchUrl);
         if (!response.ok) {

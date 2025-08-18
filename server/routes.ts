@@ -750,16 +750,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let objectPath = req.body.imageURL;
       
       // Process different types of image URLs
-      if (vercelBlobService.isAvailable() && req.body.imageURL.includes('vercel-storage.com')) {
-        // Vercel Blob URL
-        objectPath = vercelBlobService.normalizeObjectEntityPath(req.body.imageURL);
-      } else if (objectStorageService.isAvailable() && req.body.imageURL.startsWith('/objects/')) {
+      if (req.body.imageURL.includes('vercel-storage.com') || req.body.imageURL.includes('/blob/')) {
+        // Vercel Blob URL - normalize to object path
+        if (req.body.imageURL.startsWith('https://') && req.body.imageURL.includes('vercel-storage.com')) {
+          const url = new URL(req.body.imageURL);
+          objectPath = `/blob${url.pathname}`;
+        } else if (req.body.imageURL.startsWith('/blob/')) {
+          objectPath = req.body.imageURL;
+        }
+      } else if (objectStorageService.isAvailable() && (req.body.imageURL.startsWith('/objects/') || req.body.imageURL.startsWith('https://storage.googleapis.com/'))) {
         // Replit object storage path
         objectPath = objectStorageService.normalizeObjectEntityPath(req.body.imageURL);
-      } else if (req.body.imageURL.startsWith('https://storage.googleapis.com/')) {
-        // Google Cloud Storage URL (from Replit object storage)
-        const url = new URL(req.body.imageURL);
-        objectPath = `/objects${url.pathname}`;
       }
       // For external URLs (Unsplash, etc.), use as-is
 

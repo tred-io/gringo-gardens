@@ -52,21 +52,36 @@ export default async function handler(req, res) {
     const contentType = req.headers['content-type'] || 'application/octet-stream';
     console.log('Processing upload with content type:', contentType);
 
-    // Process the upload with image optimization
-    const { VercelBlobStorageService } = await import('../server/vercelBlobStorage.ts');
-    const vercelBlobService = new VercelBlobStorageService();
+    // For now, do a simple direct upload to Vercel Blob without complex processing
+    // This avoids import issues with TypeScript files in Vercel runtime
     
-    // Process and upload with multi-size generation
-    const result = await vercelBlobService.processDirectUpload(fileBuffer, contentType);
+    // Generate unique filename with proper extension
+    const fileId = randomUUID();
+    const extension = contentType.includes('image/png') ? 'png' : 
+                     contentType.includes('image/') ? 'jpg' : 'bin';
+    const filename = `gallery/uploads/${fileId}.${extension}`;
+
+    console.log('Uploading directly to Vercel Blob:', filename, contentType);
+
+    // Upload directly to Vercel Blob
+    const blob = await put(filename, fileBuffer, {
+      access: 'public',
+      contentType: contentType
+    });
+
+    const result = {
+      url: blob.url,
+      objectPath: `/blob/gallery/uploads/${fileId}.${extension}`,
+      message: 'File uploaded successfully to Vercel Blob'
+    };
 
     console.log('Upload successful with multi-size processing:', result.url);
 
     res.status(200).json({
       url: result.url,
       uploadURL: result.url,
-      sizes: result.sizes,
       objectPath: result.objectPath,
-      message: 'File uploaded successfully to Vercel Blob with multi-size processing'
+      message: result.message
     });
 
   } catch (error) {
