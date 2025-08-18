@@ -57,7 +57,7 @@ const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required"),
   description: z.string().optional(),
-  price: z.string().min(1, "Price is required"),
+  price: z.string().optional(),
   imageUrl: z.string().url().optional().or(z.literal("")),
   categoryId: z.string().min(1, "Category is required"),
   hardinessZone: z.string().optional(),
