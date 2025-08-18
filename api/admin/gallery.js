@@ -78,13 +78,79 @@ export default async function handler(req, res) {
           return res.status(404).json({ message: 'Image not found' });
         }
 
-        // Start plant identification in background
-        identifyPlantAsync(id, image.imageUrl, sql);
-        
-        return res.json({ 
-          message: 'Plant identification started',
-          imageId: id 
-        });
+        // Run plant identification synchronously for immediate UI update
+        try {
+          const plantDetails = await identifyPlant(image.imageUrl);
+          
+          // Update gallery image with plant details immediately
+          const updateData = {
+            commonName: plantDetails.common_name !== "unknown" ? plantDetails.common_name : null,
+            latinName: plantDetails.latin_name !== "unknown" ? plantDetails.latin_name : null,
+            hardinessZone: plantDetails.hardiness_zone !== "unknown" ? plantDetails.hardiness_zone : null,
+            sunPreference: plantDetails.sun_preference !== "unknown" ? plantDetails.sun_preference : null,
+            droughtTolerance: plantDetails.drought_tolerance !== "unknown" ? plantDetails.drought_tolerance : null,
+            texasNative: typeof plantDetails.texas_native === "boolean" ? plantDetails.texas_native : null,
+            indoorOutdoor: plantDetails.indoor_outdoor !== "unknown" ? plantDetails.indoor_outdoor : null,
+            classification: plantDetails.classification !== "unknown" ? plantDetails.classification : null,
+            aiDescription: plantDetails.description || null,
+            aiIdentified: true,
+          };
+
+          // Update title if plant was identified
+          if (plantDetails.common_name !== "unknown") {
+            updateData.title = plantDetails.common_name;
+            if (plantDetails.latin_name !== "unknown") {
+              updateData.title = `${plantDetails.common_name} (${plantDetails.latin_name})`;
+            }
+          }
+
+          if (plantDetails.description) {
+            updateData.description = plantDetails.description;
+          }
+
+          // Update the database synchronously
+          const [updatedImage] = await sql`
+            UPDATE gallery_images SET
+              title = ${updateData.title || null},
+              description = ${updateData.description || null},
+              common_name = ${updateData.commonName},
+              latin_name = ${updateData.latinName},
+              hardiness_zone = ${updateData.hardinessZone},
+              sun_preference = ${updateData.sunPreference},
+              drought_tolerance = ${updateData.droughtTolerance},
+              texas_native = ${updateData.texasNative},
+              indoor_outdoor = ${updateData.indoorOutdoor},
+              classification = ${updateData.classification},
+              ai_description = ${updateData.aiDescription},
+              ai_identified = ${updateData.aiIdentified}
+            WHERE id = ${id}
+            RETURNING *
+          `;
+          
+          console.log(`Plant identification completed for image ${id}: ${plantDetails.common_name}`);
+          
+          return res.json({ 
+            message: 'Plant identification completed',
+            imageId: id,
+            plantDetails: updatedImage
+          });
+          
+        } catch (error) {
+          console.error(`Error during plant identification for image ${id}:`, error);
+          
+          // Mark as identification attempted but failed
+          await sql`
+            UPDATE gallery_images SET
+              ai_identified = true,
+              ai_description = 'Plant identification failed'
+            WHERE id = ${id}
+          `;
+          
+          return res.status(500).json({ 
+            message: 'Plant identification failed',
+            error: error.message 
+          });
+        }
       }
 
       return res.status(400).json({ message: 'Invalid action' });
@@ -143,106 +209,41 @@ export default async function handler(req, res) {
   }
 }
 
-// Background plant identification function
-async function identifyPlantAsync(imageId, imageUrl, sql) {
-  try {
-    console.log(`Starting AI plant identification for image ${imageId}`);
-    
-    // Fetch and process the image for AI analysis
-    const response = await fetch(imageUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.status}`);
-    }
-    
-    const imageBuffer = await response.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
-    
-    // Call OpenAI Vision API
-    const visionResponse = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Analyze this plant image and provide detailed information. Return JSON with these exact fields: common_name, latin_name, classification, hardiness_zone, sun_preference, drought_tolerance, texas_native (boolean), indoor_outdoor, description. Use "unknown" for any field you cannot determine confidently. For texas_native, only return true if you are confident it's native to Texas.`
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`
-              }
-            }
-          ],
-        },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 1000,
-    });
-
-    const plantDetails = JSON.parse(visionResponse.choices[0].message.content);
-    console.log(`Plant identified for image ${imageId}:`, plantDetails.common_name);
-    
-    // Update gallery image with plant details
-    const updateData = {
-      commonName: plantDetails.common_name !== "unknown" ? plantDetails.common_name : null,
-      latinName: plantDetails.latin_name !== "unknown" ? plantDetails.latin_name : null,
-      hardinessZone: plantDetails.hardiness_zone !== "unknown" ? plantDetails.hardiness_zone : null,
-      sunPreference: plantDetails.sun_preference !== "unknown" ? plantDetails.sun_preference : null,
-      droughtTolerance: plantDetails.drought_tolerance !== "unknown" ? plantDetails.drought_tolerance : null,
-      texasNative: typeof plantDetails.texas_native === "boolean" ? plantDetails.texas_native : null,
-      indoorOutdoor: plantDetails.indoor_outdoor !== "unknown" ? plantDetails.indoor_outdoor : null,
-      classification: plantDetails.classification !== "unknown" ? plantDetails.classification : null,
-      aiDescription: plantDetails.description || null,
-      aiIdentified: true,
-    };
-
-    // Update title and description if plant was identified
-    if (plantDetails.common_name !== "unknown") {
-      updateData.title = plantDetails.common_name;
-      if (plantDetails.latin_name !== "unknown") {
-        updateData.title = `${plantDetails.common_name} (${plantDetails.latin_name})`;
-      }
-    }
-
-    if (plantDetails.description) {
-      updateData.description = plantDetails.description;
-    }
-
-    // Update the database
-    await sql`
-      UPDATE gallery_images SET
-        title = ${updateData.title || null},
-        description = ${updateData.description || null},
-        common_name = ${updateData.commonName},
-        latin_name = ${updateData.latinName},
-        hardiness_zone = ${updateData.hardinessZone},
-        sun_preference = ${updateData.sunPreference},
-        drought_tolerance = ${updateData.droughtTolerance},
-        texas_native = ${updateData.texasNative},
-        indoor_outdoor = ${updateData.indoorOutdoor},
-        classification = ${updateData.classification},
-        ai_description = ${updateData.aiDescription},
-        ai_identified = ${updateData.aiIdentified}
-      WHERE id = ${imageId}
-    `;
-    
-    console.log(`Successfully updated plant identification for image ${imageId}`);
-    
-  } catch (error) {
-    console.error(`Error identifying plant for image ${imageId}:`, error);
-    
-    // Mark as identification attempted but failed
-    try {
-      await sql`
-        UPDATE gallery_images SET
-          ai_identified = true,
-          ai_description = 'Plant identification failed'
-        WHERE id = ${imageId}
-      `;
-    } catch (dbError) {
-      console.error('Error updating failed identification:', dbError);
-    }
+// Synchronous plant identification function
+async function identifyPlant(imageUrl) {
+  // Fetch and process the image for AI analysis
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.status}`);
   }
+  
+  const imageBuffer = await response.arrayBuffer();
+  const base64Image = Buffer.from(imageBuffer).toString('base64');
+  
+  // Call OpenAI Vision API
+  const visionResponse = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `Analyze this plant image and provide detailed information. Return JSON with these exact fields: common_name, latin_name, classification, hardiness_zone, sun_preference, drought_tolerance, texas_native (boolean), indoor_outdoor, description. Use "unknown" for any field you cannot determine confidently. For texas_native, only return true if you are confident it's native to Texas.`
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${base64Image}`
+            }
+          }
+        ],
+      },
+    ],
+    response_format: { type: "json_object" },
+    max_tokens: 1000,
+  });
+
+  const plantDetails = JSON.parse(visionResponse.choices[0].message.content);
+  return plantDetails;
 }

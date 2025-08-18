@@ -92,4 +92,9 @@ Preferred communication style: Simple, everyday language.
     - **Team**: Fixed `display_order` → `"order"` with proper SQL quoting
   - **Database Verification**: 80+ fields across 9 tables with 100% API coverage
   - **Endpoint Structure**: Fixed missing admin settings routes (created `/api/admin/settings/[key].js`)
-  - **Status**: ✅ COMPLETE - Perfect schema-API alignment, all database capabilities fully accessible via endpoints
+  - **Routing Fixes (August 18, 2025)**: Resolved dual routing system incompatibilities
+    - **Problem**: Product category updates failing, gallery AI identification asynchronous
+    - **Root Cause**: Local Express routes used path parameters, Vercel API used query parameters
+    - **Solution**: Added dual routing support in `server/routes.ts` for query and path parameter patterns
+    - **Gallery Fix**: Made plant identification synchronous for immediate UI updates
+  - **Status**: ✅ COMPLETE - Perfect schema-API alignment, unified routing across environments, all functionality working

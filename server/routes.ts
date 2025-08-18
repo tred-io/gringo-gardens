@@ -359,6 +359,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Handle query param pattern for product updates (Vercel-style)
+  app.put('/api/admin/products', async (req, res) => {
+    try {
+      const productId = req.query.id;
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID is required" });
+      }
+      
+      const product = await storage.updateProduct(productId as string, req.body);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  // Handle path param pattern for product updates (Express-style)
   app.put('/api/admin/products/:id', async (req, res) => {
     try {
       const product = await storage.updateProduct(req.params.id, req.body);
@@ -372,6 +392,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Handle query param pattern for product deletion (Vercel-style)
+  app.delete('/api/admin/products', async (req, res) => {
+    try {
+      const productId = req.query.id;
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID is required" });
+      }
+      
+      const success = await storage.deleteProduct(productId as string);
+      if (!success) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
+  // Handle path param pattern for product deletion (Express-style)  
   app.delete('/api/admin/products/:id', async (req, res) => {
     try {
       const success = await storage.deleteProduct(req.params.id);
