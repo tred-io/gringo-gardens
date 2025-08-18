@@ -717,6 +717,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Alternative static route for Vercel compatibility (uses query params instead of path params)
+  app.put('/api/admin/settings-update', async (req, res) => {
+    try {
+      const { key } = req.query;
+      const { value } = req.body;
+      
+      if (!key) {
+        return res.status(400).json({ message: "Setting key is required in query parameter" });
+      }
+      
+      const setting = await storage.setSetting(key as string, value);
+      res.json(setting);
+    } catch (error) {
+      console.error("Error updating setting via static route:", error);
+      res.status(500).json({ message: "Failed to update setting" });
+    }
+  });
+
   app.get('/api/settings/:key', async (req, res) => {
     try {
       const setting = await storage.getSetting(req.params.key);

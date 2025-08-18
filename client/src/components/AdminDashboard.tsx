@@ -212,7 +212,7 @@ export default function AdminDashboard() {
   // Settings mutations
   const updateSettingMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: string }) => {
-      return await apiRequest("PUT", `/api/admin/settings/${key}`, { value });
+      return await apiRequest("PUT", `/api/admin/settings-update?key=${key}`, { value });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
