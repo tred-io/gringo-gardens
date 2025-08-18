@@ -1,6 +1,6 @@
 // Vercel API route for gallery image uploads
 // This file handles PUT /api/gallery-images for Vercel deployment
-// Updated: Fixed PostgreSQL text[] array handling for tags column
+// Updated: Fixed image URL handling - now uses actual blob URL from upload response
 
 import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';

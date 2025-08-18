@@ -1759,8 +1759,13 @@ export default function AdminDashboard() {
                       for (const file of result.successful) {
                         try {
                           console.log("Processing file:", file);
+                          // Use the response URL from the upload (which contains the actual blob URL)
+                          // file.uploadURL is the upload endpoint, file.response?.uploadURL or file.response?.url is the actual storage URL
+                          const actualImageURL = file.response?.url || file.response?.uploadURL || file.uploadURL;
+                          console.log("Using image URL for gallery:", actualImageURL, "from response:", file.response);
+                          
                           const response = await apiRequest("PUT", "/api/gallery-images", {
-                            imageURL: file.uploadURL,
+                            imageURL: actualImageURL,
                             title: file.name || "Uploaded Image",
                             altText: file.name || "Gallery Image", 
                             category: "general",
