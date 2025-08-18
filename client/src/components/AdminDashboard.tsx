@@ -1754,10 +1754,24 @@ export default function AdminDashboard() {
                       const data = await response.json();
                       console.log("Upload parameters from server:", data);
                       
-                      return {
-                        method: "PUT" as const,
-                        url: data.uploadURL,
-                      };
+                      // For Vercel, generate object name and pass it as query parameter
+                      if (data.uploadURL && data.uploadURL.includes('/api/blob/upload')) {
+                        const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+                        const objectName = `gallery/uploads/${fileId}.jpg`;
+                        
+                        return {
+                          method: "PUT" as const,
+                          url: `${data.uploadURL}?objectName=${encodeURIComponent(objectName)}`,
+                          meta: { objectName, isVercel: true }
+                        };
+                      } else {
+                        // For Replit object storage
+                        return {
+                          method: "PUT" as const,
+                          url: data.uploadURL,
+                          meta: { isVercel: false }
+                        };
+                      }
                     }}
                     onComplete={async (result) => {
                       console.log("Upload complete result:", result);
@@ -1775,25 +1789,47 @@ export default function AdminDashboard() {
                           console.log("File response uploadURL:", file.response?.uploadURL);
                           console.log("File uploadURL:", file.uploadURL);
                           
-                          // The upload URL becomes the image URL (for both Replit and Vercel)
-                          let actualImageURL = file.uploadURL;
+                          let actualImageURL = null;
                           
-                          // For Vercel Blob, try to get the actual blob URL from response
-                          if (file.response?.body) {
+                          // Check if this is a Vercel upload
+                          const isVercel = file.uploadURL && file.uploadURL.includes('/api/blob/upload');
+                          
+                          if (isVercel) {
+                            // For Vercel: Extract object name from upload URL and construct blob URL
                             try {
-                              let responseData = file.response.body;
-                              if (typeof responseData === 'string') {
-                                responseData = JSON.parse(responseData);
-                              }
+                              const uploadUrl = new URL(file.uploadURL, window.location.origin);
+                              const objectName = uploadUrl.searchParams.get('objectName');
                               
-                              // If we get a blob URL back, use it
-                              if (responseData.url && responseData.url.includes('vercel-storage.com')) {
-                                actualImageURL = responseData.url;
-                                console.log("Got Vercel blob URL from API response:", actualImageURL);
+                              if (objectName) {
+                                // For Vercel, the blob URL format is: https://<domain>.public.blob.vercel-storage.com/<object-name>
+                                // But we should get it from the API response
+                                if (file.response?.body) {
+                                  let responseData = file.response.body;
+                                  if (typeof responseData === 'string') {
+                                    responseData = JSON.parse(responseData);
+                                  }
+                                  
+                                  if (responseData.url) {
+                                    actualImageURL = responseData.url;
+                                    console.log("Got Vercel blob URL from API response:", actualImageURL);
+                                  }
+                                }
+                                
+                                if (!actualImageURL) {
+                                  console.error("Vercel upload succeeded but no blob URL in response");
+                                }
                               }
-                            } catch (parseError) {
-                              console.log("Could not parse response, using upload URL");
+                            } catch (error) {
+                              console.error("Error processing Vercel upload:", error);
                             }
+                          } else {
+                            // For Replit: Use the upload URL directly (signed URL approach)
+                            actualImageURL = file.uploadURL;
+                            console.log("Using Replit signed URL:", actualImageURL);
+                          }
+                          
+                          if (!actualImageURL) {
+                            throw new Error(`Upload succeeded but could not determine final URL for file: ${file.name}`);
                           }
                           
                           console.log("Final image URL:", actualImageURL);
