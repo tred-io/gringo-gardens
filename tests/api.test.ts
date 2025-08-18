@@ -936,4 +936,54 @@ describe('API Endpoints Tests', () => {
         .expect(404);
     });
   });
+
+  describe('Team Members API', () => {
+    test('GET /api/team should return team members', async () => {
+      const response = await request(app)
+        .get('/api/team')
+        .expect(200);
+
+      expect(Array.isArray(response.body)).toBe(true);
+      if (response.body.length > 0) {
+        expect(response.body[0]).toHaveProperty('id');
+        expect(response.body[0]).toHaveProperty('name');
+        expect(response.body[0]).toHaveProperty('position');
+        expect(response.body[0]).toHaveProperty('active');
+      }
+    });
+
+    test('POST /api/team should create team member', async () => {
+      const teamData = {
+        name: 'Test Manager',
+        position: 'Plant Specialist',
+        bio: 'Expert in native Texas plants',
+        active: true,
+        order: 1
+      };
+
+      const response = await request(app)
+        .post('/api/team')
+        .send(teamData)
+        .expect(201);
+
+      expect(response.body).toHaveProperty('id');
+      expect(response.body.name).toBe(teamData.name);
+      expect(response.body.position).toBe(teamData.position);
+    });
+  });
+
+  describe('Newsletter Subscribers API', () => {
+    test('GET /api/newsletter/subscribers should return subscribers', async () => {
+      const response = await request(app)
+        .get('/api/newsletter/subscribers')
+        .expect(200);
+
+      expect(Array.isArray(response.body)).toBe(true);
+      if (response.body.length > 0) {
+        expect(response.body[0]).toHaveProperty('id');
+        expect(response.body[0]).toHaveProperty('email');
+        expect(response.body[0]).toHaveProperty('active');
+      }
+    });
+  });
 });
