@@ -28,8 +28,10 @@ export default async function handler(req, res) {
         content,
         image_url as "imageUrl",
         category,
+        read_time as "readTime",
         published,
-        created_at as "createdAt"
+        created_at as "createdAt",
+        updated_at as "updatedAt"
       FROM blog_posts 
       WHERE published = true
       ORDER BY created_at DESC

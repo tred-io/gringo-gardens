@@ -21,14 +21,23 @@ export default async function handler(req, res) {
         SELECT 
           id,
           name,
+          slug,
           description,
           price,
           image_url as "imageUrl",
           category_id as "categoryId",
+          hardiness_zone as "hardinessZone",
+          sun_requirements as "sunRequirements",
+          stock,
           featured,
           active,
-          stock,
-          created_at as "createdAt"
+          texas_native as "texasNative",
+          drought_tolerance as "droughtTolerance",
+          indoor_outdoor as "indoorOutdoor",
+          bloom_season as "bloomSeason",
+          mature_size as "matureSize",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
         FROM products 
         ORDER BY created_at DESC
       `;
@@ -43,12 +52,15 @@ export default async function handler(req, res) {
       
       const [product] = await sql`
         INSERT INTO products (
-          name, description, price, image_url, category_id, 
-          featured, active, stock
+          name, slug, description, price, image_url, category_id, 
+          hardiness_zone, sun_requirements, stock, featured, active,
+          texas_native, drought_tolerance, indoor_outdoor, bloom_season, mature_size
         ) VALUES (
-          ${data.name}, ${data.description}, ${data.price}, 
-          ${data.imageUrl}, ${data.categoryId}, ${data.featured}, 
-          ${data.active}, ${data.stock}
+          ${data.name}, ${data.slug}, ${data.description}, ${data.price}, 
+          ${data.imageUrl}, ${data.categoryId}, ${data.hardinessZone}, 
+          ${data.sunRequirements}, ${data.stock}, ${data.featured}, 
+          ${data.active}, ${data.texasNative}, ${data.droughtTolerance},
+          ${data.indoorOutdoor}, ${data.bloomSeason}, ${data.matureSize}
         ) RETURNING *
       `;
 
@@ -78,13 +90,22 @@ export default async function handler(req, res) {
       const [product] = await sql`
         UPDATE products SET
           name = ${data.name},
+          slug = ${data.slug},
           description = ${data.description},
           price = ${data.price},
           image_url = ${data.imageUrl},
           category_id = ${data.categoryId},
+          hardiness_zone = ${data.hardinessZone},
+          sun_requirements = ${data.sunRequirements},
+          stock = ${data.stock},
           featured = ${data.featured},
           active = ${data.active},
-          stock = ${data.stock}
+          texas_native = ${data.texasNative},
+          drought_tolerance = ${data.droughtTolerance},
+          indoor_outdoor = ${data.indoorOutdoor},
+          bloom_season = ${data.bloomSeason},
+          mature_size = ${data.matureSize},
+          updated_at = NOW()
         WHERE id = ${id}
         RETURNING *
       `;

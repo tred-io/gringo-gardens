@@ -23,12 +23,20 @@ export default async function handler(req, res) {
       SELECT 
         id,
         name,
+        slug,
         description,
         price,
         image_url as "imageUrl",
         category_id as "categoryId",
-        featured,
+        hardiness_zone as "hardinessZone",
+        sun_requirements as "sunRequirements",
         stock,
+        featured,
+        texas_native as "texasNative",
+        drought_tolerance as "droughtTolerance",
+        indoor_outdoor as "indoorOutdoor",
+        bloom_season as "bloomSeason",
+        mature_size as "matureSize",
         created_at as "createdAt"
       FROM products 
       WHERE active = true

@@ -28,7 +28,9 @@ export default async function handler(req, res) {
           category,
           published,
           read_time as "readTime",
-          created_at as "createdAt"
+          author_id as "authorId",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
         FROM blog_posts 
         ORDER BY created_at DESC
       `;
@@ -44,11 +46,11 @@ export default async function handler(req, res) {
       const [post] = await sql`
         INSERT INTO blog_posts (
           title, slug, content, excerpt, image_url, 
-          category, published, read_time
+          category, published, read_time, author_id
         ) VALUES (
           ${data.title}, ${data.slug}, ${data.content}, 
           ${data.excerpt}, ${data.imageUrl}, ${data.category}, 
-          ${data.published}, ${data.readTime}
+          ${data.published}, ${data.readTime}, ${data.authorId}
         ) RETURNING *
       `;
 
@@ -84,7 +86,9 @@ export default async function handler(req, res) {
           image_url = ${data.imageUrl},
           category = ${data.category},
           published = ${data.published},
-          read_time = ${data.readTime}
+          read_time = ${data.readTime},
+          author_id = ${data.authorId},
+          updated_at = NOW()
         WHERE id = ${id}
         RETURNING *
       `;
