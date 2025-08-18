@@ -114,13 +114,36 @@ export function ObjectUploader({
         
         // Try to extract blob URL from the response and store it on the file
         try {
+          console.log("Processing upload-success response type:", typeof response);
+          console.log("Response keys:", Object.keys(response || {}));
+          console.log("Response body type:", typeof response?.body);
+          console.log("Response body content:", response?.body);
+          
           if (response && response.body) {
-            const responseData = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
-            if (responseData.url && responseData.url.includes('vercel-storage.com')) {
-              // Store the blob URL directly on the file object
-              file.blobURL = responseData.url;
-              console.log("Extracted and stored blob URL:", file.blobURL);
+            // Try to parse the response body to get the blob URL
+            let responseData;
+            if (typeof response.body === 'string') {
+              try {
+                responseData = JSON.parse(response.body);
+                console.log("Parsed JSON response:", responseData);
+              } catch (parseError) {
+                console.error("Failed to parse response body as JSON:", parseError);
+                responseData = response.body;
+              }
+            } else {
+              responseData = response.body;
             }
+            
+            // Look for the blob URL in various response fields
+            const blobUrl = responseData.url || responseData.uploadURL || responseData.location;
+            if (blobUrl && (blobUrl.includes('vercel-storage.com') || blobUrl.includes('blob'))) {
+              file.blobURL = blobUrl;
+              console.log("SUCCESS: Extracted and stored blob URL:", file.blobURL);
+            } else {
+              console.warn("No valid blob URL found in response data:", responseData);
+            }
+          } else {
+            console.warn("No response body found in upload-success event");
           }
         } catch (error) {
           console.error("Error extracting blob URL from response:", error);

@@ -1770,7 +1770,7 @@ export default function AdminDashboard() {
                           let actualImageURL = null;
                           
                           // Method 1: Try the blob URL extracted by upload-success handler
-                          if (file.blobURL && file.blobURL.includes('vercel-storage.com')) {
+                          if (file.blobURL && (file.blobURL.includes('vercel-storage.com') || file.blobURL.startsWith('/blob/'))) {
                             actualImageURL = file.blobURL;
                             console.log("Found blob URL from upload-success handler:", actualImageURL);
                           }
@@ -1798,15 +1798,48 @@ export default function AdminDashboard() {
                             }
                           }
                           
-                          // Method 4: If still no blob URL found, we need to make a workaround
+                          // Method 4: If still no blob URL found, try a direct API approach
                           if (!actualImageURL) {
-                            // Since the upload was successful but we can't get the blob URL from Uppy,
-                            // let's construct a temporary placeholder and then try to get it another way
-                            console.error("Could not extract blob URL from upload response");
-                            console.log("File upload appears successful but blob URL not accessible");
+                            console.warn("No blob URL found through normal methods, attempting direct API workaround...");
                             
-                            // Skip this upload with an error rather than using the wrong URL
-                            throw new Error("Upload successful but blob URL not accessible. This is a technical issue with the upload component.");
+                            try {
+                              // Make a direct request to upload the file again and get the blob URL
+                              // This is a fallback for when Uppy doesn't capture the response properly
+                              const formData = new FormData();
+                              
+                              // Convert the file data to a blob for re-upload
+                              if (file.data instanceof File) {
+                                formData.append('file', file.data);
+                              } else {
+                                // Create a new file from the data
+                                const blob = new Blob([file.data], { type: file.type });
+                                formData.append('file', blob, file.name);
+                              }
+                              
+                              console.log("Making direct upload request for file:", file.name);
+                              const directUploadResponse = await fetch('/api/blob/upload', {
+                                method: 'PUT',
+                                body: formData,
+                              });
+                              
+                              if (directUploadResponse.ok) {
+                                const directResult = await directUploadResponse.json();
+                                console.log("Direct upload result:", directResult);
+                                
+                                if (directResult.url && directResult.url.includes('vercel-storage.com')) {
+                                  actualImageURL = directResult.url;
+                                  console.log("SUCCESS: Got blob URL from direct upload:", actualImageURL);
+                                } else {
+                                  throw new Error("Direct upload did not return a valid blob URL");
+                                }
+                              } else {
+                                throw new Error(`Direct upload failed with status: ${directUploadResponse.status}`);
+                              }
+                            } catch (workaroundError) {
+                              console.error("Direct upload workaround failed:", workaroundError);
+                              // Final fallback - show error to user
+                              throw new Error(`Upload was successful but the blob URL could not be retrieved. File: ${file.name}. Error: ${workaroundError.message}`);
+                            }
                           }
                           
                           console.log("Final image URL for gallery:", actualImageURL);
