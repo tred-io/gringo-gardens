@@ -27,33 +27,34 @@ export default async function handler(req, res) {
       });
     }
 
-    // For PUT requests, the body should be the raw file data
-    console.log('Received upload request - Content-Type:', req.headers['content-type']);
-    console.log('Body type:', typeof req.body);
-    console.log('Body length:', req.body?.length || 'unknown');
+    // Read the raw binary data from the request
+    const fileBuffer = await new Promise((resolve, reject) => {
+      const chunks = [];
+      req.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+      req.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+      req.on('error', reject);
+    });
 
-    if (!req.body || req.body.length === 0) {
+    console.log('Received upload request - Content-Type:', req.headers['content-type']);
+    console.log('File buffer length:', fileBuffer.length);
+
+    if (!fileBuffer || fileBuffer.length === 0) {
       return res.status(400).json({ 
         error: 'No file data provided',
         details: 'Request body is empty or missing'
       });
     }
 
-    // Generate unique filename with proper extension
-    const fileId = randomUUID();
     const contentType = req.headers['content-type'] || 'application/octet-stream';
-    const extension = contentType.includes('image/png') ? 'png' : 
-                     contentType.includes('image/') ? 'jpg' : 'bin';
-    const filename = `gallery/uploads/${fileId}.${extension}`;
-
-    console.log('Uploading to Vercel Blob:', filename, contentType);
+    console.log('Processing upload with content type:', contentType);
 
     // Process the upload with image optimization
     const { VercelBlobStorageService } = await import('../server/vercelBlobStorage.ts');
     const vercelBlobService = new VercelBlobStorageService();
-    
-    // Convert body to Buffer if needed
-    const fileBuffer = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body);
     
     // Process and upload with multi-size generation
     const result = await vercelBlobService.processDirectUpload(fileBuffer, contentType);
@@ -77,11 +78,9 @@ export default async function handler(req, res) {
   }
 }
 
-// Configure for binary file uploads
+// Configure for binary file uploads - disable bodyParser to get raw data
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
+    bodyParser: false,
   },
 }
