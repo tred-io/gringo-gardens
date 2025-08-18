@@ -59,6 +59,10 @@ export default function Home() {
   const temporaryClosure = (temporaryClosureSetting as any)?.value ? JSON.parse((temporaryClosureSetting as any).value) : null;
   const businessHours = (businessHoursSetting as any)?.value ? JSON.parse((businessHoursSetting as any).value) : null;
   
+  // Debug logging for closure settings (can be removed in production)
+  // console.log('Home - temporaryClosureSetting:', temporaryClosureSetting);
+  // console.log('Home - temporaryClosure parsed:', temporaryClosure);
+  
 
 
   const handleCategoryClick = (categoryName: string) => {

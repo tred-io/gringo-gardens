@@ -215,9 +215,12 @@ export default function AdminDashboard() {
       return await apiRequest("PUT", `/api/admin/settings-update?key=${key}`, { value });
     },
     onSuccess: (_, variables) => {
-      // Invalidate both admin settings and the specific public setting endpoint
+      // Invalidate all settings-related queries to force refresh
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
       queryClient.invalidateQueries({ queryKey: [`/api/settings/${variables.key}`] });
+      // Also invalidate any cached queries that might contain this setting
+      queryClient.refetchQueries({ queryKey: [`/api/settings/${variables.key}`] });
+      console.log(`Cache invalidated for setting: ${variables.key}`);
       toast({
         title: "Settings Updated",
         description: "Your settings have been saved successfully.",

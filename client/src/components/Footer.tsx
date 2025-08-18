@@ -29,6 +29,10 @@ export default function Footer() {
 
   const businessHours = businessHoursSetting?.value ? JSON.parse(businessHoursSetting.value) : null;
   const temporaryClosure = temporaryClosureSetting?.value ? JSON.parse(temporaryClosureSetting.value) : null;
+  
+  // Debug logging for closure settings (can be removed in production)
+  // console.log('Footer - temporaryClosureSetting:', temporaryClosureSetting);
+  // console.log('Footer - temporaryClosure parsed:', temporaryClosure);
 
   const newsletterMutation = useMutation({
     mutationFn: async (email: string) => {
