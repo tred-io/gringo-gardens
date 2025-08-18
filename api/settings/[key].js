@@ -56,5 +56,5 @@ export default async function handler(req, res) {
 
 // Prevent static optimization - forces dynamic behavior in production
 export const config = {
-  runtime: 'nodejs18.x',
+  runtime: 'nodejs20.x',
 };
