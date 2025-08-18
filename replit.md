@@ -64,3 +64,11 @@ Preferred communication style: Simple, everyday language.
   - **Vercel**: `PUT /api/gallery-images` with `imageURL` field
   - **Local**: `POST /api/admin/gallery` with `imageUrl` field
   - **Status**: ✅ COMPLETE - Gallery uploads working in both Replit development and Vercel production environments
+
+**Complete API Unification (August 18, 2025)**: Eliminated dual API system complexity by unifying all admin endpoints
+  - **Approach**: Each endpoint handles all HTTP methods (GET, POST, PUT, DELETE) in single file using query parameters
+  - **Unified Endpoints**: All admin operations use `/api/admin/resource?id=:id` pattern instead of REST-style URLs
+  - **Database Integration**: All endpoints now connect to PostgreSQL database instead of returning static data
+  - **Complete Coverage**: Products, categories, blog, reviews, gallery, contact, settings, team, newsletter subscribers
+  - **Plant Identification**: Full AI integration with OpenAI GPT-4o-mini directly in unified gallery endpoint
+  - **Status**: ✅ COMPLETE - All admin CRUD operations work identically in Replit development and Vercel production

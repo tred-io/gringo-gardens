@@ -752,7 +752,7 @@ export default function AdminDashboard() {
 
   const markMessageReadMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("PUT", `/api/admin/contact/${id}/read`, {});
+      return await apiRequest("POST", `/api/admin/contact?id=${id}&action=read`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/contact"] });
