@@ -67,6 +67,9 @@ export default async function handler(req, res) {
     };
 
     // Insert into database using raw SQL to avoid module import issues
+    // Convert tags array to proper JSON format for PostgreSQL
+    const tagsJson = galleryImage.tags.length > 0 ? JSON.stringify(galleryImage.tags) : '[]';
+    
     await sql`
       INSERT INTO gallery_images (
         id, title, description, image_url, category, tags, featured,
@@ -78,7 +81,7 @@ export default async function handler(req, res) {
         ${galleryImage.description},
         ${galleryImage.imageUrl},
         ${galleryImage.category},
-        ${JSON.stringify(galleryImage.tags)},
+        ${tagsJson}::jsonb,
         ${galleryImage.featured},
         ${galleryImage.commonName},
         ${galleryImage.latinName},
