@@ -28,7 +28,7 @@ export default async function handler(req, res) {
         image_url as "imageUrl",
         category_id as "categoryId",
         featured,
-        stock_quantity as "stockQuantity",
+        stock,
         created_at as "createdAt"
       FROM products 
       WHERE active = true

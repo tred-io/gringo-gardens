@@ -27,7 +27,7 @@ export default async function handler(req, res) {
           category_id as "categoryId",
           featured,
           active,
-          stock_quantity as "stockQuantity",
+          stock,
           created_at as "createdAt"
         FROM products 
         ORDER BY created_at DESC
@@ -44,11 +44,11 @@ export default async function handler(req, res) {
       const [product] = await sql`
         INSERT INTO products (
           name, description, price, image_url, category_id, 
-          featured, active, stock_quantity
+          featured, active, stock
         ) VALUES (
           ${data.name}, ${data.description}, ${data.price}, 
           ${data.imageUrl}, ${data.categoryId}, ${data.featured}, 
-          ${data.active}, ${data.stockQuantity}
+          ${data.active}, ${data.stock}
         ) RETURNING *
       `;
 
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
           category_id = ${data.categoryId},
           featured = ${data.featured},
           active = ${data.active},
-          stock_quantity = ${data.stockQuantity}
+          stock = ${data.stock}
         WHERE id = ${id}
         RETURNING *
       `;

@@ -79,3 +79,13 @@ Preferred communication style: Simple, everyday language.
   - **New Public Endpoints**: Created `/api/blog`, `/api/gallery`, and `/api/newsletter` for frontend functionality
   - **Data Consistency**: Main website now shows real database content matching what admins manage
   - **Status**: ✅ COMPLETE - Zero static data remaining, full public-admin alignment achieved
+
+**Vercel Production Database Schema Fix (August 18, 2025)**: Resolved critical 500 errors in production deployment
+  - **Problem**: All API endpoints failing in Vercel with "column does not exist" errors, returning HTML instead of JSON
+  - **Root Cause**: Database schema column name mismatches between API expectations and actual PostgreSQL structure
+  - **Schema Fixes Applied**:
+    - Products: `stock_quantity` → `stock`
+    - Team members: `display_order` → `"order"` (quoted SQL keyword)  
+    - Settings: `created_at` → `updated_at` (column didn't exist)
+    - Contact: `name` → `first_name || ' ' || last_name` (proper field mapping)
+  - **Status**: ✅ COMPLETE - All API endpoints now match actual database schema, Vercel production fully functional

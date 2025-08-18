@@ -20,8 +20,10 @@ export default async function handler(req, res) {
       const messages = await sql`
         SELECT 
           id,
-          name,
+          first_name || ' ' || last_name as name,
           email,
+          phone,
+          subject,
           message,
           read,
           created_at as "createdAt"

@@ -24,12 +24,12 @@ export default async function handler(req, res) {
           position,
           bio,
           image_url as "imageUrl",
-          display_order as "order",
+          "order",
           active,
           created_at as "createdAt"
         FROM team_members 
         WHERE active = true
-        ORDER BY display_order, name
+        ORDER BY "order", name
       `;
 
       console.log(`Retrieved ${teamMembers.length} team members`);
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       
       const [teamMember] = await sql`
         INSERT INTO team_members (
-          name, position, bio, image_url, display_order, active
+          name, position, bio, image_url, "order", active
         ) VALUES (
           ${data.name}, ${data.position}, ${data.bio}, 
           ${data.imageUrl}, ${data.order || 0}, ${data.active !== false}

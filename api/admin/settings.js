@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             id,
             key,
             value,
-            created_at as "createdAt"
+            updated_at as "updatedAt"
           FROM settings 
           WHERE key = ${key}
         `;
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
             id,
             key,
             value,
-            created_at as "createdAt"
+            updated_at as "updatedAt"
           FROM settings 
           ORDER BY key
         `;
