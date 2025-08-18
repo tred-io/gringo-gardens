@@ -54,3 +54,4 @@ Preferred communication style: Simple, everyday language.
 - **Dual Storage System**: Replit object storage for development, Vercel Blob for production deployment - seamless environment detection
 - **API Coverage**: Complete API endpoints for both storage systems with automatic fallbacks and error handling
 - **Status**: ✅ COMPLETE - File upload functionality confirmed working in both environments: Replit object storage (development) with full image processing, Vercel Blob (production) with direct upload and AI compatibility
+- **Database Fix**: Resolved PostgreSQL JSONB array handling for gallery image tags - fixed "malformed array literal" error in Vercel deployment
