@@ -70,11 +70,33 @@ export function ObjectUploader({
       .use(AwsS3, {
         shouldUseMultipart: false,
         getUploadParameters: async (file) => {
-          console.log("Getting upload parameters for file:", file);
+          console.log("Getting upload parameters for file:", file.name, file.type);
           try {
             const params = await onGetUploadParameters();
             console.log("Received upload parameters:", params);
-            return params;
+            
+            // Validate that we have a proper URL
+            if (!params.url || typeof params.url !== 'string') {
+              throw new Error('Invalid upload URL received from server');
+            }
+            
+            // For relative URLs, make them absolute
+            let uploadUrl = params.url;
+            if (uploadUrl.startsWith('/')) {
+              uploadUrl = `${window.location.origin}${uploadUrl}`;
+            }
+            
+            // Ensure URL is properly formatted
+            try {
+              new URL(uploadUrl);
+            } catch (urlError) {
+              throw new Error(`Invalid URL format: ${uploadUrl}`);
+            }
+            
+            return {
+              ...params,
+              url: uploadUrl
+            };
           } catch (error) {
             console.error("Error getting upload parameters:", error);
             throw error;

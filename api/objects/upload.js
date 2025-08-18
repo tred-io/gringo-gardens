@@ -24,9 +24,10 @@ export default async function handler(req, res) {
       });
     }
 
-    // For Vercel Blob, we return a direct upload endpoint
-    // The client will need to upload to this endpoint and then call our gallery-images API
-    const uploadUrl = `/api/blob/upload`;
+    // For Vercel Blob, we return a fully qualified upload endpoint URL
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers.host;
+    const uploadUrl = `${protocol}://${host}/api/blob/upload`;
     
     res.json({ 
       uploadURL: uploadUrl,
