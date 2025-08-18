@@ -12,23 +12,37 @@ import {
 const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
 
 // The object storage client is used to interact with the object storage service.
-export const objectStorageClient = new Storage({
-  credentials: {
-    audience: "replit",
-    subject_token_type: "access_token",
-    token_url: `${REPLIT_SIDECAR_ENDPOINT}/token`,
-    type: "external_account",
-    credential_source: {
-      url: `${REPLIT_SIDECAR_ENDPOINT}/credential`,
-      format: {
-        type: "json",
-        subject_token_field_name: "access_token",
-      },
-    },
-    universe_domain: "googleapis.com",
-  },
-  projectId: "",
-});
+// Only works in Replit environment - returns null in other environments
+export const objectStorageClient = (() => {
+  try {
+    // Check if we're in Replit environment
+    if (process.env.REPL_ID || process.env.REPLIT_ENVIRONMENT) {
+      return new Storage({
+        credentials: {
+          audience: "replit",
+          subject_token_type: "access_token",
+          token_url: `${REPLIT_SIDECAR_ENDPOINT}/token`,
+          type: "external_account",
+          credential_source: {
+            url: `${REPLIT_SIDECAR_ENDPOINT}/credential`,
+            format: {
+              type: "json",
+              subject_token_field_name: "access_token",
+            },
+          },
+          universe_domain: "googleapis.com",
+        },
+        projectId: "",
+      });
+    } else {
+      console.log('Object storage not available outside Replit environment');
+      return null;
+    }
+  } catch (error) {
+    console.warn('Failed to initialize object storage client:', error);
+    return null;
+  }
+})();
 
 export class ObjectNotFoundError extends Error {
   constructor() {
@@ -40,7 +54,15 @@ export class ObjectNotFoundError extends Error {
 
 // The object storage service is used to interact with the object storage service.
 export class ObjectStorageService {
-  constructor() {}
+  constructor() {
+    if (!objectStorageClient) {
+      console.warn('ObjectStorageService: Client not available - object storage operations will be limited');
+    }
+  }
+
+  isAvailable(): boolean {
+    return objectStorageClient !== null;
+  }
 
   // Gets the public object search paths.
   getPublicObjectSearchPaths(): Array<string> {
@@ -76,6 +98,10 @@ export class ObjectStorageService {
 
   // Search for a public object from the search paths.
   async searchPublicObject(filePath: string): Promise<File | null> {
+    if (!objectStorageClient) {
+      return null;
+    }
+
     for (const searchPath of this.getPublicObjectSearchPaths()) {
       const fullPath = `${searchPath}/${filePath}`;
 
@@ -132,6 +158,10 @@ export class ObjectStorageService {
 
   // Gets the upload URL for an object entity.
   async getObjectEntityUploadURL(): Promise<string> {
+    if (!this.isAvailable()) {
+      throw new Error("Object storage not available in this environment");
+    }
+
     const privateObjectDir = this.getPrivateObjectDir();
     if (!privateObjectDir) {
       throw new Error(
@@ -156,6 +186,10 @@ export class ObjectStorageService {
 
   // Gets the object entity file from the object path.
   async getObjectEntityFile(objectPath: string): Promise<File> {
+    if (!objectStorageClient) {
+      throw new Error("Object storage not available");
+    }
+
     if (!objectPath.startsWith("/objects/")) {
       throw new ObjectNotFoundError();
     }

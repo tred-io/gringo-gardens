@@ -709,6 +709,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/objects/upload", async (req, res) => {
     try {
       const objectStorageService = new ObjectStorageService();
+      
+      if (!objectStorageService.isAvailable()) {
+        return res.status(503).json({ 
+          error: "Object storage not available in this environment",
+          message: "Please use external image hosting (like Unsplash URLs) for gallery images in the deployed version"
+        });
+      }
+      
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
       res.json({ uploadURL });
     } catch (error) {
@@ -724,12 +732,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const objectStorageService = new ObjectStorageService();
-      const objectPath = objectStorageService.normalizeObjectEntityPath(
-        req.body.imageURL,
-      );
+      let objectPath = req.body.imageURL;
+      
+      // Only process object storage paths if service is available
+      if (objectStorageService.isAvailable()) {
+        objectPath = objectStorageService.normalizeObjectEntityPath(req.body.imageURL);
+      } else {
+        // For Vercel deployment, handle external URLs directly
+        if (req.body.imageURL.startsWith('https://storage.googleapis.com/')) {
+          const url = new URL(req.body.imageURL);
+          objectPath = `/objects${url.pathname}`;
+        }
+      }
 
-      // For now, just use the uploaded image path directly
-      // Future enhancement: Process image into multiple sizes (thumbnail, lightbox, AI-optimized)
       const finalImageUrl = objectPath;
 
       // Parse tags from comma-separated string to array

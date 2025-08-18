@@ -46,3 +46,11 @@ Preferred communication style: Simple, everyday language.
 - **Components Fixed**: All pages (Home, Blog, Gallery, Products, Contact, About), all critical UI components, all asset references
 - **TypeScript**: All LSP diagnostics resolved, proper type checking restored
 - **Deployment**: Configured for Vercel with file-based API routing, static build optimization, and comprehensive import resolution fixes for reliable builds.
+
+**Object Storage & Image Processing (August 18, 2025)**: Implemented advanced image optimization and Vercel compatibility fixes.
+- **AI Image Optimization**: Created Sharp-based image processor with 768px max dimension and 75% quality for AI plant identification, reducing OpenAI token usage
+- **Multi-Size Processing**: Built comprehensive image processor generating AI-optimized, thumbnail, and lightbox versions  
+- **Vercel Compatibility**: Fixed object storage service to gracefully handle deployment environments without Replit sidecar access
+- **API Coverage**: Created Vercel-compatible API endpoints for gallery image uploads and object storage operations
+- **Environment Detection**: Added smart detection for Replit vs. Vercel environments with appropriate fallbacks
+- **Status**: Object storage works in Replit development, gracefully falls back to external URLs in Vercel deployment
