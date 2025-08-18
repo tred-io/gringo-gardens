@@ -1,6 +1,6 @@
 // Vercel API route for gallery image uploads
 // This file handles PUT /api/gallery-images for Vercel deployment
-// Updated: Fixed PostgreSQL JSONB array handling for tags column
+// Updated: Fixed PostgreSQL text[] array handling for tags column
 
 import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
         ${galleryImage.description},
         ${galleryImage.imageUrl},
         ${galleryImage.category},
-        ${JSON.stringify(galleryImage.tags)}::jsonb,
+        ${galleryImage.tags},
         ${galleryImage.featured},
         ${galleryImage.commonName},
         ${galleryImage.latinName},
