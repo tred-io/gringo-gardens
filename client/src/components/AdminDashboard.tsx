@@ -214,8 +214,10 @@ export default function AdminDashboard() {
     mutationFn: async ({ key, value }: { key: string; value: string }) => {
       return await apiRequest("PUT", `/api/admin/settings-update?key=${key}`, { value });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      // Invalidate both admin settings and the specific public setting endpoint
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/settings/${variables.key}`] });
       toast({
         title: "Settings Updated",
         description: "Your settings have been saved successfully.",
