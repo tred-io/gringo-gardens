@@ -1858,14 +1858,29 @@ export default function AdminDashboard() {
                           
                           console.log("Final image URL for gallery:", actualImageURL);
                           
-                          const response = await apiRequest("PUT", "/api/gallery-images", {
-                            imageURL: actualImageURL,
-                            title: file.name || "Uploaded Image",
-                            altText: file.name || "Gallery Image", 
-                            category: "general",
-                            tags: [], // Empty tags array for bulk uploads
-                            featured: false,
-                          });
+                          // Environment-specific API calls
+                          let response;
+                          if (isVercel) {
+                            // Vercel uses /api/gallery-images with PUT and imageURL field
+                            response = await apiRequest("PUT", "/api/gallery-images", {
+                              imageURL: actualImageURL,
+                              title: file.name || "Uploaded Image",
+                              altText: file.name || "Gallery Image", 
+                              category: "general",
+                              tags: [], // Empty tags array for bulk uploads
+                              featured: false,
+                            });
+                          } else {
+                            // Local Express server uses /api/admin/gallery with POST and imageUrl field
+                            response = await apiRequest("POST", "/api/admin/gallery", {
+                              imageUrl: actualImageURL,
+                              title: file.name || "Uploaded Image",
+                              altText: file.name || "Gallery Image", 
+                              category: "general",
+                              tags: [], // Empty tags array for bulk uploads
+                              featured: false,
+                            });
+                          }
                           
                           if (!response.ok) {
                             const errorData = await response.json();
