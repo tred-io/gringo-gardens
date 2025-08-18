@@ -72,3 +72,10 @@ Preferred communication style: Simple, everyday language.
   - **Complete Coverage**: Products, categories, blog, reviews, gallery, contact, settings, team, newsletter subscribers
   - **Plant Identification**: Full AI integration with OpenAI GPT-4o-mini directly in unified gallery endpoint
   - **Status**: ✅ COMPLETE - All admin CRUD operations work identically in Replit development and Vercel production
+
+**Public-Admin API Alignment (August 18, 2025)**: Unified all public endpoints to match admin database connectivity
+  - **Problem**: Public APIs were returning static data while admin APIs were database-connected, causing inconsistencies
+  - **Solution**: Updated all public endpoints (`/api/products`, `/api/categories`, `/api/reviews`, `/api/contact`, `/api/blog`, `/api/gallery`) to connect to PostgreSQL
+  - **New Public Endpoints**: Created `/api/blog`, `/api/gallery`, and `/api/newsletter` for frontend functionality
+  - **Data Consistency**: Main website now shows real database content matching what admins manage
+  - **Status**: ✅ COMPLETE - Zero static data remaining, full public-admin alignment achieved

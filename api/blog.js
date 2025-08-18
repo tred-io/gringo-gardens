@@ -1,4 +1,4 @@
-// Public Products API endpoint for Vercel
+// Public Blog API endpoint for Vercel
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
@@ -18,30 +18,30 @@ export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
   try {
-    // Fetch active products from database
-    const products = await sql`
+    // Fetch published blog posts from database
+    const blogPosts = await sql`
       SELECT 
         id,
-        name,
-        description,
-        price,
+        title,
+        slug,
+        excerpt,
+        content,
         image_url as "imageUrl",
-        category_id as "categoryId",
-        featured,
-        stock_quantity as "stockQuantity",
+        category,
+        published,
         created_at as "createdAt"
-      FROM products 
-      WHERE active = true
-      ORDER BY featured DESC, created_at DESC
+      FROM blog_posts 
+      WHERE published = true
+      ORDER BY created_at DESC
     `;
 
-    console.log(`Retrieved ${products.length} public products`);
-    return res.json(products);
+    console.log(`Retrieved ${blogPosts.length} public blog posts`);
+    return res.json(blogPosts);
     
   } catch (error) {
-    console.error('Error fetching public products:', error);
+    console.error('Error fetching public blog posts:', error);
     res.status(500).json({ 
-      message: 'Failed to fetch products',
+      message: 'Failed to fetch blog posts',
       error: error.message 
     });
   }
