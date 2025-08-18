@@ -1,15 +1,23 @@
-import { storage } from "../../server/storage.js";
+// Newsletter subscribers API endpoint
+const subscribers = [
+  { 
+    id: "1", 
+    email: "test@example.com", 
+    active: true, 
+    createdAt: "2025-08-16T06:42:22.470Z" 
+  },
+  { 
+    id: "2", 
+    email: "linktest@example.com", 
+    active: true, 
+    createdAt: "2025-08-16T06:43:20.480Z" 
+  }
+];
 
-export default async function handler(req, res) {
-  try {
-    if (req.method === "GET") {
-      const subscribers = await storage.getNewsletterSubscribers();
-      return res.json(subscribers);
-    }
-
-    return res.status(405).json({ error: "Method not allowed" });
-  } catch (error) {
-    console.error("Newsletter subscribers API error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+export default function handler(req, res) {
+  if (req.method === 'GET') {
+    res.json(subscribers);
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
   }
 }
