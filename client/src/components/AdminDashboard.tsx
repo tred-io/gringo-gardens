@@ -387,7 +387,7 @@ export default function AdminDashboard() {
 
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/admin/products/${id}`, {});
+      return await apiRequest("DELETE", `/api/admin/products?id=${id}`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
@@ -463,7 +463,7 @@ export default function AdminDashboard() {
 
   const deleteCategoryMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/admin/categories/${id}`, {});
+      return await apiRequest("DELETE", `/api/admin/categories?id=${id}`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
 
   const deleteBlogPostMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/admin/blog/${id}`, {});
+      return await apiRequest("DELETE", `/api/admin/blog?id=${id}`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
@@ -614,7 +614,7 @@ export default function AdminDashboard() {
 
   const deleteGalleryImageMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/admin/gallery/${id}`, {});
+      return await apiRequest("DELETE", `/api/admin/gallery?id=${id}`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
@@ -638,7 +638,7 @@ export default function AdminDashboard() {
 
   const identifyPlantMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("POST", `/api/admin/gallery/${id}/identify`, {});
+      return await apiRequest("POST", `/api/admin/gallery?id=${id}&action=identify`, {});
     },
     onSuccess: () => {
       // Invalidate immediately and then again after a delay to catch the backend update
@@ -728,7 +728,7 @@ export default function AdminDashboard() {
 
   const deleteReviewMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/admin/reviews/${id}`, {});
+      return await apiRequest("DELETE", `/api/admin/reviews?id=${id}`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
