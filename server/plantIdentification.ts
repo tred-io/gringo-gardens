@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { getAIOptimizedImage, bufferToDataUrl, detectImageMimeType } from "./imageProcessor";
 
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
@@ -24,7 +25,7 @@ export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDet
     let isBase64 = false;
     
     if (imageUrl.startsWith('/objects/uploads/')) {
-      // For object storage images, fetch the binary data and convert to base64
+      // For object storage images, fetch the binary data, optimize for AI, and convert to base64
       console.log(`Fetching object storage image data: ${imageUrl}`);
       try {
         const response = await fetch(`http://localhost:5000${imageUrl}`);
@@ -33,26 +34,21 @@ export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDet
           return null;
         }
         
-        const buffer = await response.arrayBuffer();
-        const base64Data = Buffer.from(buffer).toString('base64');
+        const originalBuffer = Buffer.from(await response.arrayBuffer());
+        console.log(`Original image size: ${originalBuffer.length} bytes`);
         
-        // Detect image type from the first few bytes (magic numbers)
-        const uint8Array = new Uint8Array(buffer);
-        let mimeType = 'image/jpeg'; // default
+        // Optimize image for AI analysis (768px max, 75% quality)
+        const optimizedBuffer = await getAIOptimizedImage(originalBuffer);
+        console.log(`Optimized image size: ${optimizedBuffer.length} bytes`);
         
-        if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50 && uint8Array[2] === 0x4E && uint8Array[3] === 0x47) {
-          mimeType = 'image/png';
-        } else if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8 && uint8Array[2] === 0xFF) {
-          mimeType = 'image/jpeg';
-        } else if (uint8Array[0] === 0x47 && uint8Array[1] === 0x49 && uint8Array[2] === 0x46) {
-          mimeType = 'image/gif';
-        }
-        
-        imageContent = `data:${mimeType};base64,${base64Data}`;
+        // Detect MIME type and create data URL
+        const mimeType = detectImageMimeType(optimizedBuffer);
+        imageContent = bufferToDataUrl(optimizedBuffer, mimeType);
         isBase64 = true;
-        console.log(`Converted object storage image to base64 (${mimeType})`);
+        
+        console.log(`Converted optimized image to base64 (${mimeType}) for AI analysis`);
       } catch (fetchError) {
-        console.error(`Error fetching object storage image:`, fetchError);
+        console.error(`Error fetching or optimizing object storage image:`, fetchError);
         return null;
       }
     } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {

@@ -1,179 +1,164 @@
-import { File } from "@google-cloud/storage";
-import sharp from "sharp";
-import { objectStorageClient } from "./objectStorage";
+import sharp from 'sharp';
 
-export interface ImageProcessingOptions {
-  maxWidth?: number;
-  maxHeight?: number;
-  quality?: number;
-  format?: 'jpeg' | 'png' | 'webp';
+export interface ImageSizes {
+  original: Buffer;
+  ai: Buffer;           // 768px max, 75% quality for AI analysis
+  thumbnail: Buffer;    // 300px max, 80% quality for gallery
+  lightbox: Buffer;     // 1920px max, 85% quality for viewing
+}
+
+export interface ProcessingOptions {
+  aiMaxSize?: number;
+  thumbnailMaxSize?: number;
+  lightboxMaxSize?: number;
+  aiQuality?: number;
+  thumbnailQuality?: number;
+  lightboxQuality?: number;
+}
+
+const DEFAULT_OPTIONS: Required<ProcessingOptions> = {
+  aiMaxSize: 768,
+  thumbnailMaxSize: 300,
+  lightboxMaxSize: 1920,
+  aiQuality: 75,
+  thumbnailQuality: 80,
+  lightboxQuality: 85
+};
+
+/**
+ * Process an image into multiple sizes optimized for different use cases
+ */
+export async function processImageSizes(
+  inputBuffer: Buffer,
+  options: ProcessingOptions = {}
+): Promise<ImageSizes> {
+  const opts = { ...DEFAULT_OPTIONS, ...options };
+  
+  try {
+    // Get original image metadata
+    const metadata = await sharp(inputBuffer).metadata();
+    console.log(`Processing image: ${metadata.width}x${metadata.height}, format: ${metadata.format}`);
+    
+    // Create base sharp instance
+    const baseImage = sharp(inputBuffer);
+    
+    // Process AI version (small, optimized for token usage)
+    const aiImage = await baseImage
+      .clone()
+      .resize(opts.aiMaxSize, opts.aiMaxSize, {
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .jpeg({ quality: opts.aiQuality, mozjpeg: true })
+      .toBuffer();
+    
+    // Process thumbnail version (for gallery)
+    const thumbnailImage = await baseImage
+      .clone()
+      .resize(opts.thumbnailMaxSize, opts.thumbnailMaxSize, {
+        fit: 'cover',
+        position: 'center'
+      })
+      .jpeg({ quality: opts.thumbnailQuality, mozjpeg: true })
+      .toBuffer();
+    
+    // Process lightbox version (high quality for viewing)
+    const lightboxImage = await baseImage
+      .clone()
+      .resize(opts.lightboxMaxSize, opts.lightboxMaxSize, {
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .jpeg({ quality: opts.lightboxQuality, mozjpeg: true })
+      .toBuffer();
+    
+    // Keep original as-is
+    const originalImage = inputBuffer;
+    
+    console.log(`Image processed: AI=${aiImage.length} bytes, Thumbnail=${thumbnailImage.length} bytes, Lightbox=${lightboxImage.length} bytes`);
+    
+    return {
+      original: originalImage,
+      ai: aiImage,
+      thumbnail: thumbnailImage,
+      lightbox: lightboxImage
+    };
+    
+  } catch (error) {
+    console.error('Error processing image sizes:', error);
+    throw new Error(`Image processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 /**
- * Image processing service for automatic web-friendly resizing
- * Currently provides a placeholder implementation that can be extended
- * with actual image processing libraries like Sharp or similar
+ * Get optimized image buffer for AI analysis
  */
-export class ImageProcessor {
-  
-  /**
-   * Process and resize an uploaded image to web-friendly dimensions
-   * @param sourceFile - The original uploaded file
-   * @param options - Processing options including size and quality
-   * @returns Promise<string> - The URL of the processed image
-   */
-  async processImage(sourceFile: File, options: ImageProcessingOptions = {}): Promise<string> {
-    const {
-      maxWidth = 1200,
-      maxHeight = 800,
-      quality = 85,
-      format = 'jpeg'
-    } = options;
+export async function getAIOptimizedImage(inputBuffer: Buffer): Promise<Buffer> {
+  try {
+    const metadata = await sharp(inputBuffer).metadata();
+    console.log(`Optimizing image for AI: ${metadata.width}x${metadata.height} -> max 768px`);
     
-    try {
-      // Download the original image
-      const [imageBuffer] = await sourceFile.download();
-      
-      // Process with Sharp
-      let sharpInstance = sharp(imageBuffer);
-      
-      // Resize while maintaining aspect ratio
-      sharpInstance = sharpInstance.resize(maxWidth, maxHeight, {
+    const optimized = await sharp(inputBuffer)
+      .resize(768, 768, {
         fit: 'inside',
         withoutEnlargement: true
-      });
-      
-      // Set format and quality
-      if (format === 'jpeg') {
-        sharpInstance = sharpInstance.jpeg({ quality });
-      } else if (format === 'png') {
-        sharpInstance = sharpInstance.png({ quality: Math.round(quality / 10) });
-      } else if (format === 'webp') {
-        sharpInstance = sharpInstance.webp({ quality });
-      }
-      
-      const processedBuffer = await sharpInstance.toBuffer();
-      
-      // Create a unique file name for the processed image to avoid conflicts
-      const originalName = sourceFile.name;
-      const timestamp = Date.now();
-      const baseName = originalName.substring(0, originalName.lastIndexOf('.')) || originalName;
-      const processedName = `${baseName}_processed_${timestamp}.${format}`;
-      
-      // Upload the processed image to the same bucket  
-      const bucket = sourceFile.bucket;
-      const processedFile = bucket.file(processedName);
-      
-      await processedFile.save(processedBuffer, {
-        metadata: {
-          contentType: `image/${format}`,
-          cacheControl: 'public, max-age=31536000', // 1 year cache
-        }
-      });
-      
-      console.log(`Image processed: ${originalName} -> ${processedName} (${maxWidth}x${maxHeight}, ${quality}% quality)`);
-      
-      // Return the object path instead of public URL for consistency with object storage system
-      return `/objects/uploads/${processedName.split('/').pop()}`;
-    } catch (error) {
-      console.error('Error processing image:', error);
-      // Return null if processing fails so we can use the original object path
-      return null;
-    }
-  }
-
-  /**
-   * Create multiple sizes of an image for responsive design
-   * @param sourceFile - The original uploaded file
-   * @returns Promise<{thumbnail: string, medium: string, large: string}>
-   */
-  async createResponsiveSizes(sourceFile: File): Promise<{
-    thumbnail: string;
-    medium: string;
-    large: string;
-    original: string;
-  }> {
-    try {
-      const [imageBuffer] = await sourceFile.download();
-      const bucket = sourceFile.bucket;
-      const originalName = sourceFile.name;
-      const baseName = originalName.substring(0, originalName.lastIndexOf('.'));
-      
-      // Create thumbnail (150x150, cropped to square)
-      const thumbnailBuffer = await sharp(imageBuffer)
-        .resize(150, 150, { fit: 'cover' })
-        .jpeg({ quality: 80 })
-        .toBuffer();
-      
-      // Create medium size (600x400, fit inside)
-      const mediumBuffer = await sharp(imageBuffer)
-        .resize(600, 400, { fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 85 })
-        .toBuffer();
-      
-      // Create large size (1200x800, fit inside)
-      const largeBuffer = await sharp(imageBuffer)
-        .resize(1200, 800, { fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 85 })
-        .toBuffer();
-      
-      // Upload all sizes
-      const thumbnailFile = bucket.file(`${baseName}_thumb.jpg`);
-      const mediumFile = bucket.file(`${baseName}_medium.jpg`);
-      const largeFile = bucket.file(`${baseName}_large.jpg`);
-      
-      await Promise.all([
-        thumbnailFile.save(thumbnailBuffer, {
-          metadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
-        }),
-        mediumFile.save(mediumBuffer, {
-          metadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
-        }),
-        largeFile.save(largeBuffer, {
-          metadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
-        })
-      ]);
-      
-      console.log(`Created responsive sizes for: ${originalName}`);
-      
-      return {
-        thumbnail: thumbnailFile.publicUrl(),
-        medium: mediumFile.publicUrl(),
-        large: largeFile.publicUrl(),
-        original: sourceFile.publicUrl()
-      };
-    } catch (error) {
-      console.error('Error creating responsive sizes:', error);
-      const originalUrl = sourceFile.publicUrl();
-      return {
-        thumbnail: originalUrl,
-        medium: originalUrl,
-        large: originalUrl,
-        original: originalUrl
-      };
-    }
-  }
-
-  /**
-   * Optimize image for web delivery
-   * @param sourceFile - The source file to optimize
-   * @returns Promise<string> - URL of optimized image
-   */
-  async optimizeForWeb(sourceFile: File): Promise<string> {
-    // TODO: Implement web optimization
-    // This would include:
-    // - Compress to appropriate quality (usually 80-85%)
-    // - Convert to WebP if browser supports it
-    // - Strip metadata
-    // - Resize if too large (max 1920px width)
+      })
+      .jpeg({ 
+        quality: 75, 
+        mozjpeg: true,
+        progressive: true
+      })
+      .toBuffer();
     
-    return this.processImage(sourceFile, {
-      maxWidth: 1920,
-      maxHeight: 1280,
-      quality: 85,
-      format: 'jpeg'
-    });
+    const originalSize = inputBuffer.length;
+    const optimizedSize = optimized.length;
+    const reduction = ((originalSize - optimizedSize) / originalSize * 100).toFixed(1);
+    
+    console.log(`AI image optimization: ${originalSize} -> ${optimizedSize} bytes (${reduction}% reduction)`);
+    
+    return optimized;
+    
+  } catch (error) {
+    console.error('Error optimizing image for AI:', error);
+    throw new Error(`AI image optimization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
-export const imageProcessor = new ImageProcessor();
+/**
+ * Convert buffer to base64 data URL
+ */
+export function bufferToDataUrl(buffer: Buffer, mimeType: string = 'image/jpeg'): string {
+  const base64Data = buffer.toString('base64');
+  return `data:${mimeType};base64,${base64Data}`;
+}
+
+/**
+ * Detect image MIME type from buffer
+ */
+export function detectImageMimeType(buffer: Buffer): string {
+  const uint8Array = new Uint8Array(buffer);
+  
+  // PNG signature
+  if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50 && uint8Array[2] === 0x4E && uint8Array[3] === 0x47) {
+    return 'image/png';
+  }
+  
+  // JPEG signature
+  if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8 && uint8Array[2] === 0xFF) {
+    return 'image/jpeg';
+  }
+  
+  // GIF signature
+  if (uint8Array[0] === 0x47 && uint8Array[1] === 0x49 && uint8Array[2] === 0x46) {
+    return 'image/gif';
+  }
+  
+  // WebP signature
+  if (uint8Array[0] === 0x52 && uint8Array[1] === 0x49 && uint8Array[2] === 0x46 && uint8Array[3] === 0x46 &&
+      uint8Array[8] === 0x57 && uint8Array[9] === 0x45 && uint8Array[10] === 0x42 && uint8Array[11] === 0x50) {
+    return 'image/webp';
+  }
+  
+  // Default to JPEG
+  return 'image/jpeg';
+}

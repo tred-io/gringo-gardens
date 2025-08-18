@@ -728,15 +728,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body.imageURL,
       );
 
-      // Get the uploaded file for processing
-      const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
-      
-      // Automatically resize and optimize the image
-      const { imageProcessor } = await import("./imageProcessor");
-      const optimizedUrl = await imageProcessor.optimizeForWeb(objectFile);
-
-      // Use the optimized URL or fall back to original object path
-      const finalImageUrl = optimizedUrl || objectPath;
+      // For now, just use the uploaded image path directly
+      // Future enhancement: Process image into multiple sizes (thumbnail, lightbox, AI-optimized)
+      const finalImageUrl = objectPath;
 
       // Parse tags from comma-separated string to array
       let tagsArray: string[] = [];
