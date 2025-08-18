@@ -1,5 +1,6 @@
 // Vercel API route for gallery image uploads
 // This file handles PUT /api/gallery-images for Vercel deployment
+// Updated: Fixed module import issues for reliable deployment
 
 import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';
