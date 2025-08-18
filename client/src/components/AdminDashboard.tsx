@@ -110,55 +110,14 @@ type CategoryFormData = z.infer<typeof categorySchema>;
 type ReviewFormData = z.infer<typeof reviewSchema>;
 
 export default function AdminDashboard() {
+  // ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL RETURNS
+  
   // Check if APIs are working by testing a simple query
   const { data: apiTest, isLoading: isApiLoading, error: apiError } = useQuery({
     queryKey: ["/api/admin/settings"],
     retry: false,
   });
 
-  console.log("Admin API test:", { apiTest, isApiLoading, apiError });
-
-  // If APIs aren't working (deployment scenario), show simple interface
-  if (!isApiLoading && apiError && !apiTest) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-12">
-            <h1 className="text-3xl font-bold text-bluebonnet-900 mb-4">Admin Dashboard</h1>
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-              <p className="text-gray-600 mb-4">
-                Admin functionality requires backend API access.
-              </p>
-              <p className="text-sm text-gray-500">
-                This demo deployment shows the public website features. 
-                Full admin features are available in the development environment.
-              </p>
-              <button
-                onClick={() => {
-                  sessionStorage.removeItem("adminAuthenticated");
-                  window.location.href = "/";
-                }}
-                className="mt-4 px-4 py-2 bg-bluebonnet-600 text-white rounded hover:bg-bluebonnet-700"
-              >
-                Return to Website
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isApiLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-bluebonnet-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin dashboard...</p>
-        </div>
-      </div>
-    );
-  }
   const [activeTab, setActiveTab] = useState("products");
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isBlogDialogOpen, setIsBlogDialogOpen] = useState(false);
@@ -822,7 +781,7 @@ export default function AdminDashboard() {
       name: product.name,
       slug: product.slug,
       description: product.description || "",
-      price: product.price,
+      price: product.price || "",
       imageUrl: product.imageUrl || "",
       categoryId: product.categoryId || "",
       hardinessZone: product.hardinessZone || "",
@@ -921,8 +880,8 @@ export default function AdminDashboard() {
       description: image.description || "",
       imageUrl: image.imageUrl,
       category: image.category || "",
-      tags: image.tags ? image.tags.join(", ") : "",
-      featured: image.featured,
+      tags: Array.isArray(image.tags) ? image.tags.join(", ") : (image.tags || ""),
+      featured: image.featured || false,
     });
     setIsGalleryDialogOpen(true);
   };
@@ -964,10 +923,8 @@ export default function AdminDashboard() {
       position: member.position,
       bio: member.bio || "",
       imageUrl: member.imageUrl || "",
-      email: member.email || "",
-      phone: member.phone || "",
-      order: member.order,
-      active: member.active,
+      order: member.order || 0,
+      active: member.active || true,
     });
     setIsTeamDialogOpen(true);
   };
@@ -1032,25 +989,25 @@ export default function AdminDashboard() {
   const stats = [
     {
       label: "Products",
-      value: products.length,
+      value: products?.length || 0,
       icon: Sprout,
       color: "bg-bluebonnet-100 text-bluebonnet-600",
     },
     {
       label: "Blog Posts",
-      value: blogPosts.length,
+      value: blogPosts?.length || 0,
       icon: FileText,
       color: "bg-texas-green-100 text-texas-green-600",
     },
     {
       label: "Gallery Images",
-      value: galleryImages.length,
+      value: galleryImages?.length || 0,
       icon: Image,
       color: "bg-earth-100 text-earth-500",
     },
     {
       label: "New Messages",
-      value: contactMessages.filter(msg => !msg.read).length,
+      value: contactMessages?.filter(msg => !msg.read).length || 0,
       icon: Mail,
       color: "bg-blue-100 text-blue-600",
     },
