@@ -14,6 +14,8 @@ export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
   const { key } = req.query;
 
+  console.log(`Settings API [${req.method}] - Key: ${key}, Body:`, req.body);
+
   if (!key) {
     return res.status(400).json({ message: 'Setting key is required' });
   }
@@ -42,6 +44,10 @@ export default async function handler(req, res) {
     if (req.method === 'PUT') {
       const { value } = req.body;
       
+      if (!value) {
+        return res.status(400).json({ message: 'Value is required' });
+      }
+      
       // Upsert setting (update if exists, insert if not)
       const [setting] = await sql`
         INSERT INTO settings (key, value, updated_at) 
@@ -50,14 +56,18 @@ export default async function handler(req, res) {
         DO UPDATE SET 
           value = EXCLUDED.value,
           updated_at = NOW()
-        RETURNING *
+        RETURNING 
+          id,
+          key,
+          value,
+          updated_at as "updatedAt"
       `;
       
       console.log(`Updated admin setting: ${key} = ${value}`);
       return res.json(setting);
     }
 
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: `Method ${req.method} not allowed` });
     
   } catch (error) {
     console.error('Error in admin settings API:', error);
