@@ -715,7 +715,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Try Vercel Blob first (for production), then fall back to Replit object storage
       if (vercelBlobService.isAvailable()) {
         // Return fully qualified Vercel Blob upload endpoint
-        const protocol = req.get('x-forwarded-proto') || (req.connection.encrypted ? 'https' : 'http');
+        const protocol = req.get('x-forwarded-proto') || req.secure ? 'https' : 'http';
         const host = req.get('host');
         const uploadURL = `${protocol}://${host}/api/blob/upload`;
         
