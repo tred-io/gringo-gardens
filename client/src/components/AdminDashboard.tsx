@@ -1816,22 +1816,22 @@ export default function AdminDashboard() {
                           const isVercel = file.uploadURL && file.uploadURL.includes('/api/blob/upload');
                           
                           if (isVercel) {
-                            // For Vercel uploads, construct blob URL from the object name
-                            // Since Uppy doesn't properly capture our JSON response
+                            // For Vercel uploads, get object name from meta data since Uppy strips query params
                             try {
-                              if (!file.uploadURL) {
-                                throw new Error("Upload URL missing for Vercel upload");
-                              }
-                              const uploadUrl = new URL(file.uploadURL, window.location.origin);
-                              const objectName = uploadUrl.searchParams.get('objectName');
+                              console.log("File meta data:", file.meta);
+                              
+                              // Get object name from meta data that we stored during upload params generation
+                              const objectName = (file.meta as any)?.objectName;
                               
                               if (objectName) {
-                                console.log("Constructing Vercel blob URL for object:", objectName);
+                                console.log("Using object name from meta:", objectName);
                                 
                                 // Use the confirmed Vercel blob domain pattern
                                 const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
                                 actualImageURL = `https://${blobDomain}/${objectName}`;
                                 console.log("Constructed Vercel blob URL:", actualImageURL);
+                              } else {
+                                console.error("Object name not found in file meta data");
                               }
                             } catch (error) {
                               console.error("Error constructing Vercel blob URL:", error);

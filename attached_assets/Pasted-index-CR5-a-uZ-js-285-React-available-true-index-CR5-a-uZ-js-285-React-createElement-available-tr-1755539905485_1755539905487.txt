@@ -1,0 +1,190 @@
+index-CR5_a-uZ.js:285 React available: true
+index-CR5_a-uZ.js:285 React.createElement available: true
+index-CR5_a-uZ.js:48 API endpoint /api/settings/business_hours returned HTML in deployment mode
+(anonymous) @ index-CR5_a-uZ.js:48
+await in (anonymous)
+i @ index-CR5_a-uZ.js:48
+b @ index-CR5_a-uZ.js:48
+start @ index-CR5_a-uZ.js:48
+fetch @ index-CR5_a-uZ.js:48
+Ul @ index-CR5_a-uZ.js:48
+onSubscribe @ index-CR5_a-uZ.js:48
+subscribe @ index-CR5_a-uZ.js:48
+(anonymous) @ index-CR5_a-uZ.js:48
+f_ @ index-CR5_a-uZ.js:30
+dh @ index-CR5_a-uZ.js:32
+na @ index-CR5_a-uZ.js:32
+fx @ index-CR5_a-uZ.js:32
+Ci @ index-CR5_a-uZ.js:30
+fP @ index-CR5_a-uZ.js:32
+ki @ index-CR5_a-uZ.js:32
+H_ @ index-CR5_a-uZ.js:32
+T @ index-CR5_a-uZ.js:17
+U @ index-CR5_a-uZ.js:17
+index-CR5_a-uZ.js:48 API endpoint /api/settings/temporary_closure returned HTML in deployment mode
+(anonymous) @ index-CR5_a-uZ.js:48
+await in (anonymous)
+i @ index-CR5_a-uZ.js:48
+b @ index-CR5_a-uZ.js:48
+start @ index-CR5_a-uZ.js:48
+fetch @ index-CR5_a-uZ.js:48
+Ul @ index-CR5_a-uZ.js:48
+onSubscribe @ index-CR5_a-uZ.js:48
+subscribe @ index-CR5_a-uZ.js:48
+(anonymous) @ index-CR5_a-uZ.js:48
+f_ @ index-CR5_a-uZ.js:30
+dh @ index-CR5_a-uZ.js:32
+na @ index-CR5_a-uZ.js:32
+fx @ index-CR5_a-uZ.js:32
+Ci @ index-CR5_a-uZ.js:30
+fP @ index-CR5_a-uZ.js:32
+ki @ index-CR5_a-uZ.js:32
+H_ @ index-CR5_a-uZ.js:32
+T @ index-CR5_a-uZ.js:17
+U @ index-CR5_a-uZ.js:17
+index-CR5_a-uZ.js:285 Getting upload parameters for file: image000000(14).jpg image/jpeg
+index-CR5_a-uZ.js:285 Upload parameters from server: {uploadURL: 'https://gringo-gardens.vercel.app/api/blob/upload', method: 'PUT', headers: {…}, message: 'Upload your file to this endpoint using PUT method'}
+index-CR5_a-uZ.js:285 Received upload parameters: {method: 'PUT', url: 'https://gringo-gardens.vercel.app/api/blob/upload?…tName=gallery%2Fuploads%2Fiuen9q3lxzsmehf3rre.jpg', meta: {…}}
+index-CR5_a-uZ.js:285 Uppy upload-success event - file: image000000(14).jpg response: {
+  "body": {
+    "access-control-allow-headers": "Content-Type, Authorization",
+    "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+    "access-control-allow-origin": "*",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-length": "556",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 18 Aug 2025 17:57:38 GMT",
+    "etag": "W/\"22c-NcjkXjIs6i/mRl4CRb3D+6h/YGA\"",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-vercel-cache": "MISS",
+    "x-vercel-id": "cle1::iad1::7dcpr-1755539856865-cc6cc65a4b04",
+    "ETag": "W/\"22c-NcjkXjIs6i/mRl4CRb3D+6h/YGA\"",
+    "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+  },
+  "status": 200,
+  "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+}
+index-CR5_a-uZ.js:285 Upload-success event - response: {body: {…}, status: 200, uploadURL: 'https://gringo-gardens.vercel.app/api/blob/upload'}
+index-CR5_a-uZ.js:285 Uppy upload complete - full result: {
+  "successful": [
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000",
+      "name": "image000000(14).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(14).jpg",
+        "type": "image/jpeg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755539857833,
+        "uploadComplete": true,
+        "bytesUploaded": 295712,
+        "bytesTotal": 295712,
+        "percentage": 100
+      },
+      "size": 295712,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/6c4a71e7-0455-4fb2-a1d1-b5d18ee648f8",
+      "s3Multipart": {},
+      "response": {
+        "body": {
+          "access-control-allow-headers": "Content-Type, Authorization",
+          "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+          "access-control-allow-origin": "*",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-length": "556",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Mon, 18 Aug 2025 17:57:38 GMT",
+          "etag": "W/\"22c-NcjkXjIs6i/mRl4CRb3D+6h/YGA\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "cle1::iad1::7dcpr-1755539856865-cc6cc65a4b04",
+          "ETag": "W/\"22c-NcjkXjIs6i/mRl4CRb3D+6h/YGA\"",
+          "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+        },
+        "status": 200,
+        "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+      },
+      "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload",
+      "isPaused": false
+    }
+  ],
+  "failed": [],
+  "uploadID": "sMiwdZEcLjteog6gQaQmI"
+}
+index-CR5_a-uZ.js:285 Upload complete result: {successful: Array(1), failed: Array(0), uploadID: 'sMiwdZEcLjteog6gQaQmI'}
+index-CR5_a-uZ.js:285 Processing file: {source: 'DashboardModal', id: 'uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000', name: 'image000000(14).jpg', extension: 'jpg', meta: {…}, …}
+index-CR5_a-uZ.js:285 Complete file object: {
+  "source": "DashboardModal",
+  "id": "uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000",
+  "name": "image000000(14).jpg",
+  "extension": "jpg",
+  "meta": {
+    "relativePath": null,
+    "name": "image000000(14).jpg",
+    "type": "image/jpeg"
+  },
+  "type": "image/jpeg",
+  "data": {},
+  "progress": {
+    "uploadStarted": 1755539857833,
+    "uploadComplete": true,
+    "bytesUploaded": 295712,
+    "bytesTotal": 295712,
+    "percentage": 100
+  },
+  "size": 295712,
+  "isGhost": false,
+  "isRemote": false,
+  "preview": "blob:https://gringo-gardens.vercel.app/6c4a71e7-0455-4fb2-a1d1-b5d18ee648f8",
+  "s3Multipart": {},
+  "response": {
+    "body": {
+      "access-control-allow-headers": "Content-Type, Authorization",
+      "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+      "access-control-allow-origin": "*",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-length": "556",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 18 Aug 2025 17:57:38 GMT",
+      "etag": "W/\"22c-NcjkXjIs6i/mRl4CRb3D+6h/YGA\"",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "cle1::iad1::7dcpr-1755539856865-cc6cc65a4b04",
+      "ETag": "W/\"22c-NcjkXjIs6i/mRl4CRb3D+6h/YGA\"",
+      "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+    },
+    "status": 200,
+    "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+  },
+  "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload",
+  "isPaused": false
+}
+index-CR5_a-uZ.js:285 File response body: {access-control-allow-headers: 'Content-Type, Authorization', access-control-allow-methods: 'GET,PUT,POST,DELETE,OPTIONS', access-control-allow-origin: '*', cache-control: 'public, max-age=0, must-revalidate', content-length: '556', …}
+index-CR5_a-uZ.js:285 File response uploadURL: https://gringo-gardens.vercel.app/api/blob/upload
+index-CR5_a-uZ.js:285 File uploadURL: https://gringo-gardens.vercel.app/api/blob/upload
+index-CR5_a-uZ.js:285 Error saving gallery image: Error: Upload succeeded but could not determine final URL for file: image000000(14).jpg
+    at onComplete (index-CR5_a-uZ.js:285:57087)
+    at Function.<anonymous> (index-CR5_a-uZ.js:285:19760)
+    at s (index-CR5_a-uZ.js:261:31397)
+    at e.emit (index-CR5_a-uZ.js:261:30765)
+    at qf.emit (index-CR5_a-uZ.js:261:41513)
+    at index-CR5_a-uZ.js:266:3473
+onComplete @ index-CR5_a-uZ.js:285
+(anonymous) @ index-CR5_a-uZ.js:285
+s @ index-CR5_a-uZ.js:261
+e.emit @ index-CR5_a-uZ.js:261
+emit @ index-CR5_a-uZ.js:261
+(anonymous) @ index-CR5_a-uZ.js:266
+Promise.then
+upload @ index-CR5_a-uZ.js:266
+(anonymous) @ index-CR5_a-uZ.js:274
+(anonymous) @ index-CR5_a-uZ.js:261
