@@ -1745,13 +1745,13 @@ export default function AdminDashboard() {
                       
                       console.log("Generated object name:", objectName);
                       
-                      // Store object name for later URL construction
-                      if (!(window as any).uploadObjectNames) (window as any).uploadObjectNames = new Map();
-                      (window as any).uploadObjectNames.set(fileId, objectName);
-                      
                       return {
                         method: "PUT" as const,
                         url: `/api/blob/upload?objectName=${encodeURIComponent(objectName)}`,
+                        // Store the object name in the request so we can use it later
+                        fields: {
+                          objectName: objectName
+                        }
                       };
                     }}
                     onComplete={async (result) => {
@@ -1773,7 +1773,7 @@ export default function AdminDashboard() {
                           // Try multiple ways to get the actual blob URL
                           let actualImageURL = null;
                           
-                          // Method 1: Extract blob URL from response body
+                          // Method 1: Extract blob URL from response body (should contain the actual Vercel storage URL)
                           if (file.response?.body) {
                             try {
                               let responseData = file.response.body;
@@ -1785,12 +1785,14 @@ export default function AdminDashboard() {
                               
                               console.log("Parsed response data:", responseData);
                               
-                              // Extract the blob URL from the response
+                              // The API should return the actual blob storage URL
                               if (responseData.url && responseData.url.includes('vercel-storage.com')) {
                                 actualImageURL = responseData.url;
                                 console.log("SUCCESS: Found blob URL in response:", actualImageURL);
-                              } else {
-                                console.warn("Response does not contain valid blob URL:", responseData);
+                              } else if (responseData.url) {
+                                // For debugging - log what URL we got instead
+                                console.warn("Response URL is not a blob storage URL:", responseData.url);
+                                console.log("Full response data:", responseData);
                               }
                             } catch (parseError) {
                               console.error("Failed to parse response body:", parseError);
@@ -1820,9 +1822,17 @@ export default function AdminDashboard() {
                             }
                           }
                           
-                          // Method 4: If still no blob URL found, this is an error
+                          // Method 4: If still no blob URL found, check if we got the blob URL from upload-success
+                          if (!actualImageURL && (file as any).blobURL) {
+                            actualImageURL = (file as any).blobURL;
+                            console.log("Using blob URL from upload-success handler:", actualImageURL);
+                          }
+                          
+                          // Final fallback: If still no blob URL, this is an error
                           if (!actualImageURL) {
                             console.error("Could not extract blob URL from any method");
+                            console.log("File object for debugging:", file);
+                            console.log("Response object for debugging:", file.response);
                             throw new Error(`Upload completed but blob URL could not be retrieved for file: ${file.name}`);
                           }
                           
