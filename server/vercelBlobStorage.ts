@@ -77,6 +77,59 @@ export class VercelBlobStorageService {
     }
   }
 
+  // Handle direct upload via API endpoint
+  async processDirectUpload(fileBuffer: Buffer, contentType: string): Promise<VercelBlobUploadResult> {
+    if (!this.isAvailable()) {
+      throw new Error('Vercel Blob storage not available in this environment');
+    }
+
+    try {
+      const baseId = randomUUID();
+      const mimeType = contentType || detectImageMimeType(fileBuffer);
+      const fileExtension = mimeType === 'image/png' ? 'png' : 'jpg';
+
+      // Process image into multiple sizes
+      const imageSizes = await processImageSizes(fileBuffer);
+
+      console.log(`Processing direct upload with multiple sizes: ${imageSizes.original.length} bytes`);
+
+      // Upload all versions to Vercel Blob
+      const [originalBlob, thumbnailBlob, lightboxBlob, aiBlob] = await Promise.all([
+        put(`gallery/original/${baseId}.${fileExtension}`, imageSizes.original, { 
+          access: 'public',
+          contentType: mimeType
+        }),
+        put(`gallery/thumbnail/${baseId}.jpg`, imageSizes.thumbnail, { 
+          access: 'public',
+          contentType: 'image/jpeg'
+        }),
+        put(`gallery/lightbox/${baseId}.jpg`, imageSizes.lightbox, { 
+          access: 'public',
+          contentType: 'image/jpeg'
+        }),
+        put(`gallery/ai/${baseId}.jpg`, imageSizes.ai, { 
+          access: 'public',
+          contentType: 'image/jpeg'
+        })
+      ]);
+
+      return {
+        url: originalBlob.url,
+        objectPath: `/blob/gallery/original/${baseId}.${fileExtension}`,
+        sizes: {
+          original: originalBlob.url,
+          thumbnail: thumbnailBlob.url,
+          lightbox: lightboxBlob.url,
+          ai: aiBlob.url
+        }
+      };
+
+    } catch (error) {
+      console.error('Error processing direct upload:', error);
+      throw new Error(`Direct upload processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
   async deleteImage(url: string): Promise<void> {
     if (!this.isAvailable()) {
       throw new Error('Vercel Blob storage not available in this environment');

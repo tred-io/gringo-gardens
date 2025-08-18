@@ -1,5 +1,5 @@
 // Vercel API route for Blob upload
-// This file handles POST /api/blob/upload for direct file uploads to Vercel Blob
+// This file handles PUT /api/blob/upload for direct file uploads to Vercel Blob
 
 import { put } from '@vercel/blob';
 import { randomUUID } from 'crypto';
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST' && req.method !== 'PUT') {
+  if (req.method !== 'PUT') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -27,25 +27,45 @@ export default async function handler(req, res) {
       });
     }
 
-    // Get the file from the request body
-    if (!req.body) {
-      return res.status(400).json({ error: 'No file data provided' });
+    // For PUT requests, the body should be the raw file data
+    console.log('Received upload request - Content-Type:', req.headers['content-type']);
+    console.log('Body type:', typeof req.body);
+    console.log('Body length:', req.body?.length || 'unknown');
+
+    if (!req.body || req.body.length === 0) {
+      return res.status(400).json({ 
+        error: 'No file data provided',
+        details: 'Request body is empty or missing'
+      });
     }
 
-    // Generate unique filename
+    // Generate unique filename with proper extension
     const fileId = randomUUID();
-    const filename = `gallery/uploads/${fileId}`;
+    const contentType = req.headers['content-type'] || 'application/octet-stream';
+    const extension = contentType.includes('image/png') ? 'png' : 
+                     contentType.includes('image/') ? 'jpg' : 'bin';
+    const filename = `gallery/uploads/${fileId}.${extension}`;
 
-    // Upload to Vercel Blob
-    const blob = await put(filename, req.body, {
-      access: 'public',
-      contentType: req.headers['content-type'] || 'application/octet-stream'
-    });
+    console.log('Uploading to Vercel Blob:', filename, contentType);
+
+    // Process the upload with image optimization
+    const { VercelBlobStorageService } = await import('../server/vercelBlobStorage.ts');
+    const vercelBlobService = new VercelBlobStorageService();
+    
+    // Convert body to Buffer if needed
+    const fileBuffer = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body);
+    
+    // Process and upload with multi-size generation
+    const result = await vercelBlobService.processDirectUpload(fileBuffer, contentType);
+
+    console.log('Upload successful with multi-size processing:', result.url);
 
     res.status(200).json({
-      url: blob.url,
-      uploadURL: blob.url,
-      message: 'File uploaded successfully to Vercel Blob'
+      url: result.url,
+      uploadURL: result.url,
+      sizes: result.sizes,
+      objectPath: result.objectPath,
+      message: 'File uploaded successfully to Vercel Blob with multi-size processing'
     });
 
   } catch (error) {
@@ -57,7 +77,7 @@ export default async function handler(req, res) {
   }
 }
 
-// Configure body parser for file uploads
+// Configure for binary file uploads
 export const config = {
   api: {
     bodyParser: {
