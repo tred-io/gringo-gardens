@@ -104,8 +104,12 @@ export function ObjectUploader({
         },
       })
       .on("complete", (result) => {
+        console.log("Uppy upload complete - full result:", JSON.stringify(result, null, 2));
         onComplete?.(result);
         setShowModal(false);
+      })
+      .on("upload-success", (file, response) => {
+        console.log("Uppy upload-success event - file:", file?.name, "response:", JSON.stringify(response, null, 2));
       })
   );
 

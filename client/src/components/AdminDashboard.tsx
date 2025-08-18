@@ -1788,7 +1788,24 @@ export default function AdminDashboard() {
                             console.log("Found URL in response object:", actualImageURL);
                           }
                           
-                          // Method 3: Fallback to uploadURL (but warn if it's the upload endpoint)
+                          // Method 3: Check if the file itself has the blob URL stored somewhere
+                          if (!actualImageURL) {
+                            // Look for any property that might contain the blob URL
+                            const fileProps = Object.keys(file);
+                            console.log("Available file properties:", fileProps);
+                            
+                            for (const prop of fileProps) {
+                              if (typeof file[prop] === 'string' && 
+                                  file[prop].startsWith('https://') && 
+                                  file[prop].includes('vercel-storage.com')) {
+                                actualImageURL = file[prop];
+                                console.log(`Found blob URL in file.${prop}:`, actualImageURL);
+                                break;
+                              }
+                            }
+                          }
+                          
+                          // Method 4: Fallback to uploadURL (but warn if it's the upload endpoint)
                           if (!actualImageURL) {
                             actualImageURL = file.uploadURL;
                             if (actualImageURL?.includes('/api/blob/upload')) {
