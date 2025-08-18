@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 // Removed auth imports - using simple password protection instead
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { VercelBlobStorageService } from "./vercelBlobStorage";
 import {
   insertProductSchema,
   insertBlogPostSchema,
@@ -709,16 +710,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/objects/upload", async (req, res) => {
     try {
       const objectStorageService = new ObjectStorageService();
+      const vercelBlobService = new VercelBlobStorageService();
       
-      if (!objectStorageService.isAvailable()) {
+      // Try Vercel Blob first (for production), then fall back to Replit object storage
+      if (vercelBlobService.isAvailable()) {
+        // Return Vercel Blob upload endpoint
+        return res.json({ 
+          uploadURL: "/api/blob/upload",
+          method: "POST",
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          message: "Upload your file using multipart/form-data to the provided URL"
+        });
+      } else if (objectStorageService.isAvailable()) {
+        // Use Replit object storage
+        const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+        res.json({ uploadURL });
+      } else {
         return res.status(503).json({ 
-          error: "Object storage not available in this environment",
-          message: "Please use external image hosting (like Unsplash URLs) for gallery images in the deployed version"
+          error: "No storage service available",
+          message: "Please use external image hosting (like Unsplash URLs) for gallery images"
         });
       }
-      
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
     } catch (error) {
       console.error("Error generating upload URL:", error);
       res.status(500).json({ error: "Failed to generate upload URL" });
@@ -732,18 +746,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const objectStorageService = new ObjectStorageService();
+      const vercelBlobService = new VercelBlobStorageService();
       let objectPath = req.body.imageURL;
       
-      // Only process object storage paths if service is available
-      if (objectStorageService.isAvailable()) {
+      // Process different types of image URLs
+      if (vercelBlobService.isAvailable() && req.body.imageURL.includes('vercel-storage.com')) {
+        // Vercel Blob URL
+        objectPath = vercelBlobService.normalizeObjectEntityPath(req.body.imageURL);
+      } else if (objectStorageService.isAvailable() && req.body.imageURL.startsWith('/objects/')) {
+        // Replit object storage path
         objectPath = objectStorageService.normalizeObjectEntityPath(req.body.imageURL);
-      } else {
-        // For Vercel deployment, handle external URLs directly
-        if (req.body.imageURL.startsWith('https://storage.googleapis.com/')) {
-          const url = new URL(req.body.imageURL);
-          objectPath = `/objects${url.pathname}`;
-        }
+      } else if (req.body.imageURL.startsWith('https://storage.googleapis.com/')) {
+        // Google Cloud Storage URL (from Replit object storage)
+        const url = new URL(req.body.imageURL);
+        objectPath = `/objects${url.pathname}`;
       }
+      // For external URLs (Unsplash, etc.), use as-is
 
       const finalImageUrl = objectPath;
 

@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { getAIOptimizedImage, bufferToDataUrl, detectImageMimeType } from "./imageProcessor";
+import { VercelBlobStorageService } from "./vercelBlobStorage";
 
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
@@ -24,13 +25,24 @@ export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDet
     let imageContent: string;
     let isBase64 = false;
     
-    if (imageUrl.startsWith('/objects/uploads/')) {
-      // For object storage images, fetch the binary data, optimize for AI, and convert to base64
-      console.log(`Fetching object storage image data: ${imageUrl}`);
+    if (imageUrl.startsWith('/objects/uploads/') || imageUrl.startsWith('/blob/')) {
+      // For object storage or Vercel Blob images, fetch and optimize for AI
+      console.log(`Fetching image data: ${imageUrl}`);
       try {
-        const response = await fetch(`http://localhost:5000${imageUrl}`);
+        const vercelBlobService = new VercelBlobStorageService();
+        let fetchUrl = imageUrl;
+        
+        // For Vercel Blob images, try to get the AI-optimized version first
+        if (vercelBlobService.isAvailable() && imageUrl.startsWith('/blob/')) {
+          const originalUrl = imageUrl.replace('/blob/', '');
+          fetchUrl = vercelBlobService.getAIImageUrl(`https://placeholder${originalUrl}`);
+        } else if (imageUrl.startsWith('/objects/')) {
+          fetchUrl = `http://localhost:5000${imageUrl}`;
+        }
+        
+        const response = await fetch(fetchUrl);
         if (!response.ok) {
-          console.error(`Failed to fetch object storage image: ${response.status}`);
+          console.error(`Failed to fetch image: ${response.status}`);
           return null;
         }
         
@@ -48,7 +60,7 @@ export async function identifyPlantFromImage(imageUrl: string): Promise<PlantDet
         
         console.log(`Converted optimized image to base64 (${mimeType}) for AI analysis`);
       } catch (fetchError) {
-        console.error(`Error fetching or optimizing object storage image:`, fetchError);
+        console.error(`Error fetching or optimizing image:`, fetchError);
         return null;
       }
     } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
