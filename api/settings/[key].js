@@ -57,4 +57,5 @@ export default async function handler(req, res) {
 // Prevent static optimization - forces dynamic behavior in production
 export const config = {
   runtime: 'nodejs',
+  regions: ['iad1'],
 };
