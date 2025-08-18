@@ -57,3 +57,10 @@ Preferred communication style: Simple, everyday language.
 - **Database Fix**: Resolved PostgreSQL text[] array handling for gallery image tags - fixed "column is of type text[] but expression is of type jsonb" error in Vercel deployment
 - **Upload Flow Fix**: Implemented custom Uppy response handler to properly extract blob URLs from Vercel API JSON responses
 - **Backend Validation**: Added API validation to reject upload endpoint URLs and ensure only proper blob storage URLs are accepted
+- **Gallery Upload Complete (August 18, 2025)**: Fully resolved gallery image upload functionality across both environments
+  - **Root Issue**: Uppy's AwsS3 plugin strips query parameters and overwrites custom metadata
+  - **Solution**: Global window storage workaround to preserve objectName across Uppy's limitations
+  - **Environment-Aware APIs**: Implemented dual API calls detecting Vercel vs local environments with appropriate endpoints
+  - **Vercel**: `PUT /api/gallery-images` with `imageURL` field
+  - **Local**: `POST /api/admin/gallery` with `imageUrl` field
+  - **Status**: ✅ COMPLETE - Gallery uploads working in both Replit development and Vercel production environments
