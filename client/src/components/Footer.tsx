@@ -22,6 +22,9 @@ export default function Footer() {
   const { data: temporaryClosureSetting } = useQuery<any>({
     queryKey: ["/api/settings/temporary_closure"],
     retry: false,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale to force refetch
   });
 
   const businessHours = businessHoursSetting?.value ? JSON.parse(businessHoursSetting.value) : null;
