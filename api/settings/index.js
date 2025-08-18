@@ -47,6 +47,5 @@ export default async function handler(req, res) {
 
 // Prevent static optimization
 export const config = {
-  runtime: 'nodejs',
-  regions: ['iad1'],
+  runtime: 'nodejs18.x',
 };
