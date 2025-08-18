@@ -850,9 +850,26 @@ export default function AdminDashboard() {
     };
     
     if (editingGalleryImage) {
-      updateGalleryImageMutation.mutate({ id: editingGalleryImage.id, ...processedData });
+      const updateData = {
+        id: editingGalleryImage.id,
+        imageUrl: processedData.imageUrl,
+        title: processedData.title,
+        description: processedData.description,
+        category: processedData.category,
+        tags: processedData.tags.join(','), // Convert array to comma-separated string for API
+        featured: processedData.featured
+      };
+      updateGalleryImageMutation.mutate(updateData);
     } else {
-      createGalleryImageMutation.mutate(processedData);
+      const createData = {
+        imageUrl: processedData.imageUrl,
+        title: processedData.title,
+        description: processedData.description,
+        category: processedData.category,
+        tags: processedData.tags.join(','), // Convert array to comma-separated string for API
+        featured: processedData.featured
+      };
+      createGalleryImageMutation.mutate(createData);
     }
   };
 
@@ -1779,6 +1796,10 @@ export default function AdminDashboard() {
                       let errorCount = 0;
                       
                       // Process each uploaded file sequentially
+                      if (!result.successful) {
+                        throw new Error("Upload failed - no successful files");
+                      }
+                      
                       for (const file of result.successful) {
                         try {
                           console.log("Processing file:", file);
@@ -1798,6 +1819,9 @@ export default function AdminDashboard() {
                             // For Vercel uploads, construct blob URL from the object name
                             // Since Uppy doesn't properly capture our JSON response
                             try {
+                              if (!file.uploadURL) {
+                                throw new Error("Upload URL missing for Vercel upload");
+                              }
                               const uploadUrl = new URL(file.uploadURL, window.location.origin);
                               const objectName = uploadUrl.searchParams.get('objectName');
                               
