@@ -112,41 +112,30 @@ export function ObjectUploader({
       .on("upload-success", (file, response) => {
         console.log("Uppy upload-success event - file:", file?.name, "response:", JSON.stringify(response, null, 2));
         
-        // Try to extract blob URL from the response and store it on the file
+        // Extract and store the blob URL from the response
         try {
-          console.log("Processing upload-success response type:", typeof response);
-          console.log("Response keys:", Object.keys(response || {}));
-          console.log("Response body type:", typeof response?.body);
-          console.log("Response body content:", response?.body);
+          console.log("Upload-success event - response:", response);
           
           if (response && response.body) {
-            // Try to parse the response body to get the blob URL
-            let responseData;
-            if (typeof response.body === 'string') {
+            let responseData = response.body;
+            
+            // Parse JSON if needed
+            if (typeof responseData === 'string') {
               try {
-                responseData = JSON.parse(response.body);
-                console.log("Parsed JSON response:", responseData);
-              } catch (parseError) {
-                console.error("Failed to parse response body as JSON:", parseError);
-                responseData = response.body;
+                responseData = JSON.parse(responseData);
+              } catch (e) {
+                console.error("Failed to parse response as JSON:", e);
               }
-            } else {
-              responseData = response.body;
             }
             
-            // Look for the blob URL in various response fields
-            const blobUrl = responseData.url || responseData.uploadURL || responseData.location;
-            if (blobUrl && (blobUrl.includes('vercel-storage.com') || blobUrl.includes('blob'))) {
-              file.blobURL = blobUrl;
-              console.log("SUCCESS: Extracted and stored blob URL:", file.blobURL);
-            } else {
-              console.warn("No valid blob URL found in response data:", responseData);
+            // Extract blob URL and store it on the file
+            if (responseData.url && responseData.url.includes('vercel-storage.com')) {
+              (file as any).blobURL = responseData.url;
+              console.log("Stored blob URL on file object:", (file as any).blobURL);
             }
-          } else {
-            console.warn("No response body found in upload-success event");
           }
         } catch (error) {
-          console.error("Error extracting blob URL from response:", error);
+          console.error("Error in upload-success handler:", error);
         }
       })
   );

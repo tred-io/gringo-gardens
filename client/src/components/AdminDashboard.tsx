@@ -1773,32 +1773,34 @@ export default function AdminDashboard() {
                           // Try multiple ways to get the actual blob URL
                           let actualImageURL = null;
                           
-                          // Method 1: Construct URL from known object name (S3 approach)
-                          // Extract object name from the upload URL query parameter
-                          try {
-                            if (file.uploadURL) {
-                              const uploadUrl = new URL(file.uploadURL, window.location.origin);
-                              const objectName = uploadUrl.searchParams.get('objectName');
-                              if (objectName) {
-                                // Use the response URL from the blob upload if available
-                                if (file.response?.body && typeof file.response.body === 'object' && 'url' in file.response.body) {
-                                  actualImageURL = file.response.body.url as string;
-                                  console.log("Found blob URL in response body:", actualImageURL);
-                                } else {
-                                  // Fallback: construct URL from object name - this shouldn't be needed with proper response parsing
-                                  console.log("Response body structure:", file.response?.body);
-                                  console.log("Falling back to object name construction");
-                                }
+                          // Method 1: Extract blob URL from response body
+                          if (file.response?.body) {
+                            try {
+                              let responseData = file.response.body;
+                              
+                              // Parse response body if it's a string
+                              if (typeof responseData === 'string') {
+                                responseData = JSON.parse(responseData);
                               }
+                              
+                              console.log("Parsed response data:", responseData);
+                              
+                              // Extract the blob URL from the response
+                              if (responseData.url && responseData.url.includes('vercel-storage.com')) {
+                                actualImageURL = responseData.url;
+                                console.log("SUCCESS: Found blob URL in response:", actualImageURL);
+                              } else {
+                                console.warn("Response does not contain valid blob URL:", responseData);
+                              }
+                            } catch (parseError) {
+                              console.error("Failed to parse response body:", parseError);
                             }
-                          } catch (urlError) {
-                            console.log("Could not extract object name from upload URL:", urlError);
                           }
                           
-                          // Method 2: From response object
-                          if (!actualImageURL) {
-                            actualImageURL = file.response?.url || file.response?.uploadURL;
-                            console.log("Found URL in response object:", actualImageURL);
+                          // Method 2: Check if upload-success handler stored blob URL
+                          if (!actualImageURL && (file as any).blobURL) {
+                            actualImageURL = (file as any).blobURL;
+                            console.log("Found blob URL from upload-success handler:", actualImageURL);
                           }
                           
                           // Method 3: Check if the file itself has the blob URL stored somewhere
