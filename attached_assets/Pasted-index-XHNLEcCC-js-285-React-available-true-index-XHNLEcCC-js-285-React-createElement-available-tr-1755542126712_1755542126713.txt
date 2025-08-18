@@ -1,0 +1,304 @@
+index-XHNLEcCC.js:285 React available: true
+index-XHNLEcCC.js:285 React.createElement available: true
+index-XHNLEcCC.js:48 API endpoint /api/settings/business_hours returned HTML in deployment mode
+(anonymous) @ index-XHNLEcCC.js:48
+await in (anonymous)
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48 API endpoint /api/settings/temporary_closure returned HTML in deployment mode
+(anonymous) @ index-XHNLEcCC.js:48
+await in (anonymous)
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48  GET https://gringo-gardens.vercel.app/api/admin/settings 500 (Internal Server Error)
+(anonymous) @ index-XHNLEcCC.js:48
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48 API endpoint /api/admin/settings not available in deployment mode
+(anonymous) @ index-XHNLEcCC.js:48
+await in (anonymous)
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48  GET https://gringo-gardens.vercel.app/api/admin/products?productCategory=&productSearch=&productStatus= 500 (Internal Server Error)
+(anonymous) @ index-XHNLEcCC.js:48
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48 API endpoint /api/admin/products?productCategory=&productSearch=&productStatus= not available in deployment mode
+(anonymous) @ index-XHNLEcCC.js:48
+await in (anonymous)
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:32 TypeError: Cannot read properties of null (reading 'map')
+    at N7 (index-XHNLEcCC.js:285:45962)
+    at Uy (index-XHNLEcCC.js:30:16998)
+    at Om (index-XHNLEcCC.js:32:3139)
+    at Q_ (index-XHNLEcCC.js:32:44804)
+    at G_ (index-XHNLEcCC.js:32:39766)
+    at uP (index-XHNLEcCC.js:32:39694)
+    at gf (index-XHNLEcCC.js:32:39547)
+    at Wm (index-XHNLEcCC.js:32:35914)
+    at fx (index-XHNLEcCC.js:32:36717)
+    at Ei (index-XHNLEcCC.js:30:3274)
+Am @ index-XHNLEcCC.js:32
+T_.n.callback @ index-XHNLEcCC.js:32
+G0 @ index-XHNLEcCC.js:30
+cx @ index-XHNLEcCC.js:32
+V_ @ index-XHNLEcCC.js:32
+aP @ index-XHNLEcCC.js:32
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+(anonymous) @ index-XHNLEcCC.js:32
+setTimeout
+s @ index-XHNLEcCC.js:48
+o @ index-XHNLEcCC.js:48
+batch @ index-XHNLEcCC.js:48
+Kr @ index-XHNLEcCC.js:48
+setData @ index-XHNLEcCC.js:48
+onSuccess @ index-XHNLEcCC.js:48
+f @ index-XHNLEcCC.js:48
+Promise.then
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:285 Uncaught TypeError: Cannot read properties of null (reading 'map')
+    at N7 (index-XHNLEcCC.js:285:45962)
+    at Uy (index-XHNLEcCC.js:30:16998)
+    at Om (index-XHNLEcCC.js:32:3139)
+    at Q_ (index-XHNLEcCC.js:32:44804)
+    at G_ (index-XHNLEcCC.js:32:39766)
+    at uP (index-XHNLEcCC.js:32:39694)
+    at gf (index-XHNLEcCC.js:32:39547)
+    at Wm (index-XHNLEcCC.js:32:35914)
+    at fx (index-XHNLEcCC.js:32:36717)
+    at Ei (index-XHNLEcCC.js:30:3274)
+N7 @ index-XHNLEcCC.js:285
+Uy @ index-XHNLEcCC.js:30
+Om @ index-XHNLEcCC.js:32
+Q_ @ index-XHNLEcCC.js:32
+G_ @ index-XHNLEcCC.js:32
+uP @ index-XHNLEcCC.js:32
+gf @ index-XHNLEcCC.js:32
+Wm @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+(anonymous) @ index-XHNLEcCC.js:32
+setTimeout
+s @ index-XHNLEcCC.js:48
+o @ index-XHNLEcCC.js:48
+batch @ index-XHNLEcCC.js:48
+Kr @ index-XHNLEcCC.js:48
+setData @ index-XHNLEcCC.js:48
+onSuccess @ index-XHNLEcCC.js:48
+f @ index-XHNLEcCC.js:48
+Promise.then
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48  GET https://gringo-gardens.vercel.app/api/team 500 (Internal Server Error)
+(anonymous) @ index-XHNLEcCC.js:48
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48 API endpoint /api/team not available in deployment mode
+(anonymous) @ index-XHNLEcCC.js:48
+await in (anonymous)
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48  GET https://gringo-gardens.vercel.app/api/admin/contact 500 (Internal Server Error)
+(anonymous) @ index-XHNLEcCC.js:48
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
+index-XHNLEcCC.js:48 API endpoint /api/admin/contact not available in deployment mode
+(anonymous) @ index-XHNLEcCC.js:48
+await in (anonymous)
+i @ index-XHNLEcCC.js:48
+b @ index-XHNLEcCC.js:48
+start @ index-XHNLEcCC.js:48
+fetch @ index-XHNLEcCC.js:48
+$l @ index-XHNLEcCC.js:48
+onSubscribe @ index-XHNLEcCC.js:48
+subscribe @ index-XHNLEcCC.js:48
+(anonymous) @ index-XHNLEcCC.js:48
+f_ @ index-XHNLEcCC.js:30
+dh @ index-XHNLEcCC.js:32
+ia @ index-XHNLEcCC.js:32
+fx @ index-XHNLEcCC.js:32
+Ei @ index-XHNLEcCC.js:30
+fP @ index-XHNLEcCC.js:32
+Fi @ index-XHNLEcCC.js:32
+H_ @ index-XHNLEcCC.js:32
+T @ index-XHNLEcCC.js:17
+U @ index-XHNLEcCC.js:17
