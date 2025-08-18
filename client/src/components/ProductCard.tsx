@@ -43,7 +43,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-texas-green-600">
-            {product.price ? `$${parseFloat(product.price).toFixed(2)}` : 'Contact for Price'}
+            {product.price && parseFloat(product.price) > 0 ? `$${parseFloat(product.price).toFixed(2)}` : 'Contact for Price'}
           </span>
           <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
             View Details

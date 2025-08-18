@@ -255,14 +255,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(productData: InsertProduct): Promise<Product> {
-    const [product] = await db.insert(products).values(productData).returning();
+    // Handle empty price - use "0.00" as default if no price provided (matches DB constraint)
+    const processedData = {
+      ...productData,
+      price: productData.price && productData.price.trim() !== '' ? productData.price : "0.00"
+    };
+    
+    const [product] = await db.insert(products).values(processedData).returning();
     return product;
   }
 
   async updateProduct(id: string, productData: Partial<InsertProduct>): Promise<Product | undefined> {
+    // Handle empty price - use "0.00" as default if no price provided (matches DB constraint)
+    const processedData = {
+      ...productData,
+      price: productData.price !== undefined ? 
+        (productData.price && productData.price.trim() !== '' ? productData.price : "0.00") :
+        productData.price, // Don't modify if price wasn't provided in update
+      updatedAt: new Date()
+    };
+    
     const [product] = await db
       .update(products)
-      .set({ ...productData, updatedAt: new Date() })
+      .set(processedData)
       .where(eq(products.id, id))
       .returning();
     return product;

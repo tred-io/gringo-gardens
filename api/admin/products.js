@@ -50,13 +50,16 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const data = req.body;
       
+      // Handle empty price - use "0.00" as default if no price provided (matches DB constraint)
+      const price = data.price && data.price.trim() !== '' ? data.price : "0.00";
+      
       const [product] = await sql`
         INSERT INTO products (
           name, slug, description, price, image_url, category_id, 
           hardiness_zone, sun_requirements, stock, featured, active,
           texas_native, drought_tolerance, indoor_outdoor, bloom_season, mature_size
         ) VALUES (
-          ${data.name}, ${data.slug}, ${data.description}, ${data.price}, 
+          ${data.name}, ${data.slug}, ${data.description}, ${price}, 
           ${data.imageUrl}, ${data.categoryId}, ${data.hardinessZone}, 
           ${data.sunRequirements}, ${data.stock}, ${data.featured}, 
           ${data.active}, ${data.texasNative}, ${data.droughtTolerance},
@@ -87,12 +90,15 @@ export default async function handler(req, res) {
 
       const data = req.body;
       
+      // Handle empty price - use "0.00" as default if no price provided (matches DB constraint)
+      const price = data.price && data.price.trim() !== '' ? data.price : "0.00";
+      
       const [product] = await sql`
         UPDATE products SET
           name = ${data.name},
           slug = ${data.slug},
           description = ${data.description},
-          price = ${data.price},
+          price = ${price},
           image_url = ${data.imageUrl},
           category_id = ${data.categoryId},
           hardiness_zone = ${data.hardinessZone},
