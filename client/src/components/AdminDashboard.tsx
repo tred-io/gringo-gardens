@@ -1748,8 +1748,8 @@ export default function AdminDashboard() {
                       return {
                         method: "PUT" as const,
                         url: `/api/blob/upload?objectName=${encodeURIComponent(objectName)}`,
-                        // Store the object name in the request so we can use it later
-                        fields: {
+                        // Store object name so we can construct the blob URL ourselves
+                        meta: {
                           objectName: objectName
                         }
                       };
@@ -1770,70 +1770,30 @@ export default function AdminDashboard() {
                           console.log("File response uploadURL:", file.response?.uploadURL);
                           console.log("File uploadURL:", file.uploadURL);
                           
-                          // Try multiple ways to get the actual blob URL
+                          // Get the blob URL from the API response
                           let actualImageURL = null;
                           
-                          // Method 1: Extract blob URL from response body (should contain the actual Vercel storage URL)
                           if (file.response?.body) {
                             try {
                               let responseData = file.response.body;
-                              
-                              // Parse response body if it's a string
                               if (typeof responseData === 'string') {
                                 responseData = JSON.parse(responseData);
                               }
                               
-                              console.log("Parsed response data:", responseData);
-                              
-                              // The API should return the actual blob storage URL
-                              if (responseData.url && responseData.url.includes('vercel-storage.com')) {
+                              // The API returns the actual Vercel Blob storage URL
+                              if (responseData.url) {
                                 actualImageURL = responseData.url;
-                                console.log("SUCCESS: Found blob URL in response:", actualImageURL);
-                              } else if (responseData.url) {
-                                // For debugging - log what URL we got instead
-                                console.warn("Response URL is not a blob storage URL:", responseData.url);
-                                console.log("Full response data:", responseData);
+                                console.log("Got blob URL from API response:", actualImageURL);
                               }
                             } catch (parseError) {
-                              console.error("Failed to parse response body:", parseError);
+                              console.error("Failed to parse API response:", parseError);
                             }
                           }
                           
-                          // Method 2: Check if upload-success handler stored blob URL
-                          if (!actualImageURL && (file as any).blobURL) {
-                            actualImageURL = (file as any).blobURL;
-                            console.log("Found blob URL from upload-success handler:", actualImageURL);
-                          }
-                          
-                          // Method 3: Check if the file itself has the blob URL stored somewhere
                           if (!actualImageURL) {
-                            // Look for any property that might contain the blob URL
-                            const fileProps = Object.keys(file);
-                            console.log("Available file properties:", fileProps);
-                            
-                            for (const prop of fileProps) {
-                              if (typeof file[prop] === 'string' && 
-                                  file[prop].startsWith('https://') && 
-                                  file[prop].includes('vercel-storage.com')) {
-                                actualImageURL = file[prop];
-                                console.log(`Found blob URL in file.${prop}:`, actualImageURL);
-                                break;
-                              }
-                            }
-                          }
-                          
-                          // Method 4: If still no blob URL found, check if we got the blob URL from upload-success
-                          if (!actualImageURL && (file as any).blobURL) {
-                            actualImageURL = (file as any).blobURL;
-                            console.log("Using blob URL from upload-success handler:", actualImageURL);
-                          }
-                          
-                          // Final fallback: If still no blob URL, this is an error
-                          if (!actualImageURL) {
-                            console.error("Could not extract blob URL from any method");
-                            console.log("File object for debugging:", file);
-                            console.log("Response object for debugging:", file.response);
-                            throw new Error(`Upload completed but blob URL could not be retrieved for file: ${file.name}`);
+                            console.error("Upload succeeded but no blob URL in response");
+                            console.log("Response body:", file.response?.body);
+                            throw new Error(`Upload succeeded but API did not return blob URL for file: ${file.name}`);
                           }
                           
                           console.log("Final image URL for gallery:", actualImageURL);
