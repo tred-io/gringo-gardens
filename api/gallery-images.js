@@ -1,7 +1,7 @@
 // Vercel API route for gallery image uploads
 // This file handles PUT /api/gallery-images for Vercel deployment
 
-import { createConnection } from '../server/db.js';
+import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';
 
 export default async function handler(req, res) {
@@ -41,7 +41,8 @@ export default async function handler(req, res) {
       tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     }
 
-    const db = createConnection();
+    // Initialize database connection
+    const sql = neon(process.env.DATABASE_URL);
     
     const galleryImage = {
       id: nanoid(),
@@ -64,34 +65,33 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString()
     };
 
-    // Insert into database
-    await db.execute(
-      `INSERT INTO gallery_images (
+    // Insert into database using raw SQL to avoid module import issues
+    await sql`
+      INSERT INTO gallery_images (
         id, title, description, image_url, category, tags, featured,
         common_name, latin_name, hardiness_zone, sun_preference, drought_tolerance,
         texas_native, indoor_outdoor, classification, ai_description, ai_identified, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        galleryImage.id,
-        galleryImage.title,
-        galleryImage.description,
-        galleryImage.imageUrl,
-        galleryImage.category,
-        JSON.stringify(galleryImage.tags),
-        galleryImage.featured,
-        galleryImage.commonName,
-        galleryImage.latinName,
-        galleryImage.hardinessZone,
-        galleryImage.sunPreference,
-        galleryImage.droughtTolerance,
-        galleryImage.texasNative,
-        galleryImage.indoorOutdoor,
-        galleryImage.classification,
-        galleryImage.aiDescription,
-        galleryImage.aiIdentified,
-        galleryImage.createdAt
-      ]
-    );
+      ) VALUES (
+        ${galleryImage.id},
+        ${galleryImage.title},
+        ${galleryImage.description},
+        ${galleryImage.imageUrl},
+        ${galleryImage.category},
+        ${JSON.stringify(galleryImage.tags)},
+        ${galleryImage.featured},
+        ${galleryImage.commonName},
+        ${galleryImage.latinName},
+        ${galleryImage.hardinessZone},
+        ${galleryImage.sunPreference},
+        ${galleryImage.droughtTolerance},
+        ${galleryImage.texasNative},
+        ${galleryImage.indoorOutdoor},
+        ${galleryImage.classification},
+        ${galleryImage.aiDescription},
+        ${galleryImage.aiIdentified},
+        ${galleryImage.createdAt}
+      )
+    `;
 
     res.status(200).json({
       objectPath: objectPath,
