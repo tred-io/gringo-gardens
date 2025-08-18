@@ -1,4 +1,4 @@
-// Public Settings API endpoint for Vercel - GET /api/settings/[key]
+// Public Settings List API endpoint for Vercel - GET /api/settings
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
@@ -17,36 +17,27 @@ export default async function handler(req, res) {
   }
 
   const sql = neon(process.env.DATABASE_URL);
-  const { key } = req.query;
 
-  console.log(`Public settings API [GET] - Key: ${key}`);
-
-  if (!key || typeof key !== 'string') {
-    return res.status(400).json({ message: 'Setting key is required' });
-  }
+  console.log('Public settings list API [GET] - Fetching all public settings');
 
   try {
-    // GET - Fetch specific public setting
-    const [setting] = await sql`
+    // GET - Fetch all public settings (non-sensitive ones)
+    const settings = await sql`
       SELECT 
         id,
         key,
         value,
         updated_at as "updatedAt"
       FROM settings 
-      WHERE key = ${key}
+      WHERE key IN ('business_hours', 'temporary_closure', 'contact_info', 'service_areas')
+      ORDER BY key
     `;
-
-    if (!setting) {
-      console.log(`Setting not found: ${key}`);
-      return res.status(404).json({ message: 'Setting not found' });
-    }
-
-    console.log(`Returning setting: ${key} = ${setting.value.substring(0, 50)}...`);
-    return res.json(setting);
+    
+    console.log(`Returning ${settings.length} public settings`);
+    return res.json(settings);
     
   } catch (error) {
-    console.error('Error in public settings API:', error);
+    console.error('Error in public settings list API:', error);
     res.status(500).json({ 
       message: 'Internal server error',
       error: error.message 
@@ -54,7 +45,7 @@ export default async function handler(req, res) {
   }
 }
 
-// Prevent static optimization - forces dynamic behavior in production
+// Prevent static optimization
 export const config = {
   runtime: 'nodejs',
 };
