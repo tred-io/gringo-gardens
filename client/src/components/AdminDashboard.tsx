@@ -1858,8 +1858,8 @@ export default function AdminDashboard() {
                           
                           console.log("Final image URL for gallery:", actualImageURL);
                           
-                          const response = await apiRequest("POST", "/api/admin/gallery", {
-                            imageUrl: actualImageURL,
+                          const response = await apiRequest("PUT", "/api/gallery-images", {
+                            imageURL: actualImageURL,
                             title: file.name || "Uploaded Image",
                             altText: file.name || "Gallery Image", 
                             category: "general",
