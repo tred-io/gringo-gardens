@@ -1,0 +1,202 @@
+index-DoAZiHvG.js:285 React available: true
+index-DoAZiHvG.js:285 React.createElement available: true
+index-DoAZiHvG.js:48 API endpoint /api/settings/temporary_closure returned HTML in deployment mode
+(anonymous) @ index-DoAZiHvG.js:48
+await in (anonymous)
+i @ index-DoAZiHvG.js:48
+b @ index-DoAZiHvG.js:48
+start @ index-DoAZiHvG.js:48
+fetch @ index-DoAZiHvG.js:48
+Ul @ index-DoAZiHvG.js:48
+onSubscribe @ index-DoAZiHvG.js:48
+subscribe @ index-DoAZiHvG.js:48
+(anonymous) @ index-DoAZiHvG.js:48
+f_ @ index-DoAZiHvG.js:30
+dh @ index-DoAZiHvG.js:32
+ra @ index-DoAZiHvG.js:32
+fx @ index-DoAZiHvG.js:32
+Ei @ index-DoAZiHvG.js:30
+fP @ index-DoAZiHvG.js:32
+Pi @ index-DoAZiHvG.js:32
+H_ @ index-DoAZiHvG.js:32
+T @ index-DoAZiHvG.js:17
+U @ index-DoAZiHvG.js:17
+index-DoAZiHvG.js:48 API endpoint /api/settings/business_hours returned HTML in deployment mode
+(anonymous) @ index-DoAZiHvG.js:48
+await in (anonymous)
+i @ index-DoAZiHvG.js:48
+b @ index-DoAZiHvG.js:48
+start @ index-DoAZiHvG.js:48
+fetch @ index-DoAZiHvG.js:48
+Ul @ index-DoAZiHvG.js:48
+onSubscribe @ index-DoAZiHvG.js:48
+subscribe @ index-DoAZiHvG.js:48
+(anonymous) @ index-DoAZiHvG.js:48
+f_ @ index-DoAZiHvG.js:30
+dh @ index-DoAZiHvG.js:32
+ra @ index-DoAZiHvG.js:32
+fx @ index-DoAZiHvG.js:32
+Ei @ index-DoAZiHvG.js:30
+fP @ index-DoAZiHvG.js:32
+Pi @ index-DoAZiHvG.js:32
+H_ @ index-DoAZiHvG.js:32
+T @ index-DoAZiHvG.js:17
+U @ index-DoAZiHvG.js:17
+index-DoAZiHvG.js:285 Getting upload parameters for file: image000000(14).jpg image/jpeg
+index-DoAZiHvG.js:285 Upload parameters from server: {uploadURL: 'https://gringo-gardens.vercel.app/api/blob/upload', method: 'PUT', headers: {…}, message: 'Upload your file to this endpoint using PUT method'}
+index-DoAZiHvG.js:285 Received upload parameters: {method: 'PUT', url: 'https://gringo-gardens.vercel.app/api/blob/upload?…ctName=gallery%2Fuploads%2Fknc90pm02jmehf8byc.jpg', meta: {…}}
+index-DoAZiHvG.js:285 Uppy upload-success event - file: image000000(14).jpg response: {
+  "body": {
+    "access-control-allow-headers": "Content-Type, Authorization",
+    "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+    "access-control-allow-origin": "*",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-length": "550",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 18 Aug 2025 18:01:10 GMT",
+    "etag": "W/\"226-aX7dC3qk2Sm8xTcx5ABFi+KqV1s\"",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-vercel-cache": "MISS",
+    "x-vercel-id": "cle1::iad1::j7qm2-1755540069658-8aefdc72c131",
+    "ETag": "W/\"226-aX7dC3qk2Sm8xTcx5ABFi+KqV1s\"",
+    "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+  },
+  "status": 200,
+  "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+}
+index-DoAZiHvG.js:285 Upload-success event - response: {body: {…}, status: 200, uploadURL: 'https://gringo-gardens.vercel.app/api/blob/upload'}
+index-DoAZiHvG.js:285 Uppy upload complete - full result: {
+  "successful": [
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000",
+      "name": "image000000(14).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(14).jpg",
+        "type": "image/jpeg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755540070608,
+        "uploadComplete": true,
+        "bytesUploaded": 295712,
+        "bytesTotal": 295712,
+        "percentage": 100
+      },
+      "size": 295712,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/dd0fad84-08e7-4e16-9ea6-d823af4a57f4",
+      "s3Multipart": {},
+      "response": {
+        "body": {
+          "access-control-allow-headers": "Content-Type, Authorization",
+          "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+          "access-control-allow-origin": "*",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-length": "550",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Mon, 18 Aug 2025 18:01:10 GMT",
+          "etag": "W/\"226-aX7dC3qk2Sm8xTcx5ABFi+KqV1s\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "cle1::iad1::j7qm2-1755540069658-8aefdc72c131",
+          "ETag": "W/\"226-aX7dC3qk2Sm8xTcx5ABFi+KqV1s\"",
+          "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+        },
+        "status": 200,
+        "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+      },
+      "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload",
+      "isPaused": false
+    }
+  ],
+  "failed": [],
+  "uploadID": "pB5JK0FW30ggRNThzYSTi"
+}
+index-DoAZiHvG.js:285 Upload complete result: {successful: Array(1), failed: Array(0), uploadID: 'pB5JK0FW30ggRNThzYSTi'}
+index-DoAZiHvG.js:285 Processing file: {source: 'DashboardModal', id: 'uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000', name: 'image000000(14).jpg', extension: 'jpg', meta: {…}, …}
+index-DoAZiHvG.js:285 Complete file object: {
+  "source": "DashboardModal",
+  "id": "uppy-image000000/14//jpg-18-19-1e-image/jpeg-295712-1755298885000",
+  "name": "image000000(14).jpg",
+  "extension": "jpg",
+  "meta": {
+    "relativePath": null,
+    "name": "image000000(14).jpg",
+    "type": "image/jpeg"
+  },
+  "type": "image/jpeg",
+  "data": {},
+  "progress": {
+    "uploadStarted": 1755540070608,
+    "uploadComplete": true,
+    "bytesUploaded": 295712,
+    "bytesTotal": 295712,
+    "percentage": 100
+  },
+  "size": 295712,
+  "isGhost": false,
+  "isRemote": false,
+  "preview": "blob:https://gringo-gardens.vercel.app/dd0fad84-08e7-4e16-9ea6-d823af4a57f4",
+  "s3Multipart": {},
+  "response": {
+    "body": {
+      "access-control-allow-headers": "Content-Type, Authorization",
+      "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+      "access-control-allow-origin": "*",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-length": "550",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 18 Aug 2025 18:01:10 GMT",
+      "etag": "W/\"226-aX7dC3qk2Sm8xTcx5ABFi+KqV1s\"",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "cle1::iad1::j7qm2-1755540069658-8aefdc72c131",
+      "ETag": "W/\"226-aX7dC3qk2Sm8xTcx5ABFi+KqV1s\"",
+      "location": "https://gringo-gardens.vercel.app/api/blob/upload"
+    },
+    "status": 200,
+    "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload"
+  },
+  "uploadURL": "https://gringo-gardens.vercel.app/api/blob/upload",
+  "isPaused": false
+}
+index-DoAZiHvG.js:285 File response body: {access-control-allow-headers: 'Content-Type, Authorization', access-control-allow-methods: 'GET,PUT,POST,DELETE,OPTIONS', access-control-allow-origin: '*', cache-control: 'public, max-age=0, must-revalidate', content-length: '550', …}
+index-DoAZiHvG.js:285 File response uploadURL: https://gringo-gardens.vercel.app/api/blob/upload
+index-DoAZiHvG.js:285 File uploadURL: https://gringo-gardens.vercel.app/api/blob/upload
+index-DoAZiHvG.js:285 File meta data: {relativePath: null, name: 'image000000(14).jpg', type: 'image/jpeg'}
+index-DoAZiHvG.js:285 Object name not found in file meta data
+onComplete @ index-DoAZiHvG.js:285
+(anonymous) @ index-DoAZiHvG.js:285
+s @ index-DoAZiHvG.js:261
+e.emit @ index-DoAZiHvG.js:261
+emit @ index-DoAZiHvG.js:261
+(anonymous) @ index-DoAZiHvG.js:266
+Promise.then
+upload @ index-DoAZiHvG.js:266
+(anonymous) @ index-DoAZiHvG.js:274
+(anonymous) @ index-DoAZiHvG.js:261
+index-DoAZiHvG.js:285 Error saving gallery image: Error: Upload succeeded but could not determine final URL for file: image000000(14).jpg
+    at onComplete (index-DoAZiHvG.js:285:57064)
+    at Function.<anonymous> (index-DoAZiHvG.js:285:19760)
+    at s (index-DoAZiHvG.js:261:31397)
+    at e.emit (index-DoAZiHvG.js:261:30765)
+    at qf.emit (index-DoAZiHvG.js:261:41513)
+    at index-DoAZiHvG.js:266:3473
+onComplete @ index-DoAZiHvG.js:285
+(anonymous) @ index-DoAZiHvG.js:285
+s @ index-DoAZiHvG.js:261
+e.emit @ index-DoAZiHvG.js:261
+emit @ index-DoAZiHvG.js:261
+(anonymous) @ index-DoAZiHvG.js:266
+Promise.then
+upload @ index-DoAZiHvG.js:266
+(anonymous) @ index-DoAZiHvG.js:274
+(anonymous) @ index-DoAZiHvG.js:261

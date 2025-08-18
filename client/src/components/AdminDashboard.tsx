@@ -1775,10 +1775,15 @@ export default function AdminDashboard() {
                       if (data.uploadURL && data.uploadURL.includes('/api/blob/upload')) {
                         const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
                         const objectName = `gallery/uploads/${fileId}.jpg`;
+                        const fullUploadUrl = `${data.uploadURL}?objectName=${encodeURIComponent(objectName)}`;
+                        
+                        // Store the object name globally so we can access it in completion handler
+                        (window as any).currentUploadObjectName = objectName;
+                        console.log("Stored object name globally:", objectName);
                         
                         return {
                           method: "PUT" as const,
-                          url: `${data.uploadURL}?objectName=${encodeURIComponent(objectName)}`,
+                          url: fullUploadUrl,
                           meta: { objectName, isVercel: true }
                         };
                       } else {
@@ -1816,22 +1821,25 @@ export default function AdminDashboard() {
                           const isVercel = file.uploadURL && file.uploadURL.includes('/api/blob/upload');
                           
                           if (isVercel) {
-                            // For Vercel uploads, get object name from meta data since Uppy strips query params
+                            // For Vercel uploads, get object name from global storage since Uppy strips meta
                             try {
                               console.log("File meta data:", file.meta);
                               
-                              // Get object name from meta data that we stored during upload params generation
-                              const objectName = (file.meta as any)?.objectName;
+                              // Get object name from global storage (temporary solution)
+                              const objectName = (window as any).currentUploadObjectName;
                               
                               if (objectName) {
-                                console.log("Using object name from meta:", objectName);
+                                console.log("Using object name from global storage:", objectName);
                                 
                                 // Use the confirmed Vercel blob domain pattern
                                 const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
                                 actualImageURL = `https://${blobDomain}/${objectName}`;
                                 console.log("Constructed Vercel blob URL:", actualImageURL);
+                                
+                                // Clear the global storage after use
+                                delete (window as any).currentUploadObjectName;
                               } else {
-                                console.error("Object name not found in file meta data");
+                                console.error("Object name not found in global storage");
                               }
                             } catch (error) {
                               console.error("Error constructing Vercel blob URL:", error);
