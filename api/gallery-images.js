@@ -1,6 +1,6 @@
 // Vercel API route for gallery image uploads
 // This file handles PUT /api/gallery-images for Vercel deployment
-// Updated: Fixed image URL handling - now uses actual blob URL from upload response
+// Updated: Added validation to reject upload endpoint URLs - forces frontend to use blob URLs
 
 import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';
@@ -26,14 +26,39 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'imageURL is required' });
     }
 
-    // For Vercel deployment, we'll store the image URL directly
-    // without object storage processing since that requires Replit environment
+    // Handle different types of image URLs for proper storage
     let objectPath = imageURL;
     
-    // If it's a Google Cloud Storage URL, convert to relative path
-    if (imageURL.startsWith('https://storage.googleapis.com/')) {
+    console.log('Processing image URL:', imageURL);
+    
+    // If it's the upload endpoint URL, this is an error - we should have received the blob URL
+    if (imageURL.includes('/api/blob/upload')) {
+      console.error('Error: Received upload endpoint URL instead of blob URL:', imageURL);
+      return res.status(400).json({ 
+        error: 'Invalid image URL - received upload endpoint instead of storage URL',
+        details: 'The frontend should pass the actual blob storage URL, not the upload endpoint'
+      });
+    }
+    
+    // Handle Vercel Blob storage URLs
+    if (imageURL.startsWith('https://') && imageURL.includes('vercel-storage.com')) {
+      // This is a proper Vercel Blob URL - use it directly
+      objectPath = imageURL;
+      console.log('Using Vercel Blob URL directly:', objectPath);
+    }
+    // Handle Google Cloud Storage URLs (Replit object storage)
+    else if (imageURL.startsWith('https://storage.googleapis.com/')) {
       const url = new URL(imageURL);
       objectPath = `/objects${url.pathname}`;
+      console.log('Converted GCS URL to object path:', objectPath);
+    }
+    // Handle relative blob paths
+    else if (imageURL.startsWith('/blob/')) {
+      objectPath = imageURL;
+      console.log('Using relative blob path:', objectPath);
+    }
+    else {
+      console.log('Using URL as-is:', objectPath);
     }
 
     // Parse tags from comma-separated string to array

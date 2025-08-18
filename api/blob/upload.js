@@ -75,7 +75,8 @@ export default async function handler(req, res) {
       message: 'File uploaded successfully to Vercel Blob'
     };
 
-    console.log('Upload successful with multi-size processing:', result.url);
+    console.log('Upload successful - Blob URL:', result.url);
+    console.log('Response being sent:', { url: result.url, uploadURL: result.url, objectPath: result.objectPath });
 
     res.status(200).json({
       url: result.url,

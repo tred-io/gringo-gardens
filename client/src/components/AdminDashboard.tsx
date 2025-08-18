@@ -1759,10 +1759,44 @@ export default function AdminDashboard() {
                       for (const file of result.successful) {
                         try {
                           console.log("Processing file:", file);
-                          // Use the response URL from the upload (which contains the actual blob URL)
-                          // file.uploadURL is the upload endpoint, file.response?.uploadURL or file.response?.url is the actual storage URL
-                          const actualImageURL = file.response?.url || file.response?.uploadURL || file.uploadURL;
-                          console.log("Using image URL for gallery:", actualImageURL, "from response:", file.response);
+                          // Extract the actual blob URL from the upload response
+                          // Debug the complete file object to understand the structure
+                          console.log("Complete file object:", JSON.stringify(file, null, 2));
+                          console.log("File response body:", file.response?.body);
+                          console.log("File response uploadURL:", file.response?.uploadURL);
+                          console.log("File uploadURL:", file.uploadURL);
+                          
+                          // Try multiple ways to get the actual blob URL
+                          let actualImageURL = null;
+                          
+                          // Method 1: From response body (Vercel Blob API response)
+                          if (file.response?.body) {
+                            try {
+                              const responseData = typeof file.response.body === 'string' 
+                                ? JSON.parse(file.response.body) 
+                                : file.response.body;
+                              actualImageURL = responseData.url || responseData.uploadURL;
+                              console.log("Found URL in response body:", actualImageURL);
+                            } catch (e) {
+                              console.log("Could not parse response body as JSON");
+                            }
+                          }
+                          
+                          // Method 2: From response object
+                          if (!actualImageURL) {
+                            actualImageURL = file.response?.url || file.response?.uploadURL;
+                            console.log("Found URL in response object:", actualImageURL);
+                          }
+                          
+                          // Method 3: Fallback to uploadURL (but warn if it's the upload endpoint)
+                          if (!actualImageURL) {
+                            actualImageURL = file.uploadURL;
+                            if (actualImageURL?.includes('/api/blob/upload')) {
+                              console.warn("WARNING: Using upload endpoint URL as fallback, this will likely fail");
+                            }
+                          }
+                          
+                          console.log("Final image URL for gallery:", actualImageURL);
                           
                           const response = await apiRequest("PUT", "/api/gallery-images", {
                             imageURL: actualImageURL,

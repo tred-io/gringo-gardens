@@ -55,4 +55,5 @@ Preferred communication style: Simple, everyday language.
 - **API Coverage**: Complete API endpoints for both storage systems with automatic fallbacks and error handling
 - **Status**: ✅ COMPLETE - File upload functionality confirmed working in both environments: Replit object storage (development) with full image processing, Vercel Blob (production) with direct upload and AI compatibility
 - **Database Fix**: Resolved PostgreSQL text[] array handling for gallery image tags - fixed "column is of type text[] but expression is of type jsonb" error in Vercel deployment
-- **Image URL Fix**: Fixed gallery image display issue where upload endpoint URL was stored instead of actual blob URL from upload response
+- **Image URL Fix**: Added backend validation to reject upload endpoint URLs and force use of actual blob storage URLs from upload responses
+- **Backend Error Handling**: API now properly validates image URLs and provides clear error messages when frontend passes incorrect URLs
