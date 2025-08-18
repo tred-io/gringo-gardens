@@ -30,11 +30,11 @@ export default async function handler(req, res) {
     
     res.json({ 
       uploadURL: uploadUrl,
-      method: 'POST',
+      method: 'PUT',
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'application/octet-stream'
       },
-      message: 'Upload your file to this endpoint using multipart/form-data'
+      message: 'Upload your file to this endpoint using PUT method'
     });
 
   } catch (error) {

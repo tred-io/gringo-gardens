@@ -717,11 +717,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Return Vercel Blob upload endpoint
         return res.json({ 
           uploadURL: "/api/blob/upload",
-          method: "POST",
+          method: "PUT",
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'application/octet-stream'
           },
-          message: "Upload your file using multipart/form-data to the provided URL"
+          message: "Upload your file using PUT method to the provided URL"
         });
       } else if (objectStorageService.isAvailable()) {
         // Use Replit object storage
