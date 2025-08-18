@@ -55,11 +55,20 @@ export default async function handler(req, res) {
     // For now, do a simple direct upload to Vercel Blob without complex processing
     // This avoids import issues with TypeScript files in Vercel runtime
     
-    // Generate unique filename with proper extension
-    const fileId = randomUUID();
-    const extension = contentType.includes('image/png') ? 'png' : 
-                     contentType.includes('image/') ? 'jpg' : 'bin';
-    const filename = `gallery/uploads/${fileId}.${extension}`;
+    // Use object name from query parameter if provided, otherwise generate one
+    let filename;
+    const objectName = req.query.objectName;
+    if (objectName && typeof objectName === 'string') {
+      filename = objectName;
+      console.log('Using provided object name:', filename);
+    } else {
+      // Fallback to generated filename
+      const fileId = randomUUID();
+      const extension = contentType.includes('image/png') ? 'png' : 
+                       contentType.includes('image/') ? 'jpg' : 'bin';
+      filename = `gallery/uploads/${fileId}.${extension}`;
+      console.log('Generated filename:', filename);
+    }
 
     console.log('Uploading directly to Vercel Blob:', filename, contentType);
 

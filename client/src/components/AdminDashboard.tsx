@@ -1739,15 +1739,19 @@ export default function AdminDashboard() {
                     maxNumberOfFiles={50}
                     maxFileSize={15728640}
                     onGetUploadParameters={async () => {
-                      const response = await apiRequest("POST", "/api/objects/upload");
-                      const data = await response.json();
-                      console.log("Upload parameters response:", data);
-                      if (!data.uploadURL) {
-                        throw new Error("No upload URL received from server");
-                      }
+                      // Generate object name upfront - S3 style approach
+                      const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+                      const objectName = `gallery/uploads/${fileId}.jpg`;
+                      
+                      console.log("Generated object name:", objectName);
+                      
+                      // Store object name for later URL construction
+                      if (!(window as any).uploadObjectNames) (window as any).uploadObjectNames = new Map();
+                      (window as any).uploadObjectNames.set(fileId, objectName);
+                      
                       return {
                         method: "PUT" as const,
-                        url: data.uploadURL,
+                        url: `/api/blob/upload?objectName=${encodeURIComponent(objectName)}`,
                       };
                     }}
                     onComplete={async (result) => {
@@ -1769,10 +1773,26 @@ export default function AdminDashboard() {
                           // Try multiple ways to get the actual blob URL
                           let actualImageURL = null;
                           
-                          // Method 1: Try the blob URL extracted by upload-success handler
-                          if (file.blobURL && (file.blobURL.includes('vercel-storage.com') || file.blobURL.startsWith('/blob/'))) {
-                            actualImageURL = file.blobURL;
-                            console.log("Found blob URL from upload-success handler:", actualImageURL);
+                          // Method 1: Construct URL from known object name (S3 approach)
+                          // Extract object name from the upload URL query parameter
+                          try {
+                            if (file.uploadURL) {
+                              const uploadUrl = new URL(file.uploadURL, window.location.origin);
+                              const objectName = uploadUrl.searchParams.get('objectName');
+                              if (objectName) {
+                                // Use the response URL from the blob upload if available
+                                if (file.response?.body && typeof file.response.body === 'object' && 'url' in file.response.body) {
+                                  actualImageURL = file.response.body.url as string;
+                                  console.log("Found blob URL in response body:", actualImageURL);
+                                } else {
+                                  // Fallback: construct URL from object name - this shouldn't be needed with proper response parsing
+                                  console.log("Response body structure:", file.response?.body);
+                                  console.log("Falling back to object name construction");
+                                }
+                              }
+                            }
+                          } catch (urlError) {
+                            console.log("Could not extract object name from upload URL:", urlError);
                           }
                           
                           // Method 2: From response object
@@ -1798,48 +1818,10 @@ export default function AdminDashboard() {
                             }
                           }
                           
-                          // Method 4: If still no blob URL found, try a direct API approach
+                          // Method 4: If still no blob URL found, this is an error
                           if (!actualImageURL) {
-                            console.warn("No blob URL found through normal methods, attempting direct API workaround...");
-                            
-                            try {
-                              // Make a direct request to upload the file again and get the blob URL
-                              // This is a fallback for when Uppy doesn't capture the response properly
-                              const formData = new FormData();
-                              
-                              // Convert the file data to a blob for re-upload
-                              if (file.data instanceof File) {
-                                formData.append('file', file.data);
-                              } else {
-                                // Create a new file from the data
-                                const blob = new Blob([file.data], { type: file.type });
-                                formData.append('file', blob, file.name);
-                              }
-                              
-                              console.log("Making direct upload request for file:", file.name);
-                              const directUploadResponse = await fetch('/api/blob/upload', {
-                                method: 'PUT',
-                                body: formData,
-                              });
-                              
-                              if (directUploadResponse.ok) {
-                                const directResult = await directUploadResponse.json();
-                                console.log("Direct upload result:", directResult);
-                                
-                                if (directResult.url && directResult.url.includes('vercel-storage.com')) {
-                                  actualImageURL = directResult.url;
-                                  console.log("SUCCESS: Got blob URL from direct upload:", actualImageURL);
-                                } else {
-                                  throw new Error("Direct upload did not return a valid blob URL");
-                                }
-                              } else {
-                                throw new Error(`Direct upload failed with status: ${directUploadResponse.status}`);
-                              }
-                            } catch (workaroundError) {
-                              console.error("Direct upload workaround failed:", workaroundError);
-                              // Final fallback - show error to user
-                              throw new Error(`Upload was successful but the blob URL could not be retrieved. File: ${file.name}. Error: ${workaroundError.message}`);
-                            }
+                            console.error("Could not extract blob URL from any method");
+                            throw new Error(`Upload completed but blob URL could not be retrieved for file: ${file.name}`);
                           }
                           
                           console.log("Final image URL for gallery:", actualImageURL);
