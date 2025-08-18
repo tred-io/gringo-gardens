@@ -102,6 +102,7 @@ export function ObjectUploader({
             throw error;
           }
         },
+
       })
       .on("complete", (result) => {
         console.log("Uppy upload complete - full result:", JSON.stringify(result, null, 2));
@@ -110,6 +111,20 @@ export function ObjectUploader({
       })
       .on("upload-success", (file, response) => {
         console.log("Uppy upload-success event - file:", file?.name, "response:", JSON.stringify(response, null, 2));
+        
+        // Try to extract blob URL from the response and store it on the file
+        try {
+          if (response && response.body) {
+            const responseData = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+            if (responseData.url && responseData.url.includes('vercel-storage.com')) {
+              // Store the blob URL directly on the file object
+              file.blobURL = responseData.url;
+              console.log("Extracted and stored blob URL:", file.blobURL);
+            }
+          }
+        } catch (error) {
+          console.error("Error extracting blob URL from response:", error);
+        }
       })
   );
 

@@ -1,6 +1,6 @@
 // Vercel API route for gallery image uploads
 // This file handles PUT /api/gallery-images for Vercel deployment
-// Updated: Added validation to reject upload endpoint URLs - forces frontend to use blob URLs
+// Updated: Added custom Uppy response handler to properly capture blob URLs from JSON response
 
 import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';

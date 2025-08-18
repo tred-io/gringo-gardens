@@ -1769,17 +1769,10 @@ export default function AdminDashboard() {
                           // Try multiple ways to get the actual blob URL
                           let actualImageURL = null;
                           
-                          // Method 1: From response body (Vercel Blob API response)
-                          if (file.response?.body) {
-                            try {
-                              const responseData = typeof file.response.body === 'string' 
-                                ? JSON.parse(file.response.body) 
-                                : file.response.body;
-                              actualImageURL = responseData.url || responseData.uploadURL;
-                              console.log("Found URL in response body:", actualImageURL);
-                            } catch (e) {
-                              console.log("Could not parse response body as JSON");
-                            }
+                          // Method 1: Try the blob URL extracted by upload-success handler
+                          if (file.blobURL && file.blobURL.includes('vercel-storage.com')) {
+                            actualImageURL = file.blobURL;
+                            console.log("Found blob URL from upload-success handler:", actualImageURL);
                           }
                           
                           // Method 2: From response object
@@ -1805,12 +1798,15 @@ export default function AdminDashboard() {
                             }
                           }
                           
-                          // Method 4: Fallback to uploadURL (but warn if it's the upload endpoint)
+                          // Method 4: If still no blob URL found, we need to make a workaround
                           if (!actualImageURL) {
-                            actualImageURL = file.uploadURL;
-                            if (actualImageURL?.includes('/api/blob/upload')) {
-                              console.warn("WARNING: Using upload endpoint URL as fallback, this will likely fail");
-                            }
+                            // Since the upload was successful but we can't get the blob URL from Uppy,
+                            // let's construct a temporary placeholder and then try to get it another way
+                            console.error("Could not extract blob URL from upload response");
+                            console.log("File upload appears successful but blob URL not accessible");
+                            
+                            // Skip this upload with an error rather than using the wrong URL
+                            throw new Error("Upload successful but blob URL not accessible. This is a technical issue with the upload component.");
                           }
                           
                           console.log("Final image URL for gallery:", actualImageURL);
