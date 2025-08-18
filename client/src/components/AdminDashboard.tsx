@@ -1739,19 +1739,24 @@ export default function AdminDashboard() {
                     maxNumberOfFiles={50}
                     maxFileSize={15728640}
                     onGetUploadParameters={async () => {
-                      // Generate object name upfront - S3 style approach
-                      const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-                      const objectName = `gallery/uploads/${fileId}.jpg`;
+                      // Call the proper upload endpoint that detects environment
+                      const response = await fetch("/api/objects/upload", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                      });
                       
-                      console.log("Generated object name:", objectName);
+                      if (!response.ok) {
+                        throw new Error(`Failed to get upload parameters: ${response.status}`);
+                      }
+                      
+                      const data = await response.json();
+                      console.log("Upload parameters from server:", data);
                       
                       return {
                         method: "PUT" as const,
-                        url: `/api/blob/upload?objectName=${encodeURIComponent(objectName)}`,
-                        // Store object name so we can construct the blob URL ourselves
-                        meta: {
-                          objectName: objectName
-                        }
+                        url: data.uploadURL,
                       };
                     }}
                     onComplete={async (result) => {
@@ -1770,9 +1775,10 @@ export default function AdminDashboard() {
                           console.log("File response uploadURL:", file.response?.uploadURL);
                           console.log("File uploadURL:", file.uploadURL);
                           
-                          // Get the blob URL from the API response
-                          let actualImageURL = null;
+                          // The upload URL becomes the image URL (for both Replit and Vercel)
+                          let actualImageURL = file.uploadURL;
                           
+                          // For Vercel Blob, try to get the actual blob URL from response
                           if (file.response?.body) {
                             try {
                               let responseData = file.response.body;
@@ -1780,21 +1786,17 @@ export default function AdminDashboard() {
                                 responseData = JSON.parse(responseData);
                               }
                               
-                              // The API returns the actual Vercel Blob storage URL
-                              if (responseData.url) {
+                              // If we get a blob URL back, use it
+                              if (responseData.url && responseData.url.includes('vercel-storage.com')) {
                                 actualImageURL = responseData.url;
-                                console.log("Got blob URL from API response:", actualImageURL);
+                                console.log("Got Vercel blob URL from API response:", actualImageURL);
                               }
                             } catch (parseError) {
-                              console.error("Failed to parse API response:", parseError);
+                              console.log("Could not parse response, using upload URL");
                             }
                           }
                           
-                          if (!actualImageURL) {
-                            console.error("Upload succeeded but no blob URL in response");
-                            console.log("Response body:", file.response?.body);
-                            throw new Error(`Upload succeeded but API did not return blob URL for file: ${file.name}`);
-                          }
+                          console.log("Final image URL:", actualImageURL);
                           
                           console.log("Final image URL for gallery:", actualImageURL);
                           
