@@ -80,7 +80,7 @@ export default async function handler(req, res) {
 
     const result = {
       url: blob.url,
-      objectPath: `/blob/gallery/uploads/${fileId}.${extension}`,
+      objectPath: `/blob/${filename}`,
       message: 'File uploaded successfully to Vercel Blob'
     };
 
