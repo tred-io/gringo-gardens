@@ -1,4 +1,4 @@
-// Unified Individual Settings API endpoint for Vercel
+// Admin Individual Settings API endpoint for Vercel
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
@@ -53,14 +53,14 @@ export default async function handler(req, res) {
         RETURNING *
       `;
       
-      console.log(`Updated setting: ${key}`);
+      console.log(`Updated admin setting: ${key} = ${value}`);
       return res.json(setting);
     }
 
     return res.status(405).json({ message: 'Method not allowed' });
     
   } catch (error) {
-    console.error('Error in settings API:', error);
+    console.error('Error in admin settings API:', error);
     res.status(500).json({ 
       message: 'Internal server error',
       error: error.message 

@@ -91,4 +91,5 @@ Preferred communication style: Simple, everyday language.
     - **Contact**: Fixed `name` → `first_name || ' ' || last_name` concatenation
     - **Team**: Fixed `display_order` → `"order"` with proper SQL quoting
   - **Database Verification**: 80+ fields across 9 tables with 100% API coverage
+  - **Endpoint Structure**: Fixed missing admin settings routes (created `/api/admin/settings/[key].js`)
   - **Status**: ✅ COMPLETE - Perfect schema-API alignment, all database capabilities fully accessible via endpoints
