@@ -1901,8 +1901,8 @@ export default function AdminDashboard() {
                         }
                       }
                       
-                      // Refresh gallery images
-                      queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
+                      // Refresh gallery images - use the same query key as the gallery query
+                      queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
                       
                       if (successCount > 0) {
                         toast({
