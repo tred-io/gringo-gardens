@@ -3,11 +3,6 @@
   "outputDirectory": "public",
   "cleanUrls": false,
   "trailingSlash": false,
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "@vercel/node@3.2.11"
-    }
-  },
   "rewrites": [
     {
       "source": "/((?!api).*)",

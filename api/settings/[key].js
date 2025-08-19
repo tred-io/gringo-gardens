@@ -54,7 +54,4 @@ export default async function handler(req, res) {
   }
 }
 
-// Prevent static optimization - forces dynamic behavior in production
-export const config = {
-  runtime: 'nodejs22.x',
-};
+// Use project default Node.js version
