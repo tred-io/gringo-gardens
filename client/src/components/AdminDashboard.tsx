@@ -1800,24 +1800,19 @@ export default function AdminDashboard() {
                       const data = await response.json();
                       console.log("Upload parameters from server:", data);
                       
-                      // For Vercel, generate object name and pass it as query parameter
-                      if (data.uploadURL && data.uploadURL.includes('/api/blob/upload')) {
+                      // Check if this is Vercel production environment
+                      const isProduction = window.location.hostname.includes('vercel.app') || data.uploadURL?.includes('/api/blob/upload');
+                      
+                      if (isProduction) {
+                        // For Vercel Blob, generate object name and pass it as query parameter
                         const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
                         const objectName = `gallery/uploads/${fileId}.jpg`;
                         const fullUploadUrl = `${data.uploadURL}?objectName=${encodeURIComponent(objectName)}`;
                         
-                        // Store the object name in a map keyed by file name + timestamp for bulk uploads
-                        if (!(window as any).uploadObjectNames) {
-                          (window as any).uploadObjectNames = new Map();
-                        }
-                        const fileKey = `${Date.now()}_${Math.random()}`;
-                        (window as any).uploadObjectNames.set(fileKey, objectName);
-                        console.log("Stored object name with key:", fileKey, objectName);
-                        
                         return {
                           method: "PUT" as const,
                           url: fullUploadUrl,
-                          meta: { objectName, isVercel: true, fileKey }
+                          meta: { objectName, isVercel: true }
                         };
                       } else {
                         // For Replit object storage
@@ -1850,12 +1845,10 @@ export default function AdminDashboard() {
                           
                           let actualImageURL = null;
                           
-                          // Environment detection - check both uploadURL and current domain
-                          const currentDomain = window.location.hostname;
+                          // Environment detection for production
+                          const isProduction = window.location.hostname.includes('vercel.app');
                           const isReplit = file.uploadURL && file.uploadURL.includes('storage.googleapis.com');
-                          const isVercel = !isReplit && (
-                            file.uploadURL && file.uploadURL.includes('vercel-storage.com')
-                          );
+                          const isVercel = isProduction || (file.uploadURL && file.uploadURL.includes('vercel-storage.com'));
                           
                           console.log("Environment detection:", {
                             uploadURL: file.uploadURL,
@@ -1873,26 +1866,26 @@ export default function AdminDashboard() {
                           });
                           
                           if (isVercel) {
-                            // For Vercel uploads, extract URL from multiple sources
+                            // For Vercel uploads in production
                             try {
-                              console.log("File data for Vercel processing:", {
-                                id: file.id,
-                                name: file.name,
-                                meta: file.meta,
-                                response: file.response,
-                                blobURL: (file as any).blobURL
-                              });
+                              console.log("Processing Vercel upload - file:", file.name);
+                              console.log("Upload response:", file.response);
                               
-                              // Use blob URL from upload-success event
-                              if ((file as any).blobURL) {
+                              // Priority 1: Extract URL from response body (Vercel Blob returns this)
+                              if (file.response?.body?.url) {
+                                actualImageURL = file.response.body.url;
+                                console.log("✅ Found URL in response body:", actualImageURL);
+                              }
+                              // Priority 2: Use stored blob URL from upload-success event
+                              else if ((file as any).blobURL) {
                                 actualImageURL = (file as any).blobURL;
-                                console.log("Using blob URL from file:", actualImageURL);
-                              } 
-                              // Fallback: construct URL from object name and domain
+                                console.log("✅ Using stored blob URL:", actualImageURL);
+                              }
+                              // Priority 3: Construct URL from object name and domain
                               else if (file.meta?.objectName) {
                                 const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
                                 actualImageURL = `https://${blobDomain}/${file.meta.objectName}`;
-                                console.log("Constructed blob URL from meta:", actualImageURL);
+                                console.log("✅ Constructed blob URL:", actualImageURL);
                               }
                               
                               // Check global map using file ID
