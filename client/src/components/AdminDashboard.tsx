@@ -1364,7 +1364,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {products.map(product => (
+                    {(Array.isArray(products) ? products : []).map(product => (
                       <tr key={product.id}>
                         <td className="px-6 py-4">
                           <div className="flex items-center">
@@ -1384,7 +1384,7 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                          {categories.find(c => c.id === product.categoryId)?.name || "Unknown"}
+                          {(Array.isArray(categories) ? categories : []).find(c => c.id === product.categoryId)?.name || "Unknown"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
                           {product.price ? `$${product.price}` : 'Contact for Price'}
@@ -1591,7 +1591,7 @@ export default function AdminDashboard() {
                       )}
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-500">
-                          {products.filter(p => p.categoryId === category.id).length} products
+                          {(Array.isArray(products) ? products : []).filter(p => p.categoryId === category.id).length} products
                         </span>
                         <div className="flex space-x-2">
                           <Button
@@ -1605,8 +1605,8 @@ export default function AdminDashboard() {
                             size="sm"
                             variant="outline"
                             onClick={() => deleteCategoryMutation.mutate(category.id)}
-                            disabled={products.some(p => p.categoryId === category.id)}
-                            title={products.some(p => p.categoryId === category.id) ? "Cannot delete - has products" : "Delete category"}
+                            disabled={(Array.isArray(products) ? products : []).some(p => p.categoryId === category.id)}
+                            title={(Array.isArray(products) ? products : []).some(p => p.categoryId === category.id) ? "Cannot delete - has products" : "Delete category"}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -1615,7 +1615,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 ))}
-                {categories.length === 0 && (
+                {(Array.isArray(categories) ? categories : []).length === 0 && (
                   <div className="col-span-full text-center py-12">
                     <p className="text-gray-500 mb-4">No plant collections created yet.</p>
                     <p className="text-sm text-gray-400">Collections you create here will appear as plant collections on your home page.</p>
@@ -1753,7 +1753,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="space-y-4">
-                {blogPosts.map(post => (
+                {(Array.isArray(blogPosts) ? blogPosts : []).map(post => (
                   <Card key={post.id}>
                     <CardContent className="p-6 flex justify-between items-center">
                       <div>
@@ -2098,7 +2098,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {galleryImages.map(image => (
+                {(Array.isArray(galleryImages) ? galleryImages : []).map(image => (
                   <Card key={image.id} className="relative group">
                     <CardContent className="p-3">
                       <img 
@@ -2296,7 +2296,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="space-y-4">
-                {reviews.map(review => (
+                {(Array.isArray(reviews) ? reviews : []).map(review => (
                   <Card key={review.id}>
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -2355,7 +2355,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="space-y-4">
-                {contactMessages.map(message => (
+                {(Array.isArray(contactMessages) ? contactMessages : []).map(message => (
                   <Card key={message.id} className={!message.read ? "border-bluebonnet-200" : ""}>
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -2578,7 +2578,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 ))}
-                {teamMembers.length === 0 && (
+                {(teamMembers || []).length === 0 && (
                   <div className="col-span-full text-center py-8">
                     <p className="text-gray-500">No team members added yet. Click "Add Team Member" to get started.</p>
                   </div>
