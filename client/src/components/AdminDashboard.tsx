@@ -1889,15 +1889,20 @@ export default function AdminDashboard() {
                                 blobURL: (file as any).blobURL
                               });
                               
-                              // Method 1: Extract URL from response body
+                              // Method 1: Direct response body URL (Vercel Blob returns this)
                               if (file.response?.body?.url) {
                                 actualImageURL = file.response.body.url;
-                                console.log("Method 1 - Found URL in response body:", actualImageURL);
+                                console.log("✓ Method 1 SUCCESS - URL from response body:", actualImageURL);
                               }
-                              // Method 2: Check if blob URL was stored on file object during upload-success
+                              // Method 2: uploadURL if it contains vercel-storage (final URL)  
+                              else if (file.uploadURL && file.uploadURL.includes('vercel-storage.com')) {
+                                actualImageURL = file.uploadURL;
+                                console.log("✓ Method 2 SUCCESS - Direct uploadURL is blob URL:", actualImageURL);
+                              }
+                              // Method 3: Blob URL stored during upload-success event
                               else if ((file as any).blobURL) {
                                 actualImageURL = (file as any).blobURL;
-                                console.log("Using blob URL from file object:", actualImageURL);
+                                console.log("✓ Method 3 SUCCESS - Using stored blob URL:", actualImageURL);
                               }
                               
                               // Method 2: Check global map using file ID
@@ -1969,6 +1974,12 @@ export default function AdminDashboard() {
                           console.log("Final image URL:", actualImageURL);
                           
                           console.log("Final image URL for gallery:", actualImageURL);
+                          
+                          // Final fallback - use the direct uploadURL if all else fails but log warning
+                          if (!actualImageURL) {
+                            console.warn("No URL extracted, using uploadURL as fallback:", file.uploadURL);
+                            actualImageURL = file.uploadURL;
+                          }
                           
                           // Use unified admin API that works in both environments
                           const response = await apiRequest("POST", "/api/admin/gallery", {
