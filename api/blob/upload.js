@@ -1,6 +1,5 @@
 // Vercel Blob Upload API endpoint
 import { put } from '@vercel/blob';
-import { NextRequest } from 'next/server';
 
 export const config = {
   api: {
