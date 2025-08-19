@@ -103,7 +103,7 @@ export default async function handler(req, res) {
             ${image_url},
             ${alt_text || title},
             ${category || 'general'},
-            ${JSON.stringify(tags || [])},
+            ${tags && Array.isArray(tags) ? tags : []},
             ${featured || false},
             ${false}
           ) RETURNING *
