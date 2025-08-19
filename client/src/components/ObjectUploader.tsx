@@ -118,7 +118,9 @@ export function ObjectUploader({
         setShowModal(false);
       })
       .on("upload-success", (file, response) => {
-        console.log("Uppy upload-success event - file:", file?.name, "response:", JSON.stringify(response, null, 2));
+        if (!file) return;
+        
+        console.log("Uppy upload-success event - file:", file.name, "response:", JSON.stringify(response, null, 2));
         
         // Extract and store the blob URL from the response
         try {
@@ -144,6 +146,13 @@ export function ObjectUploader({
                 if (url && url.indexOf('vercel-storage.com') !== -1) {
                   (file as any).blobURL = url;
                   console.log("Stored blob URL on file object:", (file as any).blobURL);
+                  
+                  // Also store in a global map for reliable access during completion
+                  if (!(window as any).uploadedBlobUrls) {
+                    (window as any).uploadedBlobUrls = new Map();
+                  }
+                  (window as any).uploadedBlobUrls.set(file.id, url);
+                  console.log("Also stored blob URL in global map with file ID:", file.id, url);
                 }
               }
             } catch (typeError) {

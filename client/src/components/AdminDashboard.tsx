@@ -1854,60 +1854,54 @@ export default function AdminDashboard() {
                           const isVercel = file.uploadURL && file.uploadURL.includes('/api/blob/upload');
                           
                           if (isVercel) {
-                            // For Vercel uploads, get object name from global storage since Uppy strips meta
+                            // For Vercel uploads, extract URL from multiple sources
                             try {
-                              console.log("File meta data:", file.meta);
+                              console.log("File data for Vercel processing:", {
+                                id: file.id,
+                                name: file.name,
+                                meta: file.meta,
+                                response: file.response,
+                                blobURL: (file as any).blobURL
+                              });
                               
-                              // Get object name from upload metadata or response
-                              let objectName = null;
+                              // Method 1: Check if blob URL was stored on file object during upload-success
+                              if ((file as any).blobURL) {
+                                actualImageURL = (file as any).blobURL;
+                                console.log("Using blob URL from file object:", actualImageURL);
+                              }
                               
-                              // Try to get from file response body first
-                              if (file.response?.body) {
+                              // Method 2: Check global map using file ID
+                              if (!actualImageURL && (window as any).uploadedBlobUrls) {
+                                const urlFromMap = (window as any).uploadedBlobUrls.get(file.id);
+                                if (urlFromMap) {
+                                  actualImageURL = urlFromMap;
+                                  console.log("Using blob URL from global map:", actualImageURL);
+                                }
+                              }
+                              
+                              // Method 3: Extract from file response body
+                              if (!actualImageURL && file.response?.body) {
                                 const responseData = typeof file.response.body === 'string' 
                                   ? JSON.parse(file.response.body) 
                                   : file.response.body;
                                 if (responseData.url) {
-                                  // Use the actual Vercel blob URL directly
                                   actualImageURL = responseData.url;
-                                  console.log("Using actual Vercel blob URL from response:", actualImageURL);
+                                  console.log("Using blob URL from response body:", actualImageURL);
                                 }
                               }
                               
-                              // If we already got the URL from response, skip object name extraction
-                              if (actualImageURL) {
-                                console.log("Already have actual URL, skipping object name extraction");
-                              } else {
-                                console.log("Need to construct URL from object name");
+                              // Method 4: Fallback construction from meta data
+                              if (!actualImageURL && file.meta?.objectName) {
+                                const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
+                                actualImageURL = `https://${blobDomain}/${file.meta.objectName}`;
+                                console.log("Constructed blob URL from meta:", actualImageURL);
                               }
                               
-                              // Only try to construct URL if we don't have it from response
                               if (!actualImageURL) {
-                                // Fallback: check file meta data
-                                if (!objectName && file.meta?.objectName) {
-                                  objectName = file.meta.objectName;
-                                  console.log("Using object name from file meta:", objectName);
-                                }
-                                
-                                // Final fallback: try to find in upload names map
-                                if (!objectName && (window as any).uploadObjectNames) {
-                                  const names = Array.from((window as any).uploadObjectNames.values());
-                                  if (names.length > 0) {
-                                    objectName = names[0]; // Use first available
-                                    console.log("Using fallback object name:", objectName);
-                                  }
-                                }
-                                
-                                if (objectName) {
-                                  // Use the confirmed Vercel blob domain pattern
-                                  const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
-                                  actualImageURL = `https://${blobDomain}/${objectName}`;
-                                  console.log("Constructed Vercel blob URL:", actualImageURL);
-                                } else {
-                                  console.error("Object name not found in any source");
-                                }
+                                console.error("Could not extract blob URL using any method for file:", file.name);
                               }
                             } catch (error) {
-                              console.error("Error constructing Vercel blob URL:", error);
+                              console.error("Error extracting Vercel blob URL:", error);
                             }
                           } else {
                             // For Replit: Use the upload URL directly (signed URL approach)
@@ -1969,6 +1963,9 @@ export default function AdminDashboard() {
                       // Clear upload tracking data
                       if ((window as any).uploadObjectNames) {
                         (window as any).uploadObjectNames.clear();
+                      }
+                      if ((window as any).uploadedBlobUrls) {
+                        (window as any).uploadedBlobUrls.clear();
                       }
                       
                       // Refresh gallery images - use the same query key as the gallery query
