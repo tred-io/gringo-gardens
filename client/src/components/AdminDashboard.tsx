@@ -1942,29 +1942,15 @@ export default function AdminDashboard() {
                           
                           console.log("Final image URL for gallery:", actualImageURL);
                           
-                          // Environment-specific API calls
-                          let response;
-                          if (isVercel) {
-                            // Vercel uses /api/gallery-images with PUT and imageURL field
-                            response = await apiRequest("PUT", "/api/gallery-images", {
-                              imageURL: actualImageURL,
-                              title: file.name || "Uploaded Image",
-                              altText: file.name || "Gallery Image", 
-                              category: "general",
-                              tags: [], // Empty tags array for bulk uploads
-                              featured: false,
-                            });
-                          } else {
-                            // Use unified admin API that works in both environments
-                            response = await apiRequest("POST", "/api/admin/gallery", {
-                              image_url: actualImageURL,  // Match database field name
-                              title: file.name || "Uploaded Image",
-                              alt_text: file.name || "Gallery Image",  // Match database field name
-                              category: "general",
-                              tags: [], // Empty tags array for bulk uploads
-                              featured: false,
-                            });
-                          }
+                          // Use unified admin API that works in both environments
+                          const response = await apiRequest("POST", "/api/admin/gallery", {
+                            image_url: actualImageURL,  // Match database field name
+                            title: file.name || "Uploaded Image",
+                            alt_text: file.name || "Gallery Image",  // Match database field name
+                            category: "general",
+                            tags: [], // Empty tags array for bulk uploads
+                            featured: false,
+                          });
                           
                           if (!response.ok) {
                             const errorData = await response.json();
