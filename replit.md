@@ -112,3 +112,18 @@ Preferred communication style: Simple, everyday language.
     - **Form Schema**: Extended product form schema to include AI fields (texasNative, droughtTolerance, indoorOutdoor, etc.)
     - **Production AI**: Enhanced Vercel gallery API with Sharp image optimization and fallback handling
   - **Status**: ✅ COMPLETE - Product filtering working correctly, AI data pipeline fully functional in both environments
+
+**Production Stability Fixes (August 19, 2025)**: Resolved critical 500 errors and resource exhaustion issues affecting bulk image processing
+  - **Problem**: Gallery API failing with 500 errors after uploading ~40 images; Node.js process exiting with syntax errors
+  - **Root Causes**:
+    - Duplicate OpenAI API calls causing memory leaks
+    - No timeout protection leading to resource exhaustion 
+    - Missing rate limiting for concurrent AI processing
+    - Syntax errors in try/catch/finally structure
+  - **Production Fixes Applied**:
+    - **Rate Limiting**: Maximum 3 concurrent AI requests with queue management
+    - **Timeout Protection**: 30-second timeout for AI processing with graceful failure handling
+    - **Memory Safeguards**: 2MB base64 image size limit to prevent memory issues
+    - **Enhanced Error Handling**: Specific error messages for timeout, size, and fetch failures
+    - **Syntax Fixes**: Corrected try/catch/finally structure preventing Node.js crashes
+  - **Status**: ✅ COMPLETE - Production gallery API now stable for bulk uploads, AI processing resilient under load

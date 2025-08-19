@@ -4,6 +4,10 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Rate limiting for AI processing to prevent resource exhaustion
+const aiProcessingQueue = new Set();
+const MAX_CONCURRENT_AI_REQUESTS = 3;
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -78,9 +82,28 @@ export default async function handler(req, res) {
           return res.status(404).json({ message: 'Image not found' });
         }
 
-        // Run plant identification synchronously for immediate UI update
+        // Check if we're already at maximum concurrent AI processing limit
+        if (aiProcessingQueue.size >= MAX_CONCURRENT_AI_REQUESTS) {
+          return res.status(429).json({ 
+            message: 'AI processing limit reached',
+            error: `Maximum ${MAX_CONCURRENT_AI_REQUESTS} concurrent AI requests allowed. Please wait and try again.`
+          });
+        }
+
+        // Add to processing queue
+        aiProcessingQueue.add(id);
+        
+        // Run plant identification with timeout protection for production stability
         try {
-          const plantDetails = await identifyPlant(image.imageUrl);
+          // Add 30-second timeout to prevent resource exhaustion
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Plant identification timeout (30s)')), 30000)
+          );
+          
+          const plantDetails = await Promise.race([
+            identifyPlant(image.imageUrl),
+            timeoutPromise
+          ]);
           
           // Update gallery image with plant details immediately
           const updateData = {
@@ -138,18 +161,36 @@ export default async function handler(req, res) {
         } catch (error) {
           console.error(`Error during plant identification for image ${id}:`, error);
           
-          // Mark as identification attempted but failed
+          // Enhanced error handling for different failure types
+          let errorMessage = 'Plant identification failed';
+          let errorDetails = error.message;
+          
+          if (error.message.includes('timeout')) {
+            errorMessage = 'Plant identification timed out';
+            errorDetails = 'AI processing exceeded 30 seconds';
+          } else if (error.message.includes('too large')) {
+            errorMessage = 'Image too large for processing';
+            errorDetails = 'Please use a smaller image file';
+          } else if (error.message.includes('fetch')) {
+            errorMessage = 'Could not access image';
+            errorDetails = 'Image URL may be invalid or inaccessible';
+          }
+          
+          // Mark as identification attempted but failed with specific error
           await sql`
             UPDATE gallery_images SET
               ai_identified = true,
-              ai_description = 'Plant identification failed'
+              ai_description = ${errorDetails}
             WHERE id = ${id}
           `;
           
           return res.status(500).json({ 
-            message: 'Plant identification failed',
-            error: error.message 
+            message: errorMessage,
+            error: errorDetails 
           });
+        } finally {
+          // Always remove from processing queue when done (success or failure)
+          aiProcessingQueue.delete(id);
         }
       }
 
@@ -243,42 +284,15 @@ async function identifyPlant(imageUrl) {
   console.log(`Optimized image size: ${optimizedBuffer.length} bytes`);
   const base64Image = optimizedBuffer.toString('base64');
   
-  // Call OpenAI Vision API with optimized prompt
-  const visionResponse = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `You are a plant identification assistant. Given an image of a plant, identify it and return ONLY a JSON payload with the following fields: common_name, latin_name, hardiness_zone, sun_preference, drought_tolerance, texas_native (true/false), indoor_outdoor, classification, description.
-
-For hardiness_zone, use USDA zones like "8a", "9b", etc. For sun_preference, use: "full sun", "partial sun", "partial shade", or "shade". For drought_tolerance, use: "high", "moderate", or "low". For indoor_outdoor, use: "indoor", "outdoor", or "both". For texas_native, only return true if you are certain it's native to Texas.
-
-Return "unknown" for any field you cannot determine with confidence. Be precise and factual.`
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Identify this plant and provide the requested JSON data."
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/jpeg;base64,${base64Image}`
-            }
-          }
-        ],
-      },
-    ],
-    response_format: { type: "json_object" },
-    max_tokens: 1000,
-  });
-
   return await makeOpenAICall(base64Image);
 }
 
 async function makeOpenAICall(base64Image) {
+  // Add production memory and timeout safeguards
+  if (base64Image.length > 2000000) { // ~2MB base64 limit
+    throw new Error('Image too large for AI processing');
+  }
+  
   // Call OpenAI Vision API with optimized prompt
   const visionResponse = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -314,3 +328,4 @@ Return "unknown" for any field you cannot determine with confidence. Be precise 
   const plantDetails = JSON.parse(visionResponse.choices[0].message.content);
   console.log(`Plant identification result: ${plantDetails.common_name || 'unknown'}`);
   return plantDetails;
+}
