@@ -106,6 +106,7 @@ export const galleryImages = pgTable("gallery_images", {
   classification: varchar("classification", { length: 100 }),
   aiDescription: text("ai_description"),
   aiIdentified: boolean("ai_identified").default(false),
+  altText: text("alt_text"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
