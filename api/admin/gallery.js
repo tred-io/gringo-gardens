@@ -4,6 +4,46 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Plant identification function using OpenAI GPT-4o-mini
+async function identifyPlant(imageUrl) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are a Texas native plant expert. Analyze this image and identify the plant species. 
+          Respond with a JSON object containing:
+          - common_name: Common name of the plant (or "unknown")
+          - latin_name: Scientific name (or "unknown") 
+          - hardiness_zone: USDA hardiness zone (or "unknown")
+          - sun_preference: full sun, partial sun, partial shade, or full shade (or "unknown")
+          - drought_tolerance: high, medium, or low (or "unknown")
+          - texas_native: boolean indicating if native to Texas (or null if unknown)
+          - indoor_outdoor: indoor, outdoor, or both (or "unknown")
+          - classification: tree, shrub, perennial, annual, grass, succulent, vine, or herb (or "unknown")
+          - description: Brief description of the plant and its characteristics`
+        },
+        {
+          role: "user", 
+          content: [
+            { type: "text", text: "Please identify this plant:" },
+            { type: "image_url", image_url: { url: imageUrl } }
+          ]
+        }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 500,
+      temperature: 0.3,
+    });
+
+    return JSON.parse(response.choices[0].message.content);
+  } catch (error) {
+    console.error("Plant identification error:", error);
+    return null;
+  }
+}
+
 // Rate limiting for AI processing to prevent resource exhaustion
 const aiProcessingQueue = new Set();
 const MAX_CONCURRENT_AI_REQUESTS = 3;
@@ -63,10 +103,86 @@ export default async function handler(req, res) {
       return res.json({ message: 'Gallery image deleted successfully' });
     }
 
-    // POST - Handle actions (like plant identification)
+    // POST - Create new gallery image OR handle actions (like plant identification)
     if (req.method === 'POST') {
+      // If no ID provided, this is a new image creation request
       if (!id) {
-        return res.status(400).json({ message: 'Image ID is required' });
+        const { image_url, title, alt_text, category, tags, featured } = req.body;
+        
+        if (!image_url || !title) {
+          return res.status(400).json({ message: 'image_url and title are required' });
+        }
+
+        // Check for duplicate images
+        const existingImages = await sql`
+          SELECT id FROM gallery_images WHERE image_url = ${image_url}
+        `;
+        
+        if (existingImages.length > 0) {
+          return res.status(400).json({ message: 'This image already exists in the gallery' });
+        }
+
+        // Create new gallery image
+        const [newImage] = await sql`
+          INSERT INTO gallery_images (
+            title,
+            description,
+            image_url,
+            alt_text,
+            category,
+            tags,
+            featured,
+            ai_identified
+          ) VALUES (
+            ${title},
+            ${null},
+            ${image_url},
+            ${alt_text || title},
+            ${category || 'general'},
+            ${JSON.stringify(tags || [])},
+            ${featured || false},
+            ${false}
+          ) RETURNING *
+        `;
+
+        console.log(`Created new gallery image: ${newImage.id}`);
+
+        // Trigger AI plant identification in background (don't wait for it)
+        if (image_url) {
+          setTimeout(async () => {
+            try {
+              const plantDetails = await identifyPlant(image_url);
+              if (plantDetails) {
+                // Update with AI details
+                await sql`
+                  UPDATE gallery_images SET
+                    common_name = ${plantDetails.common_name !== "unknown" ? plantDetails.common_name : null},
+                    latin_name = ${plantDetails.latin_name !== "unknown" ? plantDetails.latin_name : null},
+                    hardiness_zone = ${plantDetails.hardiness_zone !== "unknown" ? plantDetails.hardiness_zone : null},
+                    sun_preference = ${plantDetails.sun_preference !== "unknown" ? plantDetails.sun_preference : null},
+                    drought_tolerance = ${plantDetails.drought_tolerance !== "unknown" ? plantDetails.drought_tolerance : null},
+                    texas_native = ${typeof plantDetails.texas_native === "boolean" ? plantDetails.texas_native : null},
+                    indoor_outdoor = ${plantDetails.indoor_outdoor !== "unknown" ? plantDetails.indoor_outdoor : null},
+                    classification = ${plantDetails.classification !== "unknown" ? plantDetails.classification : null},
+                    ai_description = ${plantDetails.description || null},
+                    ai_identified = ${true}
+                  WHERE id = ${newImage.id}
+                `;
+                console.log(`AI identification completed for gallery image: ${newImage.id}`);
+              }
+            } catch (error) {
+              console.error('Background AI identification failed:', error);
+            }
+          }, 100); // Run after 100ms to not block the response
+        }
+
+        return res.status(201).json({
+          id: newImage.id,
+          title: newImage.title,
+          imageUrl: newImage.image_url,
+          category: newImage.category,
+          featured: newImage.featured
+        });
       }
 
       // Plant identification action

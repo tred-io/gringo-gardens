@@ -1955,11 +1955,11 @@ export default function AdminDashboard() {
                               featured: false,
                             });
                           } else {
-                            // Local Express server uses /api/admin/gallery with POST and imageUrl field
+                            // Use unified admin API that works in both environments
                             response = await apiRequest("POST", "/api/admin/gallery", {
-                              imageUrl: actualImageURL,
+                              image_url: actualImageURL,  // Match database field name
                               title: file.name || "Uploaded Image",
-                              altText: file.name || "Gallery Image", 
+                              alt_text: file.name || "Gallery Image",  // Match database field name
                               category: "general",
                               tags: [], // Empty tags array for bulk uploads
                               featured: false,
