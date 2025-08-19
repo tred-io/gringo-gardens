@@ -162,7 +162,7 @@ export default function AdminDashboard() {
     retry: false,
   });
 
-  const { data: products = [] } = useQuery<Product[] | null>({
+  const { data: products = [], isLoading: productsLoading, error: productsError } = useQuery<Product[] | null>({
     queryKey: ["/api/admin/products", filters],
     retry: false,
   });
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
     retry: false,
   });
 
-  const { data: galleryImages = [] } = useQuery<GalleryImage[] | null>({
+  const { data: galleryImages = [], isLoading: galleryLoading, error: galleryError } = useQuery<GalleryImage[] | null>({
     queryKey: ["/api/admin/gallery"],
     retry: false,
   });
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
     retry: false,
   });
 
-  const { data: newsletterSubscribers = [] } = useQuery<NewsletterSubscriber[] | null>({
+  const { data: newsletterSubscribers = [], isLoading: subscribersLoading, error: subscribersError } = useQuery<NewsletterSubscriber[] | null>({
     queryKey: ["/api/newsletter/subscribers"],
     retry: false,
   });
@@ -2599,7 +2599,7 @@ export default function AdminDashboard() {
                       <div className="space-y-4">
                         {newsletterSubscribers && newsletterSubscribers.length > 0 ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {newsletterSubscribers.map((subscriber) => (
+                            {(newsletterSubscribers || []).map((subscriber) => (
                               <Card key={subscriber.id} className="border-gray-200">
                                 <CardContent className="p-4">
                                   <div className="flex items-center justify-between">

@@ -1,0 +1,202 @@
+index-BDWtcmgq.js:285 React available: true
+index-BDWtcmgq.js:285 React.createElement available: true
+index-BDWtcmgq.js:203  GET https://gringo-gardens.vercel.app/api/auth/user 401 (Unauthorized)
+queryFn @ index-BDWtcmgq.js:203
+i @ index-BDWtcmgq.js:48
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
+index-BDWtcmgq.js:48  GET https://gringo-gardens.vercel.app/api/settings/business_hours 404 (Not Found)
+(anonymous) @ index-BDWtcmgq.js:48
+i @ index-BDWtcmgq.js:48
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
+index-BDWtcmgq.js:48 API call failed: /api/settings/business_hours Error: 404: {"message":"Setting not found"}
+    at AS (index-BDWtcmgq.js:48:42644)
+    at async index-BDWtcmgq.js:48:43410
+(anonymous) @ index-BDWtcmgq.js:48
+await in (anonymous)
+i @ index-BDWtcmgq.js:48
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
+index-BDWtcmgq.js:48  GET https://gringo-gardens.vercel.app/api/admin/gallery 500 (Internal Server Error)
+(anonymous) @ index-BDWtcmgq.js:48
+i @ index-BDWtcmgq.js:48
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
+index-BDWtcmgq.js:48 API endpoint /api/admin/gallery not available in deployment mode
+(anonymous) @ index-BDWtcmgq.js:48
+await in (anonymous)
+i @ index-BDWtcmgq.js:48
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
+index-BDWtcmgq.js:32 TypeError: Cannot read properties of null (reading 'map')
+    at P7 (index-BDWtcmgq.js:285:62240)
+    at zy (index-BDWtcmgq.js:30:16998)
+    at Im (index-BDWtcmgq.js:32:3139)
+    at eS (index-BDWtcmgq.js:32:44804)
+    at Y_ (index-BDWtcmgq.js:32:39766)
+    at pP (index-BDWtcmgq.js:32:39694)
+    at yf (index-BDWtcmgq.js:32:39547)
+    at Gm (index-BDWtcmgq.js:32:35914)
+    at gx (index-BDWtcmgq.js:32:36717)
+    at Ei (index-BDWtcmgq.js:30:3274)
+Mm @ index-BDWtcmgq.js:32
+R_.n.callback @ index-BDWtcmgq.js:32
+Y0 @ index-BDWtcmgq.js:30
+hx @ index-BDWtcmgq.js:32
+G_ @ index-BDWtcmgq.js:32
+dP @ index-BDWtcmgq.js:32
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+(anonymous) @ index-BDWtcmgq.js:32
+setTimeout
+s @ index-BDWtcmgq.js:48
+o @ index-BDWtcmgq.js:48
+batch @ index-BDWtcmgq.js:48
+Zr @ index-BDWtcmgq.js:48
+setData @ index-BDWtcmgq.js:48
+onSuccess @ index-BDWtcmgq.js:48
+f @ index-BDWtcmgq.js:48
+Promise.then
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
+index-BDWtcmgq.js:285 Uncaught TypeError: Cannot read properties of null (reading 'map')
+    at P7 (index-BDWtcmgq.js:285:62240)
+    at zy (index-BDWtcmgq.js:30:16998)
+    at Im (index-BDWtcmgq.js:32:3139)
+    at eS (index-BDWtcmgq.js:32:44804)
+    at Y_ (index-BDWtcmgq.js:32:39766)
+    at pP (index-BDWtcmgq.js:32:39694)
+    at yf (index-BDWtcmgq.js:32:39547)
+    at Gm (index-BDWtcmgq.js:32:35914)
+    at gx (index-BDWtcmgq.js:32:36717)
+    at Ei (index-BDWtcmgq.js:30:3274)
+P7 @ index-BDWtcmgq.js:285
+zy @ index-BDWtcmgq.js:30
+Im @ index-BDWtcmgq.js:32
+eS @ index-BDWtcmgq.js:32
+Y_ @ index-BDWtcmgq.js:32
+pP @ index-BDWtcmgq.js:32
+yf @ index-BDWtcmgq.js:32
+Gm @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+(anonymous) @ index-BDWtcmgq.js:32
+setTimeout
+s @ index-BDWtcmgq.js:48
+o @ index-BDWtcmgq.js:48
+batch @ index-BDWtcmgq.js:48
+Zr @ index-BDWtcmgq.js:48
+setData @ index-BDWtcmgq.js:48
+onSuccess @ index-BDWtcmgq.js:48
+f @ index-BDWtcmgq.js:48
+Promise.then
+b @ index-BDWtcmgq.js:48
+start @ index-BDWtcmgq.js:48
+fetch @ index-BDWtcmgq.js:48
+$l @ index-BDWtcmgq.js:48
+onSubscribe @ index-BDWtcmgq.js:48
+subscribe @ index-BDWtcmgq.js:48
+(anonymous) @ index-BDWtcmgq.js:48
+g_ @ index-BDWtcmgq.js:30
+fh @ index-BDWtcmgq.js:32
+ia @ index-BDWtcmgq.js:32
+gx @ index-BDWtcmgq.js:32
+Ei @ index-BDWtcmgq.js:30
+gP @ index-BDWtcmgq.js:32
+Fi @ index-BDWtcmgq.js:32
+K_ @ index-BDWtcmgq.js:32
+T @ index-BDWtcmgq.js:17
+U @ index-BDWtcmgq.js:17
