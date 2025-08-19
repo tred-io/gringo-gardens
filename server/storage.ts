@@ -362,12 +362,29 @@ export class DatabaseStorage implements IStorage {
       query = query.where(and(...conditions)) as any;
     }
     
-    return await query.orderBy(desc(galleryImages.createdAt));
+    const images = await query.orderBy(desc(galleryImages.createdAt));
+    
+    // Ensure tags array is properly formatted for each image
+    return images.map(image => ({
+      ...image,
+      tags: Array.isArray(image.tags) ? image.tags : []
+    }));
   }
 
   async createGalleryImage(imageData: InsertGalleryImage): Promise<GalleryImage> {
-    const [image] = await db.insert(galleryImages).values(imageData).returning();
-    return image;
+    // Ensure tags is an array before inserting
+    const safeImageData = {
+      ...imageData,
+      tags: Array.isArray(imageData.tags) ? imageData.tags : []
+    };
+    
+    const [image] = await db.insert(galleryImages).values(safeImageData).returning();
+    
+    // Ensure tags array is properly formatted in response
+    return {
+      ...image,
+      tags: Array.isArray(image.tags) ? image.tags : []
+    };
   }
 
   async updateGalleryImage(id: string, imageData: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined> {
