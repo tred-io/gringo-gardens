@@ -226,7 +226,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         featured: featured === 'true',
         active: true, // Only show active products to public
       });
-      res.json(products);
+      
+      // Add category names to products
+      const categories = await storage.getCategories();
+      const categoryMap = new Map(categories.map(cat => [cat.id, cat.name || 'Uncategorized']));
+      
+      const productsWithCategories = products.map(product => ({
+        ...product,
+        categoryName: categoryMap.get(product.categoryId) || 'Uncategorized'
+      }));
+
+      console.log(`Retrieved ${productsWithCategories.length} products with categories`);
+      res.json(productsWithCategories);
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
