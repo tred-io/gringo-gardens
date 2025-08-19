@@ -77,46 +77,26 @@ export function ObjectUploader({
         limit: 3,
         // Add retry logic for failed uploads
         retryDelays: [0, 1000, 3000],
-        // Override response parsing to extract blob URL
-        getResponseData: (responseText, response) => {
-          console.log("AwsS3 getResponseData - responseText:", responseText);
-          console.log("AwsS3 getResponseData - response:", response);
-          
-          try {
-            const data = JSON.parse(responseText);
-            console.log("Parsed Vercel Blob response:", data);
-            return data;
-          } catch (e) {
-            console.error("Failed to parse Vercel Blob response:", e);
-            return {};
-          }
-        },
+
         getUploadParameters: async (file) => {
           console.log("Getting upload parameters for file:", file.name, file.type);
           try {
+            // Generate unique object name on client side
+            const timestamp = Date.now();
+            const objectName = `${timestamp}_${file.name}`;
+            file.meta = { ...file.meta, objectName };
+            
             const params = await onGetUploadParameters();
             console.log("Received upload parameters:", params);
             
-            // Validate that we have a proper URL
-            if (!params.url || typeof params.url !== 'string') {
-              throw new Error('Invalid upload URL received from server');
-            }
-            
-            // For relative URLs, make them absolute
+            // Build the upload URL with object name
             let uploadUrl = params.url;
-            if (uploadUrl.startsWith('/')) {
-              uploadUrl = `${window.location.origin}${uploadUrl}`;
-            }
-            
-            // Ensure URL is properly formatted
-            try {
-              new URL(uploadUrl);
-            } catch (urlError) {
-              throw new Error(`Invalid URL format: ${uploadUrl}`);
+            if (!uploadUrl.includes('objectName=')) {
+              uploadUrl += `?objectName=${encodeURIComponent(objectName)}`;
             }
             
             return {
-              ...params,
+              method: params.method,
               url: uploadUrl
             };
           } catch (error) {
@@ -134,29 +114,29 @@ export function ObjectUploader({
       .on("upload-success", (file, response) => {
         if (!file) return;
         
-        console.log("🔥 UPLOAD SUCCESS - file:", file.name);
-        console.log("🔥 UPLOAD SUCCESS - response:", JSON.stringify(response, null, 2));
+        console.log("Upload success - file:", file.name);
+        console.log("Upload success - response:", response);
         
-        // Store the blob URL directly from the response
-        try {
-          if (response && response.body && response.body.url) {
-            const blobURL = response.body.url;
-            console.log("🎯 EXTRACTED BLOB URL:", blobURL);
-            
-            // Store on file object
-            (file as any).vercelBlobURL = blobURL;
-            
-            // Store in global map for completion handler
-            if (!(window as any).uploadedBlobUrls) {
-              (window as any).uploadedBlobUrls = new Map();
+        // Extract blob URL from response body
+        if (response && response.body) {
+          let blobURL = null;
+          
+          // Parse response if it's a string
+          let responseData = response.body;
+          if (typeof responseData === 'string') {
+            try {
+              responseData = JSON.parse(responseData);
+            } catch (e) {
+              console.error("Failed to parse response:", e);
             }
-            (window as any).uploadedBlobUrls.set(file.id, blobURL);
-            console.log("✅ STORED BLOB URL:", blobURL);
-          } else {
-            console.error("❌ NO URL IN RESPONSE BODY:", response);
           }
-        } catch (error) {
-          console.error("❌ ERROR STORING BLOB URL:", error);
+          
+          // Get the blob URL from the response
+          if (responseData && responseData.url) {
+            blobURL = responseData.url;
+            (file as any).blobURL = blobURL;
+            console.log("Stored blob URL:", blobURL);
+          }
         }
       })
   );

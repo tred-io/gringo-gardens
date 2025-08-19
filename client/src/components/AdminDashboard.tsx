@@ -1889,31 +1889,16 @@ export default function AdminDashboard() {
                                 blobURL: (file as any).blobURL
                               });
                               
-                              // The response body contains the actual blob URL - parse it properly
-                              if (file.response && file.response.body) {
-                                let responseData = file.response.body;
-                                
-                                // Parse if it's a string
-                                if (typeof responseData === 'string') {
-                                  try {
-                                    responseData = JSON.parse(responseData);
-                                  } catch (e) {
-                                    console.error("Failed to parse response body:", e);
-                                  }
-                                }
-                                
-                                // Extract the URL - this is where Vercel Blob returns the actual URL
-                                if (responseData && responseData.url) {
-                                  actualImageURL = responseData.url;
-                                  console.log("🎯 BLOB URL EXTRACTED:", actualImageURL);
-                                  console.log("🔍 URL TYPE:", typeof actualImageURL, "Contains vercel-storage:", actualImageURL.includes('vercel-storage.com'));
-                                }
-                              }
-                              
-                              // Fallback to stored blob URL from upload-success event
-                              if (!actualImageURL && (file as any).blobURL) {
+                              // Use blob URL from upload-success event
+                              if ((file as any).blobURL) {
                                 actualImageURL = (file as any).blobURL;
-                                console.log("✓ SUCCESS - Using stored blob URL:", actualImageURL);
+                                console.log("Using blob URL from file:", actualImageURL);
+                              } 
+                              // Fallback: construct URL from object name and domain
+                              else if (file.meta?.objectName) {
+                                const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
+                                actualImageURL = `https://${blobDomain}/${file.meta.objectName}`;
+                                console.log("Constructed blob URL from meta:", actualImageURL);
                               }
                               
                               // Check global map using file ID
