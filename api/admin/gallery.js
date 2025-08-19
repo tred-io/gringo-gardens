@@ -288,38 +288,67 @@ export default async function handler(req, res) {
 
       const updateData = req.body;
       
-      // Build dynamic update query
-      const updates = [];
-      const values = [];
+      // Check for duplicate images by URL (excluding current image)
+      if (updateData.imageUrl) {
+        const existingImages = await sql`
+          SELECT id FROM gallery_images 
+          WHERE image_url = ${updateData.imageUrl} AND id != ${id}
+        `;
+        
+        if (existingImages.length > 0) {
+          return res.status(400).json({ message: "This image URL already exists in the gallery" });
+        }
+      }
       
-      if (updateData.title !== undefined) {
-        updates.push('title = $' + (values.length + 1));
-        values.push(updateData.title);
-      }
-      if (updateData.description !== undefined) {
-        updates.push('description = $' + (values.length + 1));
-        values.push(updateData.description);
-      }
-      if (updateData.category !== undefined) {
-        updates.push('category = $' + (values.length + 1));
-        values.push(updateData.category);
-      }
-      if (updateData.featured !== undefined) {
-        updates.push('featured = $' + (values.length + 1));
-        values.push(updateData.featured);
+      const updated = await sql`
+        UPDATE gallery_images 
+        SET 
+          title = ${updateData.title || null},
+          description = ${updateData.description || null},
+          image_url = ${updateData.imageUrl},
+          category = ${updateData.category || null},
+          tags = ${updateData.tags || []},
+          featured = ${updateData.featured || false},
+          common_name = ${updateData.commonName || null},
+          latin_name = ${updateData.latinName || null},
+          hardiness_zone = ${updateData.hardinessZone || null},
+          sun_preference = ${updateData.sunPreference || null},
+          drought_tolerance = ${updateData.droughtTolerance || null},
+          texas_native = ${updateData.texasNative || null},
+          indoor_outdoor = ${updateData.indoorOutdoor || null},
+          classification = ${updateData.classification || null},
+          ai_description = ${updateData.aiDescription || null},
+          ai_identified = ${updateData.aiIdentified || false},
+          alt_text = ${updateData.altText || null}
+        WHERE id = ${id}
+        RETURNING 
+          id,
+          title,
+          description,
+          image_url as "imageUrl",
+          category,
+          tags,
+          featured,
+          common_name as "commonName",
+          latin_name as "latinName",
+          hardiness_zone as "hardinessZone", 
+          sun_preference as "sunPreference",
+          drought_tolerance as "droughtTolerance",
+          texas_native as "texasNative",
+          indoor_outdoor as "indoorOutdoor",
+          classification,
+          ai_description as "aiDescription",
+          ai_identified as "aiIdentified",
+          alt_text as "altText",
+          created_at as "createdAt"
+      `;
+
+      if (updated.length === 0) {
+        return res.status(404).json({ message: 'Gallery image not found' });
       }
 
-      if (updates.length === 0) {
-        return res.status(400).json({ message: 'No valid fields to update' });
-      }
-
-      values.push(id); // Add ID for WHERE clause
-      const query = `UPDATE gallery_images SET ${updates.join(', ')} WHERE id = $${values.length}`;
-      
-      await sql(query, values);
       console.log(`Updated gallery image: ${id}`);
-      
-      return res.json({ message: 'Gallery image updated successfully' });
+      return res.json(updated[0]);
     }
 
     return res.status(405).json({ message: 'Method not allowed' });
