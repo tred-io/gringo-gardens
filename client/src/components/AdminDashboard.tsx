@@ -1871,8 +1871,13 @@ export default function AdminDashboard() {
                                 blobURL: (file as any).blobURL
                               });
                               
-                              // Method 1: Check if blob URL was stored on file object during upload-success
-                              if ((file as any).blobURL) {
+                              // Method 1: Extract URL from response body
+                              if (file.response?.body?.url) {
+                                actualImageURL = file.response.body.url;
+                                console.log("Method 1 - Found URL in response body:", actualImageURL);
+                              }
+                              // Method 2: Check if blob URL was stored on file object during upload-success
+                              else if ((file as any).blobURL) {
                                 actualImageURL = (file as any).blobURL;
                                 console.log("Using blob URL from file object:", actualImageURL);
                               }
