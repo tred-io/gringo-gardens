@@ -127,3 +127,18 @@ Preferred communication style: Simple, everyday language.
     - **Enhanced Error Handling**: Specific error messages for timeout, size, and fetch failures
     - **Syntax Fixes**: Corrected try/catch/finally structure preventing Node.js crashes
   - **Status**: ✅ COMPLETE - Production gallery API now stable for bulk uploads, AI processing resilient under load
+
+**Bulk Upload Architecture Fix (August 19, 2025)**: Resolved critical n-1 bulk upload failures by fixing URL extraction and concurrency handling
+  - **Problem**: When uploading 5 files, 4 would fail; when uploading 41 files, 40 would fail consistently
+  - **Root Causes**:
+    - Single global storage for object names caused overwriting in bulk uploads
+    - Incorrect URL extraction from Vercel Blob API responses
+    - Missing proper concurrency limits in Uppy and Vercel endpoints
+    - TypeScript errors preventing proper response handling
+  - **Architecture Fixes Applied**:
+    - **Direct URL Extraction**: Use actual Vercel blob URLs from API response instead of reconstructing
+    - **Map-Based Tracking**: Replace single global variable with proper Map for tracking multiple uploads
+    - **Enhanced Response Processing**: Improved JSON response parsing and URL validation
+    - **Concurrent Upload Limits**: Added 5 concurrent upload limit to Vercel Blob API with timeout protection
+    - **Retry Logic**: Added Uppy retry delays and better error handling for failed uploads
+  - **Status**: 🔧 IN PROGRESS - Core architecture updated, testing bulk uploads for success rate improvement

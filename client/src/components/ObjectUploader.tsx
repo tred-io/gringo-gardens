@@ -66,9 +66,17 @@ export function ObjectUploader({
         maxFileSize,
       },
       autoProceed: false,
+      // Add concurrency limits to prevent bulk upload failures
+      meta: {},
+      // Allow retries for failed uploads
+      allowMultipleUploadBatches: true,
     })
       .use(AwsS3, {
         shouldUseMultipart: false,
+        // Add concurrency limits for production stability  
+        limit: 3,
+        // Add retry logic for failed uploads
+        retryDelays: [0, 1000, 3000],
         getUploadParameters: async (file) => {
           console.log("Getting upload parameters for file:", file.name, file.type);
           try {
@@ -117,7 +125,7 @@ export function ObjectUploader({
           console.log("Upload-success event - response:", response);
           
           if (response && response.body) {
-            let responseData = response.body;
+            let responseData: any = response.body;
             
             // Parse JSON if needed
             if (typeof responseData === 'string') {
@@ -125,13 +133,21 @@ export function ObjectUploader({
                 responseData = JSON.parse(responseData);
               } catch (e) {
                 console.error("Failed to parse response as JSON:", e);
+                return;
               }
             }
             
-            // Extract blob URL and store it on the file
-            if (responseData.url && responseData.url.includes('vercel-storage.com')) {
-              (file as any).blobURL = responseData.url;
-              console.log("Stored blob URL on file object:", (file as any).blobURL);
+            // Extract blob URL and store it on the file - handle with proper typing
+            try {
+              if (responseData && typeof responseData === 'object' && responseData.url) {
+                const url = String(responseData.url);
+                if (url && url.indexOf('vercel-storage.com') !== -1) {
+                  (file as any).blobURL = url;
+                  console.log("Stored blob URL on file object:", (file as any).blobURL);
+                }
+              }
+            } catch (typeError) {
+              console.warn("Type handling error in blob URL extraction:", typeError);
             }
           }
         } catch (error) {

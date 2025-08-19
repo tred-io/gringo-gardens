@@ -1806,14 +1806,18 @@ export default function AdminDashboard() {
                         const objectName = `gallery/uploads/${fileId}.jpg`;
                         const fullUploadUrl = `${data.uploadURL}?objectName=${encodeURIComponent(objectName)}`;
                         
-                        // Store the object name globally so we can access it in completion handler
-                        (window as any).currentUploadObjectName = objectName;
-                        console.log("Stored object name globally:", objectName);
+                        // Store the object name in a map keyed by file name + timestamp for bulk uploads
+                        if (!(window as any).uploadObjectNames) {
+                          (window as any).uploadObjectNames = new Map();
+                        }
+                        const fileKey = `${Date.now()}_${Math.random()}`;
+                        (window as any).uploadObjectNames.set(fileKey, objectName);
+                        console.log("Stored object name with key:", fileKey, objectName);
                         
                         return {
                           method: "PUT" as const,
                           url: fullUploadUrl,
-                          meta: { objectName, isVercel: true }
+                          meta: { objectName, isVercel: true, fileKey }
                         };
                       } else {
                         // For Replit object storage
@@ -1854,21 +1858,53 @@ export default function AdminDashboard() {
                             try {
                               console.log("File meta data:", file.meta);
                               
-                              // Get object name from global storage (temporary solution)
-                              const objectName = (window as any).currentUploadObjectName;
+                              // Get object name from upload metadata or response
+                              let objectName = null;
                               
-                              if (objectName) {
-                                console.log("Using object name from global storage:", objectName);
-                                
-                                // Use the confirmed Vercel blob domain pattern
-                                const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
-                                actualImageURL = `https://${blobDomain}/${objectName}`;
-                                console.log("Constructed Vercel blob URL:", actualImageURL);
-                                
-                                // Clear the global storage after use
-                                delete (window as any).currentUploadObjectName;
+                              // Try to get from file response body first
+                              if (file.response?.body) {
+                                const responseData = typeof file.response.body === 'string' 
+                                  ? JSON.parse(file.response.body) 
+                                  : file.response.body;
+                                if (responseData.url) {
+                                  // Use the actual Vercel blob URL directly
+                                  actualImageURL = responseData.url;
+                                  console.log("Using actual Vercel blob URL from response:", actualImageURL);
+                                }
+                              }
+                              
+                              // If we already got the URL from response, skip object name extraction
+                              if (actualImageURL) {
+                                console.log("Already have actual URL, skipping object name extraction");
                               } else {
-                                console.error("Object name not found in global storage");
+                                console.log("Need to construct URL from object name");
+                              }
+                              
+                              // Only try to construct URL if we don't have it from response
+                              if (!actualImageURL) {
+                                // Fallback: check file meta data
+                                if (!objectName && file.meta?.objectName) {
+                                  objectName = file.meta.objectName;
+                                  console.log("Using object name from file meta:", objectName);
+                                }
+                                
+                                // Final fallback: try to find in upload names map
+                                if (!objectName && (window as any).uploadObjectNames) {
+                                  const names = Array.from((window as any).uploadObjectNames.values());
+                                  if (names.length > 0) {
+                                    objectName = names[0]; // Use first available
+                                    console.log("Using fallback object name:", objectName);
+                                  }
+                                }
+                                
+                                if (objectName) {
+                                  // Use the confirmed Vercel blob domain pattern
+                                  const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
+                                  actualImageURL = `https://${blobDomain}/${objectName}`;
+                                  console.log("Constructed Vercel blob URL:", actualImageURL);
+                                } else {
+                                  console.error("Object name not found in any source");
+                                }
                               }
                             } catch (error) {
                               console.error("Error constructing Vercel blob URL:", error);
@@ -1928,6 +1964,11 @@ export default function AdminDashboard() {
                             variant: "destructive",
                           });
                         }
+                      }
+                      
+                      // Clear upload tracking data
+                      if ((window as any).uploadObjectNames) {
+                        (window as any).uploadObjectNames.clear();
                       }
                       
                       // Refresh gallery images - use the same query key as the gallery query

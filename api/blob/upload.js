@@ -1,6 +1,10 @@
 // Vercel Blob Upload API endpoint
 import { put } from '@vercel/blob';
 
+// Rate limiting for concurrent uploads to prevent failures
+const uploadQueue = new Set();
+const MAX_CONCURRENT_UPLOADS = 5;
+
 export const config = {
   api: {
     bodyParser: {
@@ -27,27 +31,60 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'objectName query parameter is required' });
       }
 
-      // Get file data from request body
-      const chunks = [];
-      for await (const chunk of req) {
-        chunks.push(chunk);
+      // Rate limiting to prevent bulk upload failures
+      if (uploadQueue.size >= MAX_CONCURRENT_UPLOADS) {
+        return res.status(429).json({ 
+          error: 'Upload limit reached',
+          message: `Maximum ${MAX_CONCURRENT_UPLOADS} concurrent uploads allowed. Please retry in a moment.`
+        });
       }
-      const buffer = Buffer.concat(chunks);
 
-      // Upload to Vercel Blob
-      const blob = await put(objectName, buffer, {
-        access: 'public',
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
+      // Add to upload queue
+      uploadQueue.add(objectName);
 
-      console.log(`Uploaded to Vercel Blob: ${blob.url}`);
-      
-      return res.json({
-        url: blob.url,
-        size: blob.size,
-        uploadedAt: blob.uploadedAt,
-        message: 'File uploaded successfully'
-      });
+      try {
+        // Add timeout protection for upload process
+        const uploadPromise = (async () => {
+          // Get file data from request body
+          const chunks = [];
+          for await (const chunk of req) {
+            chunks.push(chunk);
+          }
+          const buffer = Buffer.concat(chunks);
+
+          // Validate buffer size
+          if (buffer.length > 10 * 1024 * 1024) { // 10MB limit
+            throw new Error('File too large for upload');
+          }
+
+          // Upload to Vercel Blob
+          const blob = await put(objectName, buffer, {
+            access: 'public',
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+          });
+
+          console.log(`Uploaded to Vercel Blob: ${blob.url}`);
+          
+          return {
+            url: blob.url,
+            size: blob.size,
+            uploadedAt: blob.uploadedAt,
+            message: 'File uploaded successfully'
+          };
+        })();
+
+        // Add 30-second timeout
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Upload timeout (30s)')), 30000)
+        );
+
+        const result = await Promise.race([uploadPromise, timeoutPromise]);
+        return res.json(result);
+
+      } finally {
+        // Always remove from queue when done
+        uploadQueue.delete(objectName);
+      }
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
