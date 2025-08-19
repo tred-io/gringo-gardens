@@ -77,13 +77,16 @@ export default async function handler(req, res) {
           return res.status(400).json({ message: 'image_url and title are required' });
         }
 
-        // Check for duplicate images
-        const existingImages = await sql`
-          SELECT id FROM gallery_images WHERE image_url = ${image_url}
-        `;
-        
-        if (existingImages.length > 0) {
-          return res.status(400).json({ message: 'This image already exists in the gallery' });
+        // Skip duplicate check for upload endpoints (they are temporary URLs)
+        if (!image_url.includes('/api/blob/upload') && !image_url.includes('/objects/upload')) {
+          // Check for duplicate images only for final stored URLs
+          const existingImages = await sql`
+            SELECT id FROM gallery_images WHERE image_url = ${image_url}
+          `;
+          
+          if (existingImages.length > 0) {
+            return res.status(400).json({ message: 'This image already exists in the gallery' });
+          }
         }
 
         // Create new gallery image
