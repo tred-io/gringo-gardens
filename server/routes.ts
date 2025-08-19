@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Products
   app.get('/api/products', async (req, res) => {
     try {
-      const { category, search, hardinessZone, sunRequirements, priceRange, featured } = req.query;
+      const { category, search, hardinessZone, sunRequirements, priceRange, featured, texasNative, droughtTolerance } = req.query;
       const products = await storage.getProducts({
         category: category as string,
         search: search as string,
@@ -225,6 +225,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         priceRange: priceRange as string,
         featured: featured === 'true',
         active: true, // Only show active products to public
+        texasNative: texasNative as string,
+        droughtTolerance: droughtTolerance as string,
       });
       
       // Add category names to products
