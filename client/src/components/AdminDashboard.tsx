@@ -65,6 +65,12 @@ const productSchema = z.object({
   stock: z.number().min(0).optional(),
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
+  // AI plant identification fields
+  texasNative: z.boolean().optional(),
+  droughtTolerance: z.string().optional(),
+  indoorOutdoor: z.string().optional(),
+  bloomSeason: z.string().optional(),
+  matureSize: z.string().optional(),
 });
 
 const blogPostSchema = z.object({
@@ -1247,6 +1253,24 @@ export default function AdminDashboard() {
                                               productForm.setValue('categoryId', matchingCategory.id);
                                             }
                                           }
+                                          
+                                          // Transfer ALL AI plant identification data to product
+                                          if (galleryImage.hardinessZone) {
+                                            productForm.setValue('hardinessZone', galleryImage.hardinessZone);
+                                          }
+                                          if (galleryImage.sunPreference) {
+                                            productForm.setValue('sunRequirements', galleryImage.sunPreference);
+                                          }
+                                          if (galleryImage.texasNative !== null && galleryImage.texasNative !== undefined) {
+                                            productForm.setValue('texasNative', galleryImage.texasNative);
+                                          }
+                                          if (galleryImage.droughtTolerance) {
+                                            productForm.setValue('droughtTolerance', galleryImage.droughtTolerance);
+                                          }
+                                          if (galleryImage.indoorOutdoor) {
+                                            productForm.setValue('indoorOutdoor', galleryImage.indoorOutdoor);
+                                          }
+                                          // Note: bloomSeason and matureSize not available in gallery schema but could be added later
                                         }
                                       }}
                                       selectedImageUrl={field.value}

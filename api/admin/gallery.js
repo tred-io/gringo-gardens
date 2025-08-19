@@ -209,27 +209,94 @@ export default async function handler(req, res) {
   }
 }
 
-// Synchronous plant identification function
+// Synchronous plant identification function with image optimization
 async function identifyPlant(imageUrl) {
+  console.log(`Starting plant identification for: ${imageUrl}`);
+  
   // Fetch and process the image for AI analysis
   const response = await fetch(imageUrl);
   if (!response.ok) {
     throw new Error(`Failed to fetch image: ${response.status}`);
   }
   
-  const imageBuffer = await response.arrayBuffer();
-  const base64Image = Buffer.from(imageBuffer).toString('base64');
+  const originalBuffer = Buffer.from(await response.arrayBuffer());
+  console.log(`Original image size: ${originalBuffer.length} bytes`);
   
-  // Call OpenAI Vision API
+  // Optimize image for AI analysis (reduce size for better token efficiency)
+  let sharp;
+  try {
+    sharp = require('sharp');
+  } catch (error) {
+    console.warn('Sharp not available, using unoptimized image:', error.message);
+    // Fallback to unoptimized image if Sharp is not available
+    const base64Image = originalBuffer.toString('base64');
+    return await makeOpenAICall(base64Image);
+  }
+  const optimizedBuffer = await sharp(originalBuffer)
+    .resize(768, 768, {
+      fit: 'inside',
+      withoutEnlargement: true
+    })
+    .jpeg({ quality: 75 })
+    .toBuffer();
+    
+  console.log(`Optimized image size: ${optimizedBuffer.length} bytes`);
+  const base64Image = optimizedBuffer.toString('base64');
+  
+  // Call OpenAI Vision API with optimized prompt
   const visionResponse = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
+      {
+        role: "system",
+        content: `You are a plant identification assistant. Given an image of a plant, identify it and return ONLY a JSON payload with the following fields: common_name, latin_name, hardiness_zone, sun_preference, drought_tolerance, texas_native (true/false), indoor_outdoor, classification, description.
+
+For hardiness_zone, use USDA zones like "8a", "9b", etc. For sun_preference, use: "full sun", "partial sun", "partial shade", or "shade". For drought_tolerance, use: "high", "moderate", or "low". For indoor_outdoor, use: "indoor", "outdoor", or "both". For texas_native, only return true if you are certain it's native to Texas.
+
+Return "unknown" for any field you cannot determine with confidence. Be precise and factual.`
+      },
       {
         role: "user",
         content: [
           {
             type: "text",
-            text: `Analyze this plant image and provide detailed information. Return JSON with these exact fields: common_name, latin_name, classification, hardiness_zone, sun_preference, drought_tolerance, texas_native (boolean), indoor_outdoor, description. Use "unknown" for any field you cannot determine confidently. For texas_native, only return true if you are confident it's native to Texas.`
+            text: "Identify this plant and provide the requested JSON data."
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${base64Image}`
+            }
+          }
+        ],
+      },
+    ],
+    response_format: { type: "json_object" },
+    max_tokens: 1000,
+  });
+
+  return await makeOpenAICall(base64Image);
+}
+
+async function makeOpenAICall(base64Image) {
+  // Call OpenAI Vision API with optimized prompt
+  const visionResponse = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `You are a plant identification assistant. Given an image of a plant, identify it and return ONLY a JSON payload with the following fields: common_name, latin_name, hardiness_zone, sun_preference, drought_tolerance, texas_native (true/false), indoor_outdoor, classification, description.
+
+For hardiness_zone, use USDA zones like "8a", "9b", etc. For sun_preference, use: "full sun", "partial sun", "partial shade", or "shade". For drought_tolerance, use: "high", "moderate", or "low". For indoor_outdoor, use: "indoor", "outdoor", or "both". For texas_native, only return true if you are certain it's native to Texas.
+
+Return "unknown" for any field you cannot determine with confidence. Be precise and factual.`
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: "Identify this plant and provide the requested JSON data."
           },
           {
             type: "image_url",
@@ -245,5 +312,5 @@ async function identifyPlant(imageUrl) {
   });
 
   const plantDetails = JSON.parse(visionResponse.choices[0].message.content);
+  console.log(`Plant identification result: ${plantDetails.common_name || 'unknown'}`);
   return plantDetails;
-}

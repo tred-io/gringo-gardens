@@ -98,3 +98,17 @@ Preferred communication style: Simple, everyday language.
     - **Solution**: Added dual routing support in `server/routes.ts` for query and path parameter patterns
     - **Gallery Fix**: Made plant identification synchronous for immediate UI updates
   - **Status**: ✅ COMPLETE - Perfect schema-API alignment, unified routing across environments, all functionality working
+
+**AI Data Pipeline Fixed (August 19, 2025)**: Resolved critical production issue where AI plant identification wasn't populating product records
+  - **Problem**: Product filtering failing in production due to empty AI fields (hardinessZone, texasNative, droughtTolerance, etc.)
+  - **Root Causes**: 
+    - Missing filter parameters in products API endpoint
+    - AI plant data wasn't transferring from gallery to product records
+    - Production gallery API lacked image optimization for consistent AI results
+  - **Complete Fix Applied**:
+    - **API Filters**: Added missing `texasNative` and `droughtTolerance` parameters to `/api/products` endpoint
+    - **Schema Fix**: Removed obsolete `category_name` column reference causing database errors
+    - **Data Transfer**: Updated AdminDashboard to transfer ALL AI fields from gallery images to product forms
+    - **Form Schema**: Extended product form schema to include AI fields (texasNative, droughtTolerance, indoorOutdoor, etc.)
+    - **Production AI**: Enhanced Vercel gallery API with Sharp image optimization and fallback handling
+  - **Status**: ✅ COMPLETE - Product filtering working correctly, AI data pipeline fully functional in both environments
