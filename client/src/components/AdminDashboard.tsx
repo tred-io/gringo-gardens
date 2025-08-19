@@ -1905,7 +1905,8 @@ export default function AdminDashboard() {
                                 // Extract the URL - this is where Vercel Blob returns the actual URL
                                 if (responseData && responseData.url) {
                                   actualImageURL = responseData.url;
-                                  console.log("✓ SUCCESS - Found blob URL in response:", actualImageURL);
+                                  console.log("🎯 BLOB URL EXTRACTED:", actualImageURL);
+                                  console.log("🔍 URL TYPE:", typeof actualImageURL, "Contains vercel-storage:", actualImageURL.includes('vercel-storage.com'));
                                 }
                               }
                               
