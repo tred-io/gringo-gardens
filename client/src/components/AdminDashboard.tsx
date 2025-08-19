@@ -1850,14 +1850,32 @@ export default function AdminDashboard() {
                           
                           let actualImageURL = null;
                           
-                          // Correct environment detection based on actual URLs
-                          const isVercel = file.uploadURL && file.uploadURL.includes('vercel-storage.com');
-                          const isReplit = file.uploadURL && file.uploadURL.includes('storage.googleapis.com');
+                          // Environment detection - check both uploadURL and current domain
+                          const currentDomain = window.location.hostname;
+                          const isVercel = file.uploadURL && (
+                            file.uploadURL.includes('vercel-storage.com') || 
+                            currentDomain.includes('vercel') || 
+                            file.uploadURL.includes('/api/blob/upload')
+                          );
+                          const isReplit = file.uploadURL && (
+                            file.uploadURL.includes('storage.googleapis.com') ||
+                            currentDomain.includes('replit') || 
+                            file.uploadURL.includes('/objects/upload')
+                          );
                           
                           console.log("Environment detection:", {
                             uploadURL: file.uploadURL,
+                            currentDomain,
                             isVercel,
                             isReplit
+                          });
+                          
+                          // Log the complete response structure for debugging
+                          console.log("Complete file response structure:", {
+                            response: file.response,
+                            responseBody: file.response?.body,
+                            responseStatus: file.response?.status,
+                            responseHeaders: file.response?.headers
                           });
                           
                           if (isVercel) {
@@ -1891,14 +1909,19 @@ export default function AdminDashboard() {
                                 }
                               }
                               
-                              // Method 3: Extract from file response body
+                              // Method 3: Extract from file response body (more thorough)
                               if (!actualImageURL && file.response?.body) {
-                                const responseData = typeof file.response.body === 'string' 
-                                  ? JSON.parse(file.response.body) 
-                                  : file.response.body;
-                                if (responseData.url) {
-                                  actualImageURL = responseData.url;
-                                  console.log("Using blob URL from response body:", actualImageURL);
+                                try {
+                                  const responseData = typeof file.response.body === 'string' 
+                                    ? JSON.parse(file.response.body) 
+                                    : file.response.body;
+                                  
+                                  if (responseData && responseData.url) {
+                                    actualImageURL = responseData.url;
+                                    console.log("Method 3 - Found URL in response body (parsed):", actualImageURL);
+                                  }
+                                } catch (parseError) {
+                                  console.error("Failed to parse response body:", parseError);
                                 }
                               }
                               
