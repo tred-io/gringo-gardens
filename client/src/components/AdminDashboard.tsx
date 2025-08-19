@@ -1852,15 +1852,9 @@ export default function AdminDashboard() {
                           
                           // Environment detection - check both uploadURL and current domain
                           const currentDomain = window.location.hostname;
-                          const isVercel = file.uploadURL && (
-                            file.uploadURL.includes('vercel-storage.com') || 
-                            currentDomain.includes('vercel') || 
-                            file.uploadURL.includes('/api/blob/upload')
-                          );
-                          const isReplit = file.uploadURL && (
-                            file.uploadURL.includes('storage.googleapis.com') ||
-                            currentDomain.includes('replit') || 
-                            file.uploadURL.includes('/objects/upload')
+                          const isReplit = file.uploadURL && file.uploadURL.includes('storage.googleapis.com');
+                          const isVercel = !isReplit && (
+                            file.uploadURL && file.uploadURL.includes('vercel-storage.com')
                           );
                           
                           console.log("Environment detection:", {
@@ -1934,7 +1928,7 @@ export default function AdminDashboard() {
                                 const filename = pathParts[pathParts.length - 1];
                                 // Convert to serving URL format
                                 actualImageURL = `/objects/uploads/${filename}`;
-                                console.log("Converted Replit URL:", file.uploadURL, "->", actualImageURL);
+                                console.log("✅ Converted Replit URL:", file.uploadURL, "->", actualImageURL);
                               }
                             } catch (error) {
                               console.error("Error converting Replit URL:", error);
@@ -1942,9 +1936,9 @@ export default function AdminDashboard() {
                               actualImageURL = file.uploadURL;
                             }
                           } else {
-                            // Unknown storage type - use URL directly
+                            // Default case - use uploadURL directly
                             actualImageURL = file.uploadURL;
-                            console.log("Unknown storage type, using direct URL:", actualImageURL);
+                            console.log("Using upload URL directly:", actualImageURL);
                           }
                           
                           if (!actualImageURL) {

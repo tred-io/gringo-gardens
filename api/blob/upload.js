@@ -57,13 +57,23 @@ export default async function handler(req, res) {
             throw new Error('File too large for upload');
           }
 
-          // Upload to Vercel Blob
+          // Upload to Vercel Blob with proper content type
           const blob = await put(objectName, buffer, {
             access: 'public',
             token: process.env.BLOB_READ_WRITE_TOKEN,
+            contentType: req.headers['content-type'] || 'image/jpeg',
           });
 
-          console.log(`Uploaded to Vercel Blob: ${blob.url}`);
+          console.log(`Successfully uploaded to Vercel Blob: ${blob.url}`);
+          console.log(`Object name: ${objectName}, Buffer size: ${buffer.length} bytes`);
+          
+          // Verify the blob exists by trying to get its metadata
+          try {
+            const headResponse = await fetch(blob.url, { method: 'HEAD' });
+            console.log(`Blob URL verification: ${headResponse.status}`);
+          } catch (verifyError) {
+            console.error('Blob verification failed:', verifyError);
+          }
           
           return {
             url: blob.url,
