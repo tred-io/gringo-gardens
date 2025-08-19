@@ -32,17 +32,23 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
-  // Fetch business settings with optimized caching
+  // Fetch business settings with optimized caching - single load only
   const { data: temporaryClosureSetting } = useQuery({
     queryKey: ["/api/settings/temporary_closure"],
     retry: false,
-    staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    staleTime: Infinity, // Never refetch automatically
+    gcTime: Infinity, // Keep in cache indefinitely
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
+    refetchOnReconnect: false, // Don't refetch on reconnect
   });
 
   const { data: businessHoursSetting } = useQuery({
     queryKey: ["/api/settings/business_hours"],
     retry: false,
+    staleTime: Infinity, // Never refetch automatically
+    gcTime: Infinity, // Keep in cache indefinitely
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Select 2 random reviews instead of featured ones
