@@ -1785,13 +1785,19 @@ export default function AdminDashboard() {
                     maxNumberOfFiles={50}
                     maxFileSize={15728640}
                     onGetUploadParameters={async () => {
-                      // Call the proper upload endpoint that detects environment
-                      const response = await fetch("/api/objects/upload", {
+                      // Use environment-specific upload endpoint  
+                      const isProductionEnv = window.location.hostname.includes('vercel.app');
+                      const uploadEndpoint = isProductionEnv ? "/api/blob/upload" : "/api/objects/upload";
+                      
+                      const response = await fetch(uploadEndpoint, {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
                         },
                       });
+                      
+                      console.log(`Using upload endpoint: ${uploadEndpoint} (production: ${isProductionEnv})`);
+                      console.log("Upload response status:", response.status);
                       
                       if (!response.ok) {
                         throw new Error(`Failed to get upload parameters: ${response.status}`);
@@ -1800,10 +1806,10 @@ export default function AdminDashboard() {
                       const data = await response.json();
                       console.log("Upload parameters from server:", data);
                       
-                      // Check if this is Vercel production environment
-                      const isProduction = window.location.hostname.includes('vercel.app') || data.uploadURL?.includes('/api/blob/upload');
+                      // Check if this is Vercel production environment  
+                      const isVercelProduction = window.location.hostname.includes('vercel.app') || data.uploadURL?.includes('/api/blob/upload');
                       
-                      if (isProduction) {
+                      if (isVercelProduction) {
                         // For Vercel Blob, generate object name and pass it as query parameter
                         const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
                         const objectName = `gallery/uploads/${fileId}.jpg`;
@@ -1845,10 +1851,10 @@ export default function AdminDashboard() {
                           
                           let actualImageURL = null;
                           
-                          // Environment detection for production
-                          const isProduction = window.location.hostname.includes('vercel.app');
+                          // Environment detection for production  
+                          const isProductionDeploy = window.location.hostname.includes('vercel.app');
                           const isReplit = file.uploadURL && file.uploadURL.includes('storage.googleapis.com');
-                          const isVercel = isProduction || (file.uploadURL && file.uploadURL.includes('vercel-storage.com'));
+                          const isVercel = isProductionDeploy || (file.uploadURL && file.uploadURL.includes('vercel-storage.com'));
                           
                           console.log("Environment detection:", {
                             uploadURL: file.uploadURL,

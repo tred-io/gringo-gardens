@@ -22,6 +22,7 @@ Preferred communication style: Simple, everyday language.
 - **Image Management**: Advanced image optimization using Sharp for AI processing, multi-size image generation, and dual storage system support (Replit object storage for development, Vercel Blob for production).
 - **API Unification**: Consolidated all admin and public API endpoints for consistent database connectivity and schema alignment across the application.
 - **Robustness**: Implemented rate limiting, timeout protection, and memory safeguards for image processing and AI calls to ensure production stability.
+- **Bulk Upload**: Fixed bulk image upload with proper URL extraction for both development (Replit object storage) and production (Vercel Blob) environments, resolving duplicate variable declarations and broken image display issues.
 
 ## External Dependencies
 

@@ -23,7 +23,16 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  console.log(`Blob upload handler - Method: ${req.method}, URL: ${req.url}`);
+
   try {
+    // Handle POST request to get upload URL
+    if (req.method === 'POST') {
+      // Return the current endpoint URL for upload
+      return res.json({
+        uploadURL: `/api/blob/upload`
+      });
+    }
     if (req.method === 'PUT') {
       const { objectName } = req.query;
       
