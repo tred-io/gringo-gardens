@@ -54,10 +54,12 @@ export default function Contact() {
       form.reset();
       setIsSubmitting(false);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Contact form error:', error);
+      const errorMessage = error.message || "Failed to send message. Please try again.";
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -65,6 +67,12 @@ export default function Contact() {
   });
 
   const onSubmit = (data: ContactFormData) => {
+    console.log('Form data being submitted:', data);
+    const errors = form.formState.errors;
+    if (Object.keys(errors).length > 0) {
+      console.log('Form validation errors:', errors);
+      return;
+    }
     setIsSubmitting(true);
     trackEvent('contact_form_submit', 'engagement', data.subject);
     contactMutation.mutate(data);

@@ -32,13 +32,12 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
-  // Fetch business settings
+  // Fetch business settings with optimized caching
   const { data: temporaryClosureSetting } = useQuery({
     queryKey: ["/api/settings/temporary_closure"],
     retry: false,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    staleTime: 0, // Always consider data stale to force refetch
+    staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes
+    cacheTime: 30 * 60 * 1000, // Cache for 30 minutes
   });
 
   const { data: businessHoursSetting } = useQuery({

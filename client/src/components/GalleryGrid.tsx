@@ -40,19 +40,19 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
 
       {/* Lightbox Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-y-auto">
           <DialogTitle className="sr-only">
             {selectedImage?.title || "Gallery image"}
           </DialogTitle>
           {selectedImage && (
-            <div>
+            <div className="flex flex-col">
               <img
                 src={selectedImage.imageUrl}
                 alt={selectedImage.title || "Gallery image"}
-                className="w-full h-auto max-h-[80vh] object-contain"
+                className="w-full h-auto max-h-[60vh] object-contain"
               />
               {(selectedImage.title || selectedImage.description) && (
-                <div className="p-6">
+                <div className="p-6 max-h-[30vh] overflow-y-auto">
                   {selectedImage.title && (
                     <h3 className="text-xl font-bold text-bluebonnet-900 mb-2">
                       {selectedImage.title}
@@ -60,6 +60,23 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
                   )}
                   {selectedImage.description && (
                     <p className="text-gray-600">{selectedImage.description}</p>
+                  )}
+                  {selectedImage.commonName && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-sm text-gray-600">
+                        <strong>Common Name:</strong> {selectedImage.commonName}
+                      </p>
+                      {selectedImage.latinName && (
+                        <p className="text-sm text-gray-600">
+                          <strong>Latin Name:</strong> <em>{selectedImage.latinName}</em>
+                        </p>
+                      )}
+                      {selectedImage.texasNative !== null && (
+                        <p className="text-sm text-gray-600">
+                          <strong>Texas Native:</strong> {selectedImage.texasNative ? 'Yes' : 'No'}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               )}

@@ -55,6 +55,7 @@ export const products = pgTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }),
   imageUrl: varchar("image_url"),
   categoryId: varchar("category_id").references(() => categories.id),
+  categoryName: varchar("category_name"), // For display purposes to avoid joins
   hardinessZone: varchar("hardiness_zone", { length: 10 }),
   sunRequirements: varchar("sun_requirements", { length: 50 }),
   stock: integer("stock"),

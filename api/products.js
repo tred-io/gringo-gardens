@@ -21,26 +21,28 @@ export default async function handler(req, res) {
     // Fetch active products from database
     const products = await sql`
       SELECT 
-        id,
-        name,
-        slug,
-        description,
-        price,
-        image_url as "imageUrl",
-        category_id as "categoryId",
-        hardiness_zone as "hardinessZone",
-        sun_requirements as "sunRequirements",
-        stock,
-        featured,
-        texas_native as "texasNative",
-        drought_tolerance as "droughtTolerance",
-        indoor_outdoor as "indoorOutdoor",
-        bloom_season as "bloomSeason",
-        mature_size as "matureSize",
-        created_at as "createdAt"
-      FROM products 
-      WHERE active = true
-      ORDER BY featured DESC, created_at DESC
+        p.id,
+        p.name,
+        p.slug,
+        p.description,
+        p.price,
+        p.image_url as "imageUrl",
+        p.category_id as "categoryId",
+        c.name as "categoryName",
+        p.hardiness_zone as "hardinessZone",
+        p.sun_requirements as "sunRequirements",
+        p.stock,
+        p.featured,
+        p.texas_native as "texasNative",
+        p.drought_tolerance as "droughtTolerance",
+        p.indoor_outdoor as "indoorOutdoor",
+        p.bloom_season as "bloomSeason",
+        p.mature_size as "matureSize",
+        p.created_at as "createdAt"
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id 
+      WHERE p.active = true
+      ORDER BY p.featured DESC, p.created_at DESC
     `;
 
     console.log(`Retrieved ${products.length} public products`);

@@ -181,7 +181,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     const result = await db.delete(categories).where(eq(categories.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Product operations
@@ -238,7 +238,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
     return await query.orderBy(desc(products.createdAt));
@@ -285,7 +285,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProduct(id: string): Promise<boolean> {
     const result = await db.delete(products).where(eq(products.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Blog operations
@@ -306,7 +306,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
     return await query.orderBy(desc(blogPosts.createdAt));
@@ -338,7 +338,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteBlogPost(id: string): Promise<boolean> {
     const result = await db.delete(blogPosts).where(eq(blogPosts.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Gallery operations
@@ -359,7 +359,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
     return await query.orderBy(desc(galleryImages.createdAt));
@@ -381,7 +381,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteGalleryImage(id: string): Promise<boolean> {
     const result = await db.delete(galleryImages).where(eq(galleryImages.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Review operations
@@ -402,7 +402,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
     return await query.orderBy(desc(reviews.createdAt));
@@ -424,7 +424,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteReview(id: string): Promise<boolean> {
     const result = await db.delete(reviews).where(eq(reviews.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Contact operations
@@ -442,7 +442,7 @@ export class DatabaseStorage implements IStorage {
       .update(contactMessages)
       .set({ read: true })
       .where(eq(contactMessages.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Newsletter operations
@@ -517,7 +517,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTeamMember(id: string): Promise<boolean> {
     const result = await db.delete(teamMembers).where(eq(teamMembers.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 }
 

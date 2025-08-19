@@ -6,9 +6,10 @@ import type { Product } from "@shared/schema";
 
 interface ProductCardProps {
   product: Product;
+  onViewDetails?: () => void;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, onViewDetails }: ProductCardProps) {
   const getCategoryBadgeColor = (categoryId: string) => {
     // This would be better with actual category data, but for now using simple logic
     const colors = {
@@ -37,23 +38,27 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
       <CardContent className="p-6">
         <Badge className={`mb-2 ${getCategoryBadgeColor(product.categoryId || '')}`}>
-          {product.categoryId || 'Product'}
+          {product.categoryName || 'Product'}
         </Badge>
         <h3 className="text-xl font-bold text-bluebonnet-900 mb-2">{product.name}</h3>
         <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-texas-green-600">
-            {product.price && parseFloat(product.price) > 0 ? `$${parseFloat(product.price).toFixed(2)}` : 'Contact for Price'}
+            {product.price && parseFloat(product.price) > 0 ? `$${parseFloat(product.price).toFixed(2)}` : ''}
           </span>
-          <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
+          <Button 
+            className="bg-bluebonnet-600 hover:bg-bluebonnet-700"
+            onClick={onViewDetails}
+            data-testid={`button-view-details-${product.id}`}
+          >
             View Details
           </Button>
         </div>
         {product.stock !== null && product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
           <p className="text-orange-600 text-sm mt-2">Only {product.stock} left in stock!</p>
         )}
-        {product.stock === 0 && (
-          <p className="text-red-600 text-sm mt-2">Out of stock</p>
+        {product.stock !== null && product.stock !== undefined && product.stock === 0 && (
+          <span></span>
         )}
       </CardContent>
     </Card>
