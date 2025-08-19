@@ -1850,8 +1850,15 @@ export default function AdminDashboard() {
                           
                           let actualImageURL = null;
                           
-                          // Check if this is a Vercel upload
-                          const isVercel = file.uploadURL && file.uploadURL.includes('/api/blob/upload');
+                          // Correct environment detection based on actual URLs
+                          const isVercel = file.uploadURL && file.uploadURL.includes('vercel-storage.com');
+                          const isReplit = file.uploadURL && file.uploadURL.includes('storage.googleapis.com');
+                          
+                          console.log("Environment detection:", {
+                            uploadURL: file.uploadURL,
+                            isVercel,
+                            isReplit
+                          });
                           
                           if (isVercel) {
                             // For Vercel uploads, extract URL from multiple sources
@@ -1903,10 +1910,28 @@ export default function AdminDashboard() {
                             } catch (error) {
                               console.error("Error extracting Vercel blob URL:", error);
                             }
+                          } else if (isReplit) {
+                            // For Replit object storage: convert signed URL to permanent serving URL
+                            try {
+                              // Extract object path from Google Cloud Storage URL
+                              const url = new URL(file.uploadURL);
+                              const pathParts = url.pathname.split('/');
+                              // Path structure: /bucket-name/.private/uploads/filename
+                              if (pathParts.length >= 4) {
+                                const filename = pathParts[pathParts.length - 1];
+                                // Convert to serving URL format
+                                actualImageURL = `/objects/uploads/${filename}`;
+                                console.log("Converted Replit URL:", file.uploadURL, "->", actualImageURL);
+                              }
+                            } catch (error) {
+                              console.error("Error converting Replit URL:", error);
+                              // Fallback: use original URL
+                              actualImageURL = file.uploadURL;
+                            }
                           } else {
-                            // For Replit: Use the upload URL directly (signed URL approach)
+                            // Unknown storage type - use URL directly
                             actualImageURL = file.uploadURL;
-                            console.log("Using Replit signed URL:", actualImageURL);
+                            console.log("Unknown storage type, using direct URL:", actualImageURL);
                           }
                           
                           if (!actualImageURL) {
