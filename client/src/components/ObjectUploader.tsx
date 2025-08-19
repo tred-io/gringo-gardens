@@ -81,22 +81,36 @@ export function ObjectUploader({
         getUploadParameters: async (file) => {
           console.log("Getting upload parameters for file:", file.name, file.type);
           try {
-            // Generate unique object name on client side
-            const timestamp = Date.now();
-            const objectName = `${timestamp}_${file.name}`;
-            file.meta = { ...file.meta, objectName };
-            
             const params = await onGetUploadParameters();
             console.log("Received upload parameters:", params);
             
-            // Build the upload URL with object name
+            // Validate URL before proceeding
+            if (!params.url || typeof params.url !== 'string') {
+              throw new Error('Invalid upload URL received from server');
+            }
+            
             let uploadUrl = params.url;
-            if (!uploadUrl.includes('objectName=')) {
-              uploadUrl += `?objectName=${encodeURIComponent(objectName)}`;
+            
+            // For Vercel Blob uploads, add object name as query parameter
+            if (uploadUrl.includes('/api/blob/upload')) {
+              const timestamp = Date.now();
+              const objectName = `gallery/uploads/${timestamp}_${file.name}`;
+              file.meta = { ...file.meta, objectName };
+              
+              if (!uploadUrl.includes('objectName=')) {
+                uploadUrl += `?objectName=${encodeURIComponent(objectName)}`;
+              }
+            }
+            
+            // Final URL validation
+            try {
+              new URL(uploadUrl, window.location.origin);
+            } catch (urlError) {
+              throw new Error(`Invalid URL format: ${uploadUrl}`);
             }
             
             return {
-              method: params.method,
+              method: params.method || "PUT",
               url: uploadUrl
             };
           } catch (error) {

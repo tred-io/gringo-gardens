@@ -28,9 +28,11 @@ export default async function handler(req, res) {
   try {
     // Handle POST request to get upload URL
     if (req.method === 'POST') {
+      console.log('Providing Vercel Blob upload URL');
       // Return the current endpoint URL for upload
       return res.json({
-        uploadURL: `/api/blob/upload`
+        uploadURL: `/api/blob/upload`,
+        method: "PUT"
       });
     }
     if (req.method === 'PUT') {

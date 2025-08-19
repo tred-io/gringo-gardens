@@ -1809,25 +1809,11 @@ export default function AdminDashboard() {
                       // Check if this is Vercel production environment  
                       const isVercelProduction = window.location.hostname.includes('vercel.app') || data.uploadURL?.includes('/api/blob/upload');
                       
-                      if (isVercelProduction) {
-                        // For Vercel Blob, generate object name and pass it as query parameter
-                        const fileId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-                        const objectName = `gallery/uploads/${fileId}.jpg`;
-                        const fullUploadUrl = `${data.uploadURL}?objectName=${encodeURIComponent(objectName)}`;
-                        
-                        return {
-                          method: "PUT" as const,
-                          url: fullUploadUrl,
-                          meta: { objectName, isVercel: true }
-                        };
-                      } else {
-                        // For Replit object storage
-                        return {
-                          method: "PUT" as const,
-                          url: data.uploadURL,
-                          meta: { isVercel: false }
-                        };
-                      }
+                      // Return upload parameters - ObjectUploader will handle URL construction
+                      return {
+                        method: data.method || "PUT",
+                        url: data.uploadURL
+                      };
                     }}
                     onComplete={async (result) => {
                       console.log("Upload complete result:", result);
@@ -1851,10 +1837,12 @@ export default function AdminDashboard() {
                           
                           let actualImageURL = null;
                           
-                          // Environment detection for production  
-                          const isProductionDeploy = window.location.hostname.includes('vercel.app');
+                          // Environment detection based on upload URL
                           const isReplit = file.uploadURL && file.uploadURL.includes('storage.googleapis.com');
-                          const isVercel = isProductionDeploy || (file.uploadURL && file.uploadURL.includes('vercel-storage.com'));
+                          const isVercel = file.uploadURL && (
+                            file.uploadURL.includes('vercel-storage.com') || 
+                            file.uploadURL.includes('/api/blob/upload')
+                          );
                           
                           console.log("Environment detection:", {
                             uploadURL: file.uploadURL,
