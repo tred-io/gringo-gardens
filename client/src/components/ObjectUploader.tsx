@@ -77,6 +77,20 @@ export function ObjectUploader({
         limit: 3,
         // Add retry logic for failed uploads
         retryDelays: [0, 1000, 3000],
+        // Override response parsing to extract blob URL
+        getResponseData: (responseText, response) => {
+          console.log("AwsS3 getResponseData - responseText:", responseText);
+          console.log("AwsS3 getResponseData - response:", response);
+          
+          try {
+            const data = JSON.parse(responseText);
+            console.log("Parsed Vercel Blob response:", data);
+            return data;
+          } catch (e) {
+            console.error("Failed to parse Vercel Blob response:", e);
+            return {};
+          }
+        },
         getUploadParameters: async (file) => {
           console.log("Getting upload parameters for file:", file.name, file.type);
           try {
@@ -120,47 +134,29 @@ export function ObjectUploader({
       .on("upload-success", (file, response) => {
         if (!file) return;
         
-        console.log("Uppy upload-success event - file:", file.name, "response:", JSON.stringify(response, null, 2));
+        console.log("🔥 UPLOAD SUCCESS - file:", file.name);
+        console.log("🔥 UPLOAD SUCCESS - response:", JSON.stringify(response, null, 2));
         
-        // Extract and store the blob URL from the response
+        // Store the blob URL directly from the response
         try {
-          console.log("Upload-success event - response:", response);
-          
-          if (response && response.body) {
-            let responseData: any = response.body;
+          if (response && response.body && response.body.url) {
+            const blobURL = response.body.url;
+            console.log("🎯 EXTRACTED BLOB URL:", blobURL);
             
-            // Parse JSON if needed
-            if (typeof responseData === 'string') {
-              try {
-                responseData = JSON.parse(responseData);
-              } catch (e) {
-                console.error("Failed to parse response as JSON:", e);
-                return;
-              }
-            }
+            // Store on file object
+            (file as any).vercelBlobURL = blobURL;
             
-            // Extract blob URL and store it on the file - handle with proper typing
-            try {
-              if (responseData && typeof responseData === 'object' && responseData.url) {
-                const url = String(responseData.url);
-                if (url && url.indexOf('vercel-storage.com') !== -1) {
-                  (file as any).blobURL = url;
-                  console.log("Stored blob URL on file object:", (file as any).blobURL);
-                  
-                  // Also store in a global map for reliable access during completion
-                  if (!(window as any).uploadedBlobUrls) {
-                    (window as any).uploadedBlobUrls = new Map();
-                  }
-                  (window as any).uploadedBlobUrls.set(file.id, url);
-                  console.log("Also stored blob URL in global map with file ID:", file.id, url);
-                }
-              }
-            } catch (typeError) {
-              console.warn("Type handling error in blob URL extraction:", typeError);
+            // Store in global map for completion handler
+            if (!(window as any).uploadedBlobUrls) {
+              (window as any).uploadedBlobUrls = new Map();
             }
+            (window as any).uploadedBlobUrls.set(file.id, blobURL);
+            console.log("✅ STORED BLOB URL:", blobURL);
+          } else {
+            console.error("❌ NO URL IN RESPONSE BODY:", response);
           }
         } catch (error) {
-          console.error("Error in upload-success handler:", error);
+          console.error("❌ ERROR STORING BLOB URL:", error);
         }
       })
   );
