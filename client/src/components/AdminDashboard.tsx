@@ -1852,7 +1852,7 @@ export default function AdminDashboard() {
                           
                           console.log("Environment detection:", {
                             uploadURL: file.uploadURL,
-                            currentDomain,
+                            hostname: window.location.hostname,
                             isVercel,
                             isReplit
                           });
@@ -1942,10 +1942,10 @@ export default function AdminDashboard() {
                           
                           console.log("Final image URL for gallery:", actualImageURL);
                           
-                          // Final fallback - use the direct uploadURL if all else fails but log warning
+                          // Final validation and fallback
                           if (!actualImageURL) {
-                            console.warn("No URL extracted, using uploadURL as fallback:", file.uploadURL);
-                            actualImageURL = file.uploadURL;
+                            console.error("❌ FAILED TO EXTRACT IMAGE URL - No URL found for file:", file.name);
+                            throw new Error(`Could not determine image URL for ${file.name}`);
                           }
                           
                           // Use unified admin API that works in both environments
