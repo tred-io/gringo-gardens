@@ -1889,23 +1889,33 @@ export default function AdminDashboard() {
                                 blobURL: (file as any).blobURL
                               });
                               
-                              // Method 1: Direct response body URL (Vercel Blob returns this)
-                              if (file.response?.body?.url) {
-                                actualImageURL = file.response.body.url;
-                                console.log("✓ Method 1 SUCCESS - URL from response body:", actualImageURL);
-                              }
-                              // Method 2: uploadURL if it contains vercel-storage (final URL)  
-                              else if (file.uploadURL && file.uploadURL.includes('vercel-storage.com')) {
-                                actualImageURL = file.uploadURL;
-                                console.log("✓ Method 2 SUCCESS - Direct uploadURL is blob URL:", actualImageURL);
-                              }
-                              // Method 3: Blob URL stored during upload-success event
-                              else if ((file as any).blobURL) {
-                                actualImageURL = (file as any).blobURL;
-                                console.log("✓ Method 3 SUCCESS - Using stored blob URL:", actualImageURL);
+                              // The response body contains the actual blob URL - parse it properly
+                              if (file.response && file.response.body) {
+                                let responseData = file.response.body;
+                                
+                                // Parse if it's a string
+                                if (typeof responseData === 'string') {
+                                  try {
+                                    responseData = JSON.parse(responseData);
+                                  } catch (e) {
+                                    console.error("Failed to parse response body:", e);
+                                  }
+                                }
+                                
+                                // Extract the URL - this is where Vercel Blob returns the actual URL
+                                if (responseData && responseData.url) {
+                                  actualImageURL = responseData.url;
+                                  console.log("✓ SUCCESS - Found blob URL in response:", actualImageURL);
+                                }
                               }
                               
-                              // Method 2: Check global map using file ID
+                              // Fallback to stored blob URL from upload-success event
+                              if (!actualImageURL && (file as any).blobURL) {
+                                actualImageURL = (file as any).blobURL;
+                                console.log("✓ SUCCESS - Using stored blob URL:", actualImageURL);
+                              }
+                              
+                              // Check global map using file ID
                               if (!actualImageURL && (window as any).uploadedBlobUrls) {
                                 const urlFromMap = (window as any).uploadedBlobUrls.get(file.id);
                                 if (urlFromMap) {
@@ -1914,23 +1924,7 @@ export default function AdminDashboard() {
                                 }
                               }
                               
-                              // Method 3: Extract from file response body (more thorough)
-                              if (!actualImageURL && file.response?.body) {
-                                try {
-                                  const responseData = typeof file.response.body === 'string' 
-                                    ? JSON.parse(file.response.body) 
-                                    : file.response.body;
-                                  
-                                  if (responseData && responseData.url) {
-                                    actualImageURL = responseData.url;
-                                    console.log("Method 3 - Found URL in response body (parsed):", actualImageURL);
-                                  }
-                                } catch (parseError) {
-                                  console.error("Failed to parse response body:", parseError);
-                                }
-                              }
-                              
-                              // Method 4: Fallback construction from meta data
+                              // Fallback construction from meta data
                               if (!actualImageURL && file.meta?.objectName) {
                                 const blobDomain = "ar8dyzdqhh48e0uf.public.blob.vercel-storage.com";
                                 actualImageURL = `https://${blobDomain}/${file.meta.objectName}`;
