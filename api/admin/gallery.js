@@ -5,44 +5,8 @@ import OpenAI from 'openai';
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Plant identification function using OpenAI GPT-4o-mini
-async function identifyPlant(imageUrl) {
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `You are a Texas native plant expert. Analyze this image and identify the plant species. 
-          Respond with a JSON object containing:
-          - common_name: Common name of the plant (or "unknown")
-          - latin_name: Scientific name (or "unknown") 
-          - hardiness_zone: USDA hardiness zone (or "unknown")
-          - sun_preference: full sun, partial sun, partial shade, or full shade (or "unknown")
-          - drought_tolerance: high, medium, or low (or "unknown")
-          - texas_native: boolean indicating if native to Texas (or null if unknown)
-          - indoor_outdoor: indoor, outdoor, or both (or "unknown")
-          - classification: tree, shrub, perennial, annual, grass, succulent, vine, or herb (or "unknown")
-          - description: Brief description of the plant and its characteristics`
-        },
-        {
-          role: "user", 
-          content: [
-            { type: "text", text: "Please identify this plant:" },
-            { type: "image_url", image_url: { url: imageUrl } }
-          ]
-        }
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 500,
-      temperature: 0.3,
-    });
-
-    return JSON.parse(response.choices[0].message.content);
-  } catch (error) {
-    console.error("Plant identification error:", error);
-    return null;
-  }
-}
+// Plant identification function removed to prevent duplicate declaration
+// Using the optimized version below with image processing
 
 // Rate limiting for AI processing to prevent resource exhaustion
 const aiProcessingQueue = new Set();

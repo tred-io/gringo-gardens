@@ -33,13 +33,11 @@ export default async function handler(req, res) {
         };
 
         const [newSetting] = await sql`
-          INSERT INTO settings (id, key, value, created_at, updated_at)
+          INSERT INTO settings (id, key, value)
           VALUES (
             gen_random_uuid(),
             'business_hours',
-            ${JSON.stringify(defaultHours)},
-            now(),
-            now()
+            ${JSON.stringify(defaultHours)}
           )
           RETURNING *
         `;
@@ -55,7 +53,7 @@ export default async function handler(req, res) {
 
       const [setting] = await sql`
         UPDATE settings 
-        SET value = ${JSON.stringify(value)}, updated_at = now()
+        SET value = ${JSON.stringify(value)}
         WHERE key = 'business_hours'
         RETURNING *
       `;
