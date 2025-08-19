@@ -1,0 +1,447 @@
+index-DjHnNWi4.js:285 React available: true
+index-DjHnNWi4.js:285 React.createElement available: true
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(17).jpg image/jpeg
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(18).jpg image/jpeg
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(19).jpg image/jpeg
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(20).jpg image/jpeg
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:261 [Uppy] [16:17:05] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(21).jpg image/jpeg
+index-DjHnNWi4.js:261 [Uppy] [16:17:05] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(22).jpg image/jpeg
+index-DjHnNWi4.js:261 [Uppy] [16:17:05] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(23).jpg image/jpeg
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:261 [Uppy] [16:17:07] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:285 Getting upload parameters for file: image000000(24).jpg image/jpeg
+index-DjHnNWi4.js:261 [Uppy] [16:17:07] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:261 [Uppy] [16:17:07] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:285 Using upload endpoint: /api/blob/upload (production: true)
+index-DjHnNWi4.js:285 Upload response status: 200
+index-DjHnNWi4.js:285 Upload parameters from server: {uploadURL: '/api/blob/upload', method: 'PUT'}
+index-DjHnNWi4.js:285 Received upload parameters: {method: 'PUT', url: '/api/blob/upload'}
+index-DjHnNWi4.js:261 [Uppy] [16:17:08] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:261 [Uppy] [16:17:09] Failed to construct 'URL': Invalid URL
+error @ index-DjHnNWi4.js:261
+log @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:266
+s @ index-DjHnNWi4.js:261
+E6.e.emit @ index-DjHnNWi4.js:261
+emit @ index-DjHnNWi4.js:261
+o @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Promise.then
+zj @ index-DjHnNWi4.js:285
+start @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wj @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+(anonymous) @ index-DjHnNWi4.js:285
+Wl @ index-DjHnNWi4.js:266
+await in Wl
+(anonymous) @ index-DjHnNWi4.js:266
+Promise.then
+upload @ index-DjHnNWi4.js:266
+(anonymous) @ index-DjHnNWi4.js:274
+(anonymous) @ index-DjHnNWi4.js:261
+index-DjHnNWi4.js:285 Uppy upload complete - full result: {
+  "successful": [],
+  "failed": [
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/17//jpg-18-19-1e-image/jpeg-408124-1755298887000",
+      "name": "image000000(17).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(17).jpg",
+        "type": "image/jpeg",
+        "objectName": "gallery/uploads/1755638222769_image000000(17).jpg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 408124,
+        "bytesTotal": 408124,
+        "percentage": 100
+      },
+      "size": 408124,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/eea6cbf0-a2b2-4d8b-8d9b-b49aaf777efd",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/18//jpg-18-19-1e-image/jpeg-416333-1755298888000",
+      "name": "image000000(18).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(18).jpg",
+        "type": "image/jpeg",
+        "objectName": "gallery/uploads/1755638222801_image000000(18).jpg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 416333,
+        "bytesTotal": 416333,
+        "percentage": 100
+      },
+      "size": 416333,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/a9a39bbd-dad6-479f-b73f-eec68eddda92",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/19//jpg-18-19-1e-image/jpeg-534204-1755298889000",
+      "name": "image000000(19).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(19).jpg",
+        "type": "image/jpeg",
+        "objectName": "gallery/uploads/1755638222767_image000000(19).jpg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 534204,
+        "bytesTotal": 534204,
+        "percentage": 100
+      },
+      "size": 534204,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/8d453114-fb7c-4ebc-b760-8b9324098a72",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/20//jpg-18-19-1e-image/jpeg-597913-1755298890000",
+      "name": "image000000(20).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(20).jpg",
+        "type": "image/jpeg",
+        "objectName": "gallery/uploads/1755638222870_image000000(20).jpg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 597913,
+        "bytesTotal": 597913,
+        "percentage": 100
+      },
+      "size": 597913,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/cfc9ace1-62cf-4e2b-90aa-da685492de61",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/21//jpg-18-19-1e-image/jpeg-551390-1755303299114",
+      "name": "image000000(21).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(21).jpg",
+        "type": "image/jpeg",
+        "objectName": "gallery/uploads/1755638225871_image000000(21).jpg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 551390,
+        "bytesTotal": 551390,
+        "percentage": 100
+      },
+      "size": 551390,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/f23d43a1-9b31-48af-b56f-8ce5e4b16227",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/22//jpg-18-19-1e-image/jpeg-640612-1755298892000",
+      "name": "image000000(22).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(22).jpg",
+        "type": "image/jpeg",
+        "objectName": "gallery/uploads/1755638225884_image000000(22).jpg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 640612,
+        "bytesTotal": 640612,
+        "percentage": 100
+      },
+      "size": 640612,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/c98fc567-8da0-4cb5-8205-a9657adffa04",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/23//jpg-18-19-1e-image/jpeg-288430-1755298893000",
+      "name": "image000000(23).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(23).jpg",
+        "type": "image/jpeg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 288430,
+        "bytesTotal": 288430,
+        "percentage": 100
+      },
+      "size": 288430,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/8de6b8f7-9633-4a4a-b8a4-ef446c9ce936",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    },
+    {
+      "source": "DashboardModal",
+      "id": "uppy-image000000/24//jpg-18-19-1e-image/jpeg-626528-1755303306602",
+      "name": "image000000(24).jpg",
+      "extension": "jpg",
+      "meta": {
+        "relativePath": null,
+        "name": "image000000(24).jpg",
+        "type": "image/jpeg"
+      },
+      "type": "image/jpeg",
+      "data": {},
+      "progress": {
+        "uploadStarted": 1755638222533,
+        "uploadComplete": false,
+        "bytesUploaded": 626528,
+        "bytesTotal": 626528,
+        "percentage": 100
+      },
+      "size": 626528,
+      "isGhost": false,
+      "isRemote": false,
+      "preview": "blob:https://gringo-gardens.vercel.app/abb521ca-85c6-4563-8d6b-9119329bff3b",
+      "s3Multipart": {},
+      "error": "Failed to construct 'URL': Invalid URL"
+    }
+  ],
+  "uploadID": "JEd8X_AThT7BVj28jjbq2"
+}
+index-DjHnNWi4.js:285 Upload complete result: {successful: Array(0), failed: Array(8), uploadID: 'JEd8X_AThT7BVj28jjbq2'}

@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     // Handle POST request to get upload URL
     if (req.method === 'POST') {
       console.log('Providing Vercel Blob upload URL');
-      // Return the current endpoint URL for upload
+      // Return the current endpoint URL for upload - use relative path
       return res.json({
         uploadURL: `/api/blob/upload`,
         method: "PUT"
@@ -69,6 +69,7 @@ export default async function handler(req, res) {
           }
 
           // Upload to Vercel Blob with proper content type
+          console.log(`Uploading to Vercel Blob: ${objectName}, size: ${buffer.length} bytes`);
           const blob = await put(objectName, buffer, {
             access: 'public',
             token: process.env.BLOB_READ_WRITE_TOKEN,

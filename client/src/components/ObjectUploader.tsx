@@ -102,12 +102,20 @@ export function ObjectUploader({
               }
             }
             
+            // Convert relative URLs to absolute URLs for Uppy
+            if (uploadUrl.startsWith('/')) {
+              uploadUrl = window.location.origin + uploadUrl;
+            }
+            
             // Final URL validation
             try {
-              new URL(uploadUrl, window.location.origin);
+              new URL(uploadUrl);
             } catch (urlError) {
+              console.error(`Invalid URL format: ${uploadUrl}`, urlError);
               throw new Error(`Invalid URL format: ${uploadUrl}`);
             }
+            
+            console.log(`Final upload URL: ${uploadUrl}`);
             
             return {
               method: params.method || "PUT",
