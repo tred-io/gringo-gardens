@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Link } from "wouter";
 
@@ -19,17 +19,29 @@ export default function HeroSection({
   ctaText = "Shop Native Plants",
   ctaLink = "/products"
 }: HeroSectionProps) {
+  const [imageSrc, setImageSrc] = useState(heroImageUrl);
+  const [hasTriedFallback, setHasTriedFallback] = useState(false);
+
+  // Reset state when heroImageUrl prop changes
+  useEffect(() => {
+    setImageSrc(heroImageUrl);
+    setHasTriedFallback(false);
+  }, [heroImageUrl]);
   return (
     <section className="relative h-screen flex items-center justify-center text-white">
       {/* Background Image */}
       <img 
-        src={heroImageUrl} 
+        src={imageSrc} 
         alt="Texas wildflowers"
         className="absolute inset-0 w-full h-full object-cover z-0"
         onError={(e) => {
-          console.error('Hero image failed to load:', e);
-          // Fallback to original image
-          e.currentTarget.src = 'https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80';
+          if (!hasTriedFallback) {
+            console.error('Hero image failed to load, trying fallback:', e);
+            setHasTriedFallback(true);
+            setImageSrc('https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+          } else {
+            console.error('Both hero and fallback images failed to load');
+          }
         }}
         onLoad={() => console.log('Hero image loaded successfully')}
       />
