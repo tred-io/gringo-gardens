@@ -128,7 +128,7 @@ describe('Website Link Testing', () => {
       expect(Array.isArray(response.body)).toBe(true);
       
       // Test that homepage categories are properly marked
-      const homepageCategories = response.body.filter(cat => cat.showOnHomepage);
+      const homepageCategories = response.body.filter((cat: any) => cat.showOnHomepage);
       expect(homepageCategories.length).toBeGreaterThan(0);
       expect(homepageCategories.length).toBeLessThanOrEqual(4);
     });
@@ -395,7 +395,7 @@ describe('Website Link Testing', () => {
         .get('/api/categories')
         .expect(200);
 
-      const homepageCategories = response.body.filter(cat => cat.showOnHomepage);
+      const homepageCategories = response.body.filter((cat: any) => cat.showOnHomepage);
       
       for (const category of homepageCategories) {
         expect(category).toHaveProperty('imageUrl');
