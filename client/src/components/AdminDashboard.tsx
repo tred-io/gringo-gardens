@@ -867,20 +867,20 @@ export default function AdminDashboard() {
         title: processedData.title,
         description: processedData.description,
         category: processedData.category,
-        tags: processedData.tags.join(','), // Convert array to comma-separated string for API
+        tags: processedData.tags.join(','), // Convert to comma-separated string for mutation interface
         featured: processedData.featured
       };
-      updateGalleryImageMutation.mutate(updateData);
+      updateGalleryImageMutation.mutate(updateData as any);
     } else {
       const createData = {
         imageUrl: processedData.imageUrl,
         title: processedData.title,
         description: processedData.description,
         category: processedData.category,
-        tags: processedData.tags.join(','), // Convert array to comma-separated string for API
+        tags: processedData.tags.join(','), // Convert to comma-separated string for mutation interface
         featured: processedData.featured
       };
-      createGalleryImageMutation.mutate(createData);
+      createGalleryImageMutation.mutate(createData as any);
     }
   };
 
@@ -1200,11 +1200,11 @@ export default function AdminDashboard() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {categories.map(category => (
+                                  {categories?.map(category => (
                                     <SelectItem key={category.id} value={category.id}>
                                       {category.name}
                                     </SelectItem>
-                                  ))}
+                                  )) || []}
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -1245,9 +1245,9 @@ export default function AdminDashboard() {
                                           // Map plant category to product category
                                           if (galleryImage.category) {
                                             // Try to find matching category or use the gallery category
-                                            const matchingCategory = categories.find(cat => 
+                                            const matchingCategory = categories?.find(cat => 
                                               cat.id === galleryImage.category || 
-                                              cat.name.toLowerCase().includes(galleryImage.category.toLowerCase())
+                                              cat.name.toLowerCase().includes(galleryImage.category?.toLowerCase() || '')
                                             );
                                             if (matchingCategory) {
                                               productForm.setValue('categoryId', matchingCategory.id);
@@ -1278,9 +1278,9 @@ export default function AdminDashboard() {
                                     <ObjectUploader
                                       maxNumberOfFiles={1}
                                       maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
                                       onComplete={(result) => {
-                                        if (result.successful.length > 0) {
+                                        if (result.successful && result.successful.length > 0) {
                                           field.onChange(result.successful[0].uploadURL);
                                         }
                                       }}
@@ -1326,11 +1326,11 @@ export default function AdminDashboard() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map(category => (
+                    {categories?.map(category => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
-                    ))}
+                    )) || []}
                   </SelectContent>
                 </Select>
                 <Input
@@ -1498,9 +1498,9 @@ export default function AdminDashboard() {
                                     <ObjectUploader
                                       maxNumberOfFiles={1}
                                       maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
                                       onComplete={(result) => {
-                                        if (result.successful.length > 0) {
+                                        if (result.successful && result.successful.length > 0) {
                                           field.onChange(result.successful[0].uploadURL);
                                         }
                                       }}
@@ -1561,7 +1561,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories.map(category => (
+                {categories?.map(category => (
                   <Card key={category.id} className="overflow-hidden">
                     <div className="h-32 bg-gray-100">
                       {category.imageUrl ? (
@@ -1699,9 +1699,9 @@ export default function AdminDashboard() {
                                     <ObjectUploader
                                       maxNumberOfFiles={1}
                                       maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
                                       onComplete={(result) => {
-                                        if (result.successful.length > 0) {
+                                        if (result.successful && result.successful.length > 0) {
                                           field.onChange(result.successful[0].uploadURL);
                                         }
                                       }}
@@ -1856,7 +1856,7 @@ export default function AdminDashboard() {
                             response: file.response,
                             responseBody: file.response?.body,
                             responseStatus: file.response?.status,
-                            responseHeaders: file.response?.headers
+                            responseHeaders: (file.response as any)?.headers
                           });
                           
                           if (isVercel) {
@@ -1908,6 +1908,7 @@ export default function AdminDashboard() {
                             // For Replit object storage: convert signed URL to permanent serving URL
                             try {
                               // Extract object path from Google Cloud Storage URL
+                              if (!file.uploadURL) throw new Error('Upload URL is missing');
                               const url = new URL(file.uploadURL);
                               const pathParts = url.pathname.split('/');
                               // Path structure: /bucket-name/.private/uploads/filename
@@ -2461,9 +2462,9 @@ export default function AdminDashboard() {
                                     <ObjectUploader
                                       maxNumberOfFiles={1}
                                       maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("/api/objects/upload", { method: "POST" }).then(r => ({ method: "PUT" as const, url: r.uploadURL }))}
+                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
                                       onComplete={(result) => {
-                                        if (result.successful.length > 0) {
+                                        if (result.successful && result.successful.length > 0) {
                                           field.onChange(result.successful[0].uploadURL);
                                         }
                                       }}
@@ -2547,7 +2548,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {teamMembers.map(member => (
+                {teamMembers?.map(member => (
                   <Card key={member.id}>
                     <CardContent className="p-6 text-center">
                       <div className="w-20 h-20 bg-bluebonnet-100 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
@@ -2566,7 +2567,6 @@ export default function AdminDashboard() {
                       <h3 className="font-semibold text-bluebonnet-900 mb-1">{member.name}</h3>
                       <p className="text-gray-600 text-sm mb-2">{member.position}</p>
                       {member.bio && <p className="text-gray-500 text-xs mb-2">{member.bio}</p>}
-                      {member.email && <p className="text-gray-400 text-xs">{member.email}</p>}
                       <div className="flex gap-2 mt-4 justify-center">
                         <Button size="sm" variant="outline" onClick={() => handleEditTeamMember(member)}>
                           <Edit className="w-4 h-4" />
@@ -2606,7 +2606,7 @@ export default function AdminDashboard() {
                                     <div>
                                       <p className="text-sm font-medium text-gray-900">{subscriber.email}</p>
                                       <p className="text-xs text-gray-500">
-                                        {subscriber.subscribedAt ? new Date(subscriber.subscribedAt).toLocaleDateString() : 'Unknown date'}
+                                        {subscriber.createdAt ? new Date(subscriber.createdAt).toLocaleDateString() : 'Unknown date'}
                                       </p>
                                     </div>
                                     <Badge variant={subscriber.active ? "default" : "secondary"}>
@@ -2641,7 +2641,7 @@ export default function AdminDashboard() {
                                 onChange={(e) => {
                                   setBusinessHours(prev => ({
                                     ...prev,
-                                    [day]: { ...prev[day], closed: !e.target.checked }
+                                    [day]: { ...(prev as any)[day], closed: !e.target.checked }
                                   }));
                                 }}
                                 className="rounded"
@@ -2656,7 +2656,7 @@ export default function AdminDashboard() {
                                   onChange={(e) => {
                                     setBusinessHours(prev => ({
                                       ...prev,
-                                      [day]: { ...prev[day], open: e.target.value }
+                                      [day]: { ...(prev as any)[day], open: e.target.value }
                                     }));
                                   }}
                                   className="px-3 py-2 border border-gray-300 rounded-md focus:ring-bluebonnet-500 focus:border-bluebonnet-500"
@@ -2668,7 +2668,7 @@ export default function AdminDashboard() {
                                   onChange={(e) => {
                                     setBusinessHours(prev => ({
                                       ...prev,
-                                      [day]: { ...prev[day], close: e.target.value }
+                                      [day]: { ...(prev as any)[day], close: e.target.value }
                                     }));
                                   }}
                                   className="px-3 py-2 border border-gray-300 rounded-md focus:ring-bluebonnet-500 focus:border-bluebonnet-500"
