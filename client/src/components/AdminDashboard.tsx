@@ -256,6 +256,181 @@ export default function AdminDashboard() {
   const [isTeamDialogOpen, setIsTeamDialogOpen] = useState(false);
   const [editingTeamMember, setEditingTeamMember] = useState<TeamMember | null>(null);
 
+  // Content management state
+  const [contentLoading, setContentLoading] = useState(false);
+  
+  // Content form schemas
+  const homepageContentSchema = z.object({
+    heroTitle: z.string().optional(),
+    heroSubtitle: z.string().optional(),
+    heroDescription: z.string().optional(),
+    heroImageUrl: z.string().optional(),
+    ctaText: z.string().optional(),
+    ctaLink: z.string().optional(),
+    aboutTitle: z.string().optional(),
+    aboutContent: z.string().optional(),
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
+    seoKeywords: z.string().optional(),
+  });
+
+  const aboutContentSchema = z.object({
+    pageTitle: z.string().optional(),
+    heroSubtitle: z.string().optional(),
+    story: z.string().optional(),
+    mission: z.string().optional(),
+  });
+
+  const contactContentSchema = z.object({
+    pageTitle: z.string().optional(),
+    description: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
+    address: z.string().optional(),
+  });
+
+  const globalContentSchema = z.object({
+    siteName: z.string().optional(),
+    siteTagline: z.string().optional(),
+    footerCopyright: z.string().optional(),
+  });
+
+  // Content forms
+  const homepageForm = useForm<z.infer<typeof homepageContentSchema>>({
+    resolver: zodResolver(homepageContentSchema),
+    defaultValues: {
+      heroTitle: "",
+      heroSubtitle: "",
+      heroDescription: "",
+      heroImageUrl: "",
+      ctaText: "",
+      ctaLink: "",
+      aboutTitle: "",
+      aboutContent: "",
+      seoTitle: "",
+      seoDescription: "",
+      seoKeywords: "",
+    },
+  });
+
+  const aboutForm = useForm<z.infer<typeof aboutContentSchema>>({
+    resolver: zodResolver(aboutContentSchema),
+    defaultValues: {
+      pageTitle: "",
+      heroSubtitle: "",
+      story: "",
+      mission: "",
+    },
+  });
+
+  const contactForm = useForm<z.infer<typeof contactContentSchema>>({
+    resolver: zodResolver(contactContentSchema),
+    defaultValues: {
+      pageTitle: "",
+      description: "",
+      phone: "",
+      email: "",
+      address: "",
+    },
+  });
+
+  const globalForm = useForm<z.infer<typeof globalContentSchema>>({
+    resolver: zodResolver(globalContentSchema),
+    defaultValues: {
+      siteName: "",
+      siteTagline: "",
+      footerCopyright: "",
+    },
+  });
+
+  // Load existing content when settings are available
+  useEffect(() => {
+    if (settings && settings.length > 0) {
+      // Load homepage content
+      const homepageSetting = settings.find(s => s.key === 'page_content_homepage');
+      if (homepageSetting?.value) {
+        try {
+          const content = JSON.parse(homepageSetting.value);
+          homepageForm.reset(content);
+        } catch (error) {
+          console.error('Error parsing homepage content:', error);
+        }
+      }
+
+      // Load about content
+      const aboutSetting = settings.find(s => s.key === 'page_content_about');
+      if (aboutSetting?.value) {
+        try {
+          const content = JSON.parse(aboutSetting.value);
+          aboutForm.reset(content);
+        } catch (error) {
+          console.error('Error parsing about content:', error);
+        }
+      }
+
+      // Load contact content
+      const contactSetting = settings.find(s => s.key === 'page_content_contact');
+      if (contactSetting?.value) {
+        try {
+          const content = JSON.parse(contactSetting.value);
+          contactForm.reset(content);
+        } catch (error) {
+          console.error('Error parsing contact content:', error);
+        }
+      }
+
+      // Load global content
+      const globalSetting = settings.find(s => s.key === 'global_content');
+      if (globalSetting?.value) {
+        try {
+          const content = JSON.parse(globalSetting.value);
+          globalForm.reset(content);
+        } catch (error) {
+          console.error('Error parsing global content:', error);
+        }
+      }
+    }
+  }, [settings, homepageForm, aboutForm, contactForm, globalForm]);
+
+  // Content save functions
+  const savePageContent = async (pageKey: string, content: any) => {
+    setContentLoading(true);
+    try {
+      await updateSettingMutation.mutateAsync({
+        key: pageKey,
+        value: JSON.stringify(content),
+      });
+      toast({
+        title: "Content Saved",
+        description: "Your page content has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save content. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setContentLoading(false);
+    }
+  };
+
+  const onHomepageSubmit = (data: z.infer<typeof homepageContentSchema>) => {
+    savePageContent('page_content_homepage', data);
+  };
+
+  const onAboutSubmit = (data: z.infer<typeof aboutContentSchema>) => {
+    savePageContent('page_content_about', data);
+  };
+
+  const onContactSubmit = (data: z.infer<typeof contactContentSchema>) => {
+    savePageContent('page_content_contact', data);
+  };
+
+  const onGlobalSubmit = (data: z.infer<typeof globalContentSchema>) => {
+    savePageContent('global_content', data);
+  };
+
   // Team member form schema
   const teamMemberSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -2629,143 +2804,259 @@ export default function AdminDashboard() {
                             </DialogDescription>
                           </DialogHeader>
                           
-                          <div className="space-y-6">
-                            {/* Hero Section */}
-                            <div className="border rounded-lg p-4">
-                              <h3 className="font-semibold text-lg mb-4 flex items-center">
-                                <Image className="w-5 h-5 mr-2" />
-                                Hero Section
-                              </h3>
-                              <div className="grid gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Hero Title</label>
-                                  <Input 
-                                    placeholder="Welcome to Gringo Gardens"
-                                    data-testid="input-hero-title"
+                          <Form {...homepageForm}>
+                            <form onSubmit={homepageForm.handleSubmit(onHomepageSubmit)} className="space-y-6">
+                              {/* Hero Section */}
+                              <div className="border rounded-lg p-4">
+                                <h3 className="font-semibold text-lg mb-4 flex items-center">
+                                  <Image className="w-5 h-5 mr-2" />
+                                  Hero Section
+                                </h3>
+                                <div className="grid gap-4">
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="heroTitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Hero Title</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="Welcome to Gringo Gardens"
+                                            data-testid="input-hero-title"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-                                  <Input 
-                                    placeholder="Texas Native Plants & Trees"
-                                    data-testid="input-hero-subtitle"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="heroSubtitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Hero Subtitle</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="Texas Native Plants & Trees"
+                                            data-testid="input-hero-subtitle"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Hero Description</label>
-                                  <Textarea 
-                                    placeholder="Discover drought-tolerant Texas native plants..."
-                                    rows={3}
-                                    data-testid="textarea-hero-description"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="heroDescription"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Hero Description</FormLabel>
+                                        <FormControl>
+                                          <Textarea 
+                                            placeholder="Discover drought-tolerant Texas native plants..."
+                                            rows={3}
+                                            data-testid="textarea-hero-description"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Hero Image</label>
-                                  <div className="flex gap-2">
-                                    <Select data-testid="select-hero-image">
-                                      <SelectTrigger className="flex-1">
-                                        <SelectValue placeholder="Select from gallery" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {galleryImages?.slice(0, 10).map(image => (
-                                          <SelectItem key={image.id} value={image.imageUrl}>
-                                            <div className="flex items-center">
-                                              <img src={image.imageUrl} alt={image.title || 'Gallery image'} className="w-8 h-8 object-cover rounded mr-2" />
-                                              {image.title || 'Untitled'}
-                                            </div>
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                    <Button variant="outline" size="sm">
-                                      <Upload className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Call-to-Action Button Text</label>
-                                  <Input 
-                                    placeholder="Shop Native Plants"
-                                    data-testid="input-cta-text"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="heroImageUrl"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Hero Image</FormLabel>
+                                        <FormControl>
+                                          <div className="flex gap-2">
+                                            <Select value={field.value} onValueChange={field.onChange} data-testid="select-hero-image">
+                                              <SelectTrigger className="flex-1">
+                                                <SelectValue placeholder="Select from gallery" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                {galleryImages?.slice(0, 10).map(image => (
+                                                  <SelectItem key={image.id} value={image.imageUrl}>
+                                                    <div className="flex items-center">
+                                                      <img src={image.imageUrl} alt={image.title || 'Gallery image'} className="w-8 h-8 object-cover rounded mr-2" />
+                                                      {image.title || 'Untitled'}
+                                                    </div>
+                                                  </SelectItem>
+                                                ))}
+                                              </SelectContent>
+                                            </Select>
+                                            <Button type="button" variant="outline" size="sm">
+                                              <Upload className="w-4 h-4" />
+                                            </Button>
+                                          </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Call-to-Action Button Link</label>
-                                  <Input 
-                                    placeholder="/products"
-                                    data-testid="input-cta-link"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="ctaText"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Call-to-Action Button Text</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="Shop Native Plants"
+                                            data-testid="input-cta-text"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="ctaLink"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Call-to-Action Button Link</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="/products"
+                                            data-testid="input-cta-link"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
                                 </div>
                               </div>
-                            </div>
 
-                            {/* About Section */}
-                            <div className="border rounded-lg p-4">
-                              <h3 className="font-semibold text-lg mb-4 flex items-center">
-                                <FileText className="w-5 h-5 mr-2" />
-                                About Section
-                              </h3>
-                              <div className="grid gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">About Title</label>
-                                  <Input 
-                                    placeholder="About Gringo Gardens"
-                                    data-testid="input-about-title"
+                              {/* About Section */}
+                              <div className="border rounded-lg p-4">
+                                <h3 className="font-semibold text-lg mb-4 flex items-center">
+                                  <FileText className="w-5 h-5 mr-2" />
+                                  About Section
+                                </h3>
+                                <div className="grid gap-4">
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="aboutTitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>About Title</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="About Gringo Gardens"
+                                            data-testid="input-about-title"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">About Content</label>
-                                  <Textarea 
-                                    placeholder="We are a family-owned nursery specializing in Texas native plants..."
-                                    rows={4}
-                                    data-testid="textarea-about-content"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="aboutContent"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>About Content</FormLabel>
+                                        <FormControl>
+                                          <Textarea 
+                                            placeholder="We are a family-owned nursery specializing in Texas native plants..."
+                                            rows={4}
+                                            data-testid="textarea-about-content"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
                                 </div>
                               </div>
-                            </div>
 
-                            {/* SEO Settings */}
-                            <div className="border rounded-lg p-4">
-                              <h3 className="font-semibold text-lg mb-4 flex items-center">
-                                <Search className="w-5 h-5 mr-2" />
-                                SEO Settings
-                              </h3>
-                              <div className="grid gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Page Title</label>
-                                  <Input 
-                                    placeholder="Gringo Gardens - Texas Native Plants & Trees"
-                                    data-testid="input-seo-title"
+                              {/* SEO Settings */}
+                              <div className="border rounded-lg p-4">
+                                <h3 className="font-semibold text-lg mb-4 flex items-center">
+                                  <Search className="w-5 h-5 mr-2" />
+                                  SEO Settings
+                                </h3>
+                                <div className="grid gap-4">
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="seoTitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Page Title</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="Gringo Gardens - Texas Native Plants & Trees"
+                                            data-testid="input-seo-title"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Meta Description</label>
-                                  <Textarea 
-                                    placeholder="Discover drought-tolerant Texas native plants..."
-                                    rows={2}
-                                    data-testid="textarea-seo-description"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="seoDescription"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Meta Description</FormLabel>
+                                        <FormControl>
+                                          <Textarea 
+                                            placeholder="Discover drought-tolerant Texas native plants..."
+                                            rows={2}
+                                            data-testid="textarea-seo-description"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Keywords</label>
-                                  <Input 
-                                    placeholder="texas native plants, drought tolerant, nursery"
-                                    data-testid="input-seo-keywords"
+                                  <FormField
+                                    control={homepageForm.control}
+                                    name="seoKeywords"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Keywords</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="texas native plants, drought tolerant, nursery"
+                                            data-testid="input-seo-keywords"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
                                   />
                                 </div>
                               </div>
-                            </div>
-                          </div>
 
-                          <div className="flex justify-end gap-2 mt-6">
-                            <DialogClose asChild>
-                              <Button variant="outline" data-testid="button-cancel-homepage">Cancel</Button>
-                            </DialogClose>
-                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-homepage">
-                              <Save className="w-4 h-4 mr-2" />
-                              Save Homepage Content
-                            </Button>
-                          </div>
+                              <div className="flex justify-end gap-2 mt-6">
+                                <DialogClose asChild>
+                                  <Button type="button" variant="outline" data-testid="button-cancel-homepage">Cancel</Button>
+                                </DialogClose>
+                                <Button 
+                                  type="submit" 
+                                  className="bg-bluebonnet-600 hover:bg-bluebonnet-700" 
+                                  data-testid="button-save-homepage"
+                                  disabled={contentLoading}
+                                >
+                                  <Save className="w-4 h-4 mr-2" />
+                                  {contentLoading ? 'Saving...' : 'Save Homepage Content'}
+                                </Button>
+                              </div>
+                            </form>
+                          </Form>
                         </DialogContent>
                       </Dialog>
                     </CardContent>
