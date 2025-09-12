@@ -4,8 +4,12 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import type { Product } from "@shared/schema";
 
+interface ProductWithCategory extends Product {
+  categoryName?: string;
+}
+
 interface ProductCardProps {
-  product: Product;
+  product: ProductWithCategory;
   onViewDetails?: () => void;
 }
 

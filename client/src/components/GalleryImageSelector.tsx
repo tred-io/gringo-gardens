@@ -18,7 +18,7 @@ interface GalleryImageSelectorProps {
 export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: GalleryImageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>("all");
 
 
   const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
@@ -111,7 +111,7 @@ export function GalleryImageSelector({ onSelect, selectedImageUrl, trigger }: Ga
                   <div className="aspect-square">
                     <img
                       src={image.imageUrl}
-                      alt={image.altText || image.title}
+                      alt={image.altText || image.title || ""}
                       className="w-full h-full object-cover"
                     />
                   </div>
