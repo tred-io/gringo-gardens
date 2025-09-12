@@ -53,7 +53,7 @@ export default function Home() {
 
   // Fetch homepage content from CMS
   const { data: homepageContentSetting } = useQuery({
-    queryKey: ["/api/admin/settings/page_content_homepage"],
+    queryKey: ["/api/settings/page_content_homepage"],
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
