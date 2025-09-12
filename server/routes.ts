@@ -235,7 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const productsWithCategories = products.map(product => ({
         ...product,
-        categoryName: categoryMap.get(product.categoryId) || 'Uncategorized'
+        categoryName: product.categoryId ? (categoryMap.get(product.categoryId) || 'Uncategorized') : 'Uncategorized'
       }));
 
       console.log(`Retrieved ${productsWithCategories.length} products with categories`);
