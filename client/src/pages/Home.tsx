@@ -51,6 +51,14 @@ export default function Home() {
     refetchOnReconnect: false,
   });
 
+  // Fetch homepage content from CMS
+  const { data: homepageContentSetting } = useQuery({
+    queryKey: ["/api/admin/settings/page_content_homepage"],
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+
   // Select 2 random reviews instead of featured ones
   const getRandomReviews = (reviewsArray: Review[] | null, count: number) => {
     if (!reviewsArray || reviewsArray.length <= count) return reviewsArray || [];
@@ -63,6 +71,9 @@ export default function Home() {
   // Parse business settings with safe access
   const temporaryClosure = (temporaryClosureSetting as any)?.value ? JSON.parse((temporaryClosureSetting as any).value) : null;
   const businessHours = (businessHoursSetting as any)?.value ? JSON.parse((businessHoursSetting as any).value) : null;
+
+  // Parse homepage content from CMS
+  const homepageContent = (homepageContentSetting as any)?.value ? JSON.parse((homepageContentSetting as any).value) : null;
   
   // Debug logging for closure settings (can be removed in production)
   // console.log('Home - temporaryClosureSetting:', temporaryClosureSetting);
@@ -81,15 +92,22 @@ export default function Home() {
   return (
     <div>
       <SEOHead
-        title="Texas Native Plants & Trees | Lampasas Nursery"
-        description="Discover drought-tolerant Texas native plants, trees, and wildflowers at Gringo Gardens in Lampasas. Expert advice, quality plants, and sustainable landscaping solutions for Central Texas."
-        keywords="Texas native plants, native trees, wildflowers, drought tolerant plants, Lampasas nursery, Central Texas plants, bluebonnets, fruit trees, herbs, sustainable landscaping"
+        title={homepageContent?.seoTitle || "Texas Native Plants & Trees | Lampasas Nursery"}
+        description={homepageContent?.seoDescription || "Discover drought-tolerant Texas native plants, trees, and wildflowers at Gringo Gardens in Lampasas. Expert advice, quality plants, and sustainable landscaping solutions for Central Texas."}
+        keywords={homepageContent?.seoKeywords || "Texas native plants, native trees, wildflowers, drought tolerant plants, Lampasas nursery, Central Texas plants, bluebonnets, fruit trees, herbs, sustainable landscaping"}
         url="/"
-        image="/hero-wildflowers.jpg"
+        image={homepageContent?.heroImageUrl || "/hero-wildflowers.jpg"}
       />
       
       {/* Hero Section */}
-      <HeroSection />
+      <HeroSection 
+        heroTitle={homepageContent?.heroTitle}
+        heroSubtitle={homepageContent?.heroSubtitle}
+        heroDescription={homepageContent?.heroDescription}
+        heroImageUrl={homepageContent?.heroImageUrl}
+        ctaText={homepageContent?.ctaText}
+        ctaLink={homepageContent?.ctaLink}
+      />
 
       {/* About Section */}
       <section className="py-16 lg:py-24 bg-gray-50">
@@ -97,14 +115,22 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl lg:text-4xl font-bold text-bluebonnet-900 mb-6">
-                Rooted in Texas Tradition
+                {homepageContent?.aboutTitle || "Rooted in Texas Tradition"}
               </h2>
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                Founded in the heart of Lampasas, Gringo Gardens has been Central Texas's trusted source for native plants and expert horticultural advice for over a decade. Our passion for Texas flora drives everything we do.
-              </p>
-              <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-                We believe that the best gardens work with nature, not against it. That's why we specialize in native Texas plants that naturally thrive in our climate, require less water, and support local wildlife.
-              </p>
+              <div className="text-lg text-gray-700 mb-8 leading-relaxed">
+                {homepageContent?.aboutContent ? (
+                  <div dangerouslySetInnerHTML={{ __html: homepageContent.aboutContent.replace(/\n/g, '</p><p className="mb-6">') }} />
+                ) : (
+                  <>
+                    <p className="mb-6">
+                      Founded in the heart of Lampasas, Gringo Gardens has been Central Texas's trusted source for native plants and expert horticultural advice for over a decade. Our passion for Texas flora drives everything we do.
+                    </p>
+                    <p>
+                      We believe that the best gardens work with nature, not against it. That's why we specialize in native Texas plants that naturally thrive in our climate, require less water, and support local wildlife.
+                    </p>
+                  </>
+                )}
+              </div>
               <Link href="/about">
                 <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700">
                   Learn Our Story
