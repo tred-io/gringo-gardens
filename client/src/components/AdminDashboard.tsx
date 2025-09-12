@@ -345,9 +345,9 @@ export default function AdminDashboard() {
 
   // Load existing content when settings are available
   useEffect(() => {
-    if (settings && settings.length > 0) {
+    if (settings && Array.isArray(settings) && settings.length > 0) {
       // Load homepage content
-      const homepageSetting = settings.find(s => s.key === 'page_content_homepage');
+      const homepageSetting = settings.find((s: any) => s.key === 'page_content_homepage');
       if (homepageSetting?.value) {
         try {
           const content = JSON.parse(homepageSetting.value);
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
       }
 
       // Load about content
-      const aboutSetting = settings.find(s => s.key === 'page_content_about');
+      const aboutSetting = settings.find((s: any) => s.key === 'page_content_about');
       if (aboutSetting?.value) {
         try {
           const content = JSON.parse(aboutSetting.value);
@@ -369,7 +369,7 @@ export default function AdminDashboard() {
       }
 
       // Load contact content
-      const contactSetting = settings.find(s => s.key === 'page_content_contact');
+      const contactSetting = settings.find((s: any) => s.key === 'page_content_contact');
       if (contactSetting?.value) {
         try {
           const content = JSON.parse(contactSetting.value);
@@ -380,7 +380,7 @@ export default function AdminDashboard() {
       }
 
       // Load global content
-      const globalSetting = settings.find(s => s.key === 'global_content');
+      const globalSetting = settings.find((s: any) => s.key === 'global_content');
       if (globalSetting?.value) {
         try {
           const content = JSON.parse(globalSetting.value);
