@@ -13,7 +13,7 @@ import { Switch } from "./ui/switch";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from "./ui/dialog";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { isUnauthorizedError } from "../lib/authUtils";
@@ -31,7 +31,14 @@ import {
   Eye,
   EyeOff,
   Check,
-  X
+  X,
+  Globe,
+  Home,
+  Info,
+  Phone,
+  Save,
+  Search,
+  Upload
 } from "lucide-react";
 import { ObjectUploader } from "./ObjectUploader";
 import { GalleryImageSelector } from "./GalleryImageSelector";
@@ -1082,7 +1089,7 @@ export default function AdminDashboard() {
         <Card>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <div className="border-b border-gray-200">
-              <TabsList className="grid w-full grid-cols-8">
+              <TabsList className="grid w-full grid-cols-9">
                 <TabsTrigger value="products">Products</TabsTrigger>
                 <TabsTrigger value="categories">Categories</TabsTrigger>
                 <TabsTrigger value="blog">Blog Posts</TabsTrigger>
@@ -1090,6 +1097,7 @@ export default function AdminDashboard() {
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
                 <TabsTrigger value="messages">Messages</TabsTrigger>
                 <TabsTrigger value="team">Team</TabsTrigger>
+                <TabsTrigger value="content">Content</TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
             </div>
@@ -2583,6 +2591,392 @@ export default function AdminDashboard() {
                     <p className="text-gray-500">No team members added yet. Click "Add Team Member" to get started.</p>
                   </div>
                 )}
+              </div>
+            </TabsContent>
+
+            {/* Content Management Tab */}
+            <TabsContent value="content" className="p-6">
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-bluebonnet-900 mb-2">Content Management</h2>
+                <p className="text-gray-600">Manage your website content page by page. Select a page below to edit its content, images, and SEO settings.</p>
+              </div>
+
+              <div className="grid gap-6">
+                {/* Page Selection Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Homepage Card */}
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" data-testid="card-homepage-content">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="p-2 rounded-full bg-bluebonnet-100">
+                          <Home className="w-6 h-6 text-bluebonnet-600" />
+                        </div>
+                        <h3 className="font-semibold text-bluebonnet-900 ml-3">Homepage</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-4">Manage hero section, featured content, and homepage layout</p>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button className="w-full" variant="outline" data-testid="button-edit-homepage">
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Homepage
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Homepage Content</DialogTitle>
+                            <DialogDescription>
+                              Edit your homepage hero section, content, and SEO settings
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-6">
+                            {/* Hero Section */}
+                            <div className="border rounded-lg p-4">
+                              <h3 className="font-semibold text-lg mb-4 flex items-center">
+                                <Image className="w-5 h-5 mr-2" />
+                                Hero Section
+                              </h3>
+                              <div className="grid gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Hero Title</label>
+                                  <Input 
+                                    placeholder="Welcome to Gringo Gardens"
+                                    data-testid="input-hero-title"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                                  <Input 
+                                    placeholder="Texas Native Plants & Trees"
+                                    data-testid="input-hero-subtitle"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Hero Description</label>
+                                  <Textarea 
+                                    placeholder="Discover drought-tolerant Texas native plants..."
+                                    rows={3}
+                                    data-testid="textarea-hero-description"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Hero Image</label>
+                                  <div className="flex gap-2">
+                                    <Select data-testid="select-hero-image">
+                                      <SelectTrigger className="flex-1">
+                                        <SelectValue placeholder="Select from gallery" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {galleryImages?.slice(0, 10).map(image => (
+                                          <SelectItem key={image.id} value={image.imageUrl}>
+                                            <div className="flex items-center">
+                                              <img src={image.imageUrl} alt={image.title || 'Gallery image'} className="w-8 h-8 object-cover rounded mr-2" />
+                                              {image.title || 'Untitled'}
+                                            </div>
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <Button variant="outline" size="sm">
+                                      <Upload className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Call-to-Action Button Text</label>
+                                  <Input 
+                                    placeholder="Shop Native Plants"
+                                    data-testid="input-cta-text"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Call-to-Action Button Link</label>
+                                  <Input 
+                                    placeholder="/products"
+                                    data-testid="input-cta-link"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* About Section */}
+                            <div className="border rounded-lg p-4">
+                              <h3 className="font-semibold text-lg mb-4 flex items-center">
+                                <FileText className="w-5 h-5 mr-2" />
+                                About Section
+                              </h3>
+                              <div className="grid gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">About Title</label>
+                                  <Input 
+                                    placeholder="About Gringo Gardens"
+                                    data-testid="input-about-title"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">About Content</label>
+                                  <Textarea 
+                                    placeholder="We are a family-owned nursery specializing in Texas native plants..."
+                                    rows={4}
+                                    data-testid="textarea-about-content"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* SEO Settings */}
+                            <div className="border rounded-lg p-4">
+                              <h3 className="font-semibold text-lg mb-4 flex items-center">
+                                <Search className="w-5 h-5 mr-2" />
+                                SEO Settings
+                              </h3>
+                              <div className="grid gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Page Title</label>
+                                  <Input 
+                                    placeholder="Gringo Gardens - Texas Native Plants & Trees"
+                                    data-testid="input-seo-title"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Meta Description</label>
+                                  <Textarea 
+                                    placeholder="Discover drought-tolerant Texas native plants..."
+                                    rows={2}
+                                    data-testid="textarea-seo-description"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Keywords</label>
+                                  <Input 
+                                    placeholder="texas native plants, drought tolerant, nursery"
+                                    data-testid="input-seo-keywords"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 mt-6">
+                            <DialogClose asChild>
+                              <Button variant="outline" data-testid="button-cancel-homepage">Cancel</Button>
+                            </DialogClose>
+                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-homepage">
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Homepage Content
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </CardContent>
+                  </Card>
+
+                  {/* About Page Card */}
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" data-testid="card-about-content">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="p-2 rounded-full bg-earth-100">
+                          <Info className="w-6 h-6 text-earth-500" />
+                        </div>
+                        <h3 className="font-semibold text-bluebonnet-900 ml-3">About Page</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-4">Edit your nursery story, mission, and team information</p>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button className="w-full" variant="outline" data-testid="button-edit-about">
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit About Page
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>About Page Content</DialogTitle>
+                            <DialogDescription>
+                              Edit your about page content and story
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-6">
+                            <div className="border rounded-lg p-4">
+                              <h3 className="font-semibold text-lg mb-4">Page Content</h3>
+                              <div className="grid gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Page Title</label>
+                                  <Input placeholder="About Gringo Gardens" data-testid="input-about-page-title" />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                                  <Input placeholder="Our Story & Mission" data-testid="input-about-hero-subtitle" />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Our Story</label>
+                                  <Textarea placeholder="Founded in..." rows={4} data-testid="textarea-our-story" />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Mission Statement</label>
+                                  <Textarea placeholder="Our mission is to..." rows={3} data-testid="textarea-mission" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 mt-6">
+                            <DialogClose asChild>
+                              <Button variant="outline" data-testid="button-cancel-about">Cancel</Button>
+                            </DialogClose>
+                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-about">
+                              <Save className="w-4 h-4 mr-2" />
+                              Save About Content
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </CardContent>
+                  </Card>
+
+                  {/* Contact Page Card */}
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" data-testid="card-contact-content">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="p-2 rounded-full bg-texas-green-100">
+                          <Phone className="w-6 h-6 text-texas-green-600" />
+                        </div>
+                        <h3 className="font-semibold text-bluebonnet-900 ml-3">Contact Page</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-4">Manage contact information and business details</p>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button className="w-full" variant="outline" data-testid="button-edit-contact">
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Contact Page
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Contact Page Content</DialogTitle>
+                            <DialogDescription>
+                              Edit contact information and business details
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-6">
+                            <div className="border rounded-lg p-4">
+                              <h3 className="font-semibold text-lg mb-4">Contact Information</h3>
+                              <div className="grid gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Page Title</label>
+                                  <Input placeholder="Contact Us" data-testid="input-contact-title" />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Description</label>
+                                  <Textarea placeholder="Get in touch with our team..." rows={2} data-testid="textarea-contact-description" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">Phone</label>
+                                    <Input placeholder="(555) 123-4567" data-testid="input-contact-phone" />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2">Email</label>
+                                    <Input placeholder="info@gringogardens.com" data-testid="input-contact-email" />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Address</label>
+                                  <Textarea placeholder="123 Garden Lane, Lampasas, TX" rows={2} data-testid="textarea-contact-address" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 mt-6">
+                            <DialogClose asChild>
+                              <Button variant="outline" data-testid="button-cancel-contact">Cancel</Button>
+                            </DialogClose>
+                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-contact">
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Contact Content
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Global Settings */}
+                <Card data-testid="card-global-settings">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="font-semibold text-bluebonnet-900 flex items-center">
+                          <Globe className="w-5 h-5 mr-2" />
+                          Global Content Settings
+                        </h3>
+                        <p className="text-gray-600 text-sm">Manage site-wide content that appears across all pages</p>
+                      </div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" data-testid="button-edit-global">
+                            <Settings className="w-4 h-4 mr-2" />
+                            Edit Global Settings
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Global Content Settings</DialogTitle>
+                            <DialogDescription>
+                              Edit content that appears site-wide
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Site Name</label>
+                              <Input placeholder="Gringo Gardens" data-testid="input-site-name" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Site Tagline</label>
+                              <Input placeholder="Texas Native Plants & Trees" data-testid="input-site-tagline" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Footer Copyright</label>
+                              <Input placeholder="© 2024 Gringo Gardens. All rights reserved." data-testid="input-footer-copyright" />
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 mt-6">
+                            <DialogClose asChild>
+                              <Button variant="outline" data-testid="button-cancel-global">Cancel</Button>
+                            </DialogClose>
+                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-global">
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Global Settings
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                      <div className="text-center p-3 bg-gray-50 rounded">
+                        <Globe className="w-8 h-8 mx-auto mb-2 text-bluebonnet-600" />
+                        <p className="font-medium">Site Information</p>
+                        <p className="text-xs text-gray-500">Name, tagline, copyright</p>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded">
+                        <Mail className="w-8 h-8 mx-auto mb-2 text-earth-500" />
+                        <p className="font-medium">Contact Details</p>
+                        <p className="text-xs text-gray-500">Phone, email, address</p>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded">
+                        <Image className="w-8 h-8 mx-auto mb-2 text-texas-green-600" />
+                        <p className="font-medium">Default Images</p>
+                        <p className="text-xs text-gray-500">Logo, fallback images</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
