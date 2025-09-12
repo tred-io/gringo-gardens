@@ -351,7 +351,8 @@ export default function AdminDashboard() {
       if (homepageSetting?.value) {
         try {
           const content = JSON.parse(homepageSetting.value);
-          homepageForm.reset(content);
+          // Use setTimeout to ensure DOM is ready
+          setTimeout(() => homepageForm.reset(content), 0);
         } catch (error) {
           console.error('Error parsing homepage content:', error);
         }
@@ -362,7 +363,7 @@ export default function AdminDashboard() {
       if (aboutSetting?.value) {
         try {
           const content = JSON.parse(aboutSetting.value);
-          aboutForm.reset(content);
+          setTimeout(() => aboutForm.reset(content), 0);
         } catch (error) {
           console.error('Error parsing about content:', error);
         }
@@ -373,7 +374,7 @@ export default function AdminDashboard() {
       if (contactSetting?.value) {
         try {
           const content = JSON.parse(contactSetting.value);
-          contactForm.reset(content);
+          setTimeout(() => contactForm.reset(content), 0);
         } catch (error) {
           console.error('Error parsing contact content:', error);
         }
@@ -384,7 +385,7 @@ export default function AdminDashboard() {
       if (globalSetting?.value) {
         try {
           const content = JSON.parse(globalSetting.value);
-          globalForm.reset(content);
+          setTimeout(() => globalForm.reset(content), 0);
         } catch (error) {
           console.error('Error parsing global content:', error);
         }
