@@ -42,11 +42,23 @@ import {
 } from "lucide-react";
 import { ObjectUploader } from "./ObjectUploader";
 import { GalleryImageSelector } from "./GalleryImageSelector";
-import type { 
-  Product, 
-  BlogPost, 
-  GalleryImage, 
-  Review, 
+// New UX components
+import { AutoSlugInput } from "./ui/auto-slug-input";
+import { UnifiedImageUploader } from "./ui/unified-image-uploader";
+import { TagSelector } from "./ui/tag-selector";
+import { PlantIdentificationStatus } from "./ui/plant-identification-status";
+import { DeleteConfirmation } from "./ui/delete-confirmation";
+import { GroupedTabs, ADMIN_TAB_GROUPS } from "./ui/grouped-tabs";
+import { InlineToggle } from "./ui/inline-toggle";
+import { EmptyState, emptyStates } from "./ui/empty-state";
+import { FormDescription } from "./ui/form";
+// Helper utilities
+import { helperText, placeholders, imageSizeGuide } from "../lib/helperText";
+import type {
+  Product,
+  BlogPost,
+  GalleryImage,
+  Review,
   ContactMessage,
   Category,
   TeamMember,
@@ -96,7 +108,7 @@ const galleryImageSchema = z.object({
   description: z.string().optional(),
   imageUrl: z.string().min(1, "Image URL is required"),
   category: z.string().optional(),
-  tags: z.string().optional(), // Comma-separated tags for filtering
+  tags: z.array(z.string()).optional(), // Array of tags for TagSelector component
   featured: z.boolean().default(false),
 });
 
@@ -141,6 +153,7 @@ export default function AdminDashboard() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingGalleryImage, setEditingGalleryImage] = useState<GalleryImage | null>(null);
+  const [identifyingImageId, setIdentifyingImageId] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     productCategory: "",
     productSearch: "",
@@ -499,6 +512,7 @@ export default function AdminDashboard() {
       description: "",
       imageUrl: "",
       category: "",
+      tags: [],
       featured: false,
     },
   });
@@ -1263,20 +1277,11 @@ export default function AdminDashboard() {
 
         {/* Admin Tabs */}
         <Card>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <div className="border-b border-gray-200">
-              <TabsList className="grid w-full grid-cols-9">
-                <TabsTrigger value="products">Products</TabsTrigger>
-                <TabsTrigger value="categories">Categories</TabsTrigger>
-                <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-                <TabsTrigger value="gallery">Gallery</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                <TabsTrigger value="messages">Messages</TabsTrigger>
-                <TabsTrigger value="team">Team</TabsTrigger>
-                <TabsTrigger value="content">Content</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
-              </TabsList>
-            </div>
+          <GroupedTabs
+            groups={ADMIN_TAB_GROUPS}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          >
 
             {/* Products Tab */}
             <TabsContent value="products" className="p-6">
@@ -1315,13 +1320,11 @@ export default function AdminDashboard() {
                             control={productForm.control}
                             name="slug"
                             render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Slug</FormLabel>
-                                <FormControl>
-                                  <Input {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
+                              <AutoSlugInput
+                                sourceValue={productForm.watch("name")}
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
                             )}
                           />
                         </div>
@@ -1399,93 +1402,66 @@ export default function AdminDashboard() {
                           control={productForm.control}
                           name="imageUrl"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Product Image</FormLabel>
-                              <FormControl>
-                                <div className="space-y-2">
-                                  <Input {...field} placeholder="https://..." />
-                                  <div className="flex gap-2">
-                                    <GalleryImageSelector
-                                      onSelect={(imageUrl, galleryImage) => {
-                                        field.onChange(imageUrl);
-                                        // Transfer AI plant identification data to product fields
-                                        if (galleryImage) {
-                                          // Update product name with plant name
-                                          if (galleryImage.title && galleryImage.title !== "Untitled" && galleryImage.title !== "Uploaded Image") {
-                                            productForm.setValue('name', galleryImage.title);
-                                            // Auto-generate slug from plant name
-                                            const slug = galleryImage.title.toLowerCase()
-                                              .replace(/[^a-z0-9 -]/g, '') // Remove special characters
-                                              .replace(/\s+/g, '-') // Replace spaces with hyphens
-                                              .replace(/-+/g, '-'); // Remove duplicate hyphens
-                                            productForm.setValue('slug', slug);
-                                          }
-                                          
-                                          // Update description with plant details
-                                          if (galleryImage.description) {
-                                            productForm.setValue('description', galleryImage.description);
-                                          }
-                                          
-                                          // Map plant category to product category
-                                          if (galleryImage.category) {
-                                            // Try to find matching category or use the gallery category
-                                            const matchingCategory = categories?.find(cat => 
-                                              cat.id === galleryImage.category || 
-                                              cat.name.toLowerCase().includes(galleryImage.category?.toLowerCase() || '')
-                                            );
-                                            if (matchingCategory) {
-                                              productForm.setValue('categoryId', matchingCategory.id);
-                                            }
-                                          }
-                                          
-                                          // Transfer ALL AI plant identification data to product
-                                          if (galleryImage.hardinessZone) {
-                                            productForm.setValue('hardinessZone', galleryImage.hardinessZone);
-                                          }
-                                          if (galleryImage.sunPreference) {
-                                            productForm.setValue('sunRequirements', galleryImage.sunPreference);
-                                          }
-                                          if (galleryImage.texasNative !== null && galleryImage.texasNative !== undefined) {
-                                            productForm.setValue('texasNative', galleryImage.texasNative);
-                                          }
-                                          if (galleryImage.droughtTolerance) {
-                                            productForm.setValue('droughtTolerance', galleryImage.droughtTolerance);
-                                          }
-                                          if (galleryImage.indoorOutdoor) {
-                                            productForm.setValue('indoorOutdoor', galleryImage.indoorOutdoor);
-                                          }
-                                          // Note: bloomSeason and matureSize not available in gallery schema but could be added later
-                                        }
-                                      }}
-                                      selectedImageUrl={field.value}
-                                    />
-                                    <ObjectUploader
-                                      maxNumberOfFiles={1}
-                                      maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
-                                      onComplete={(result) => {
-                                        if (result.successful && result.successful.length > 0) {
-                                          field.onChange(result.successful[0].uploadURL);
-                                        }
-                                      }}
-                                      buttonClassName="text-sm"
-                                    >
-                                      Upload New
-                                    </ObjectUploader>
-                                  </div>
-                                  {field.value && (
-                                    <div className="mt-2">
-                                      <img 
-                                        src={field.value} 
-                                        alt="Preview" 
-                                        className="w-20 h-20 object-cover rounded border" 
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <UnifiedImageUploader
+                              value={field.value}
+                              onChange={(imageUrl, galleryImage) => {
+                                field.onChange(imageUrl);
+                                // Transfer AI plant identification data to product fields
+                                if (galleryImage) {
+                                  // Update product name with plant name
+                                  if (galleryImage.title && galleryImage.title !== "Untitled" && galleryImage.title !== "Uploaded Image") {
+                                    productForm.setValue('name', galleryImage.title);
+                                    // Auto-generate slug from plant name
+                                    const slug = galleryImage.title.toLowerCase()
+                                      .replace(/[^a-z0-9 -]/g, '') // Remove special characters
+                                      .replace(/\s+/g, '-') // Replace spaces with hyphens
+                                      .replace(/-+/g, '-'); // Remove duplicate hyphens
+                                    productForm.setValue('slug', slug);
+                                  }
+
+                                  // Update description with plant details
+                                  if (galleryImage.description) {
+                                    productForm.setValue('description', galleryImage.description);
+                                  }
+
+                                  // Map plant category to product category
+                                  if (galleryImage.category) {
+                                    // Try to find matching category or use the gallery category
+                                    const matchingCategory = categories?.find(cat =>
+                                      cat.id === galleryImage.category ||
+                                      cat.name.toLowerCase().includes(galleryImage.category?.toLowerCase() || '')
+                                    );
+                                    if (matchingCategory) {
+                                      productForm.setValue('categoryId', matchingCategory.id);
+                                    }
+                                  }
+
+                                  // Transfer ALL AI plant identification data to product
+                                  if (galleryImage.hardinessZone) {
+                                    productForm.setValue('hardinessZone', galleryImage.hardinessZone);
+                                  }
+                                  if (galleryImage.sunPreference) {
+                                    productForm.setValue('sunRequirements', galleryImage.sunPreference);
+                                  }
+                                  if (galleryImage.texasNative !== null && galleryImage.texasNative !== undefined) {
+                                    productForm.setValue('texasNative', galleryImage.texasNative);
+                                  }
+                                  if (galleryImage.droughtTolerance) {
+                                    productForm.setValue('droughtTolerance', galleryImage.droughtTolerance);
+                                  }
+                                  if (galleryImage.indoorOutdoor) {
+                                    productForm.setValue('indoorOutdoor', galleryImage.indoorOutdoor);
+                                  }
+                                  // Note: bloomSeason and matureSize not available in gallery schema but could be added later
+                                }
+                              }}
+                              onGetUploadParameters={async () => {
+                                const res = await apiRequest("POST", "/api/objects/upload", {});
+                                return { method: "PUT" as const, url: (res as any).uploadURL };
+                              }}
+                              label="Product Image"
+                              helperText={imageSizeGuide.product}
+                            />
                           )}
                         />
                         <div className="flex gap-4">
@@ -1590,13 +1566,19 @@ export default function AdminDashboard() {
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => deleteProductMutation.mutate(product.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <DeleteConfirmation
+                              title="Delete Product?"
+                              description="This will permanently remove this product from your store."
+                              itemName={product.name}
+                              impact={product.stock && product.stock > 0 ? `${product.stock} items in stock will be removed` : undefined}
+                              onConfirm={() => deleteProductMutation.mutate(product.id)}
+                              isLoading={deleteProductMutation.isPending}
+                              trigger={
+                                <Button size="sm" variant="outline">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              }
+                            />
                           </div>
                         </td>
                       </tr>
@@ -1643,13 +1625,11 @@ export default function AdminDashboard() {
                           control={categoryForm.control}
                           name="slug"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Slug</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <AutoSlugInput
+                              sourceValue={categoryForm.watch("name")}
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
                           )}
                         />
                         <FormField
@@ -1669,43 +1649,16 @@ export default function AdminDashboard() {
                           control={categoryForm.control}
                           name="imageUrl"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Collection Image</FormLabel>
-                              <FormControl>
-                                <div className="space-y-2">
-                                  <Input {...field} placeholder="https://..." />
-                                  <div className="flex gap-2">
-                                    <GalleryImageSelector
-                                      onSelect={field.onChange}
-                                      selectedImageUrl={field.value}
-                                    />
-                                    <ObjectUploader
-                                      maxNumberOfFiles={1}
-                                      maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
-                                      onComplete={(result) => {
-                                        if (result.successful && result.successful.length > 0) {
-                                          field.onChange(result.successful[0].uploadURL);
-                                        }
-                                      }}
-                                      buttonClassName="text-sm"
-                                    >
-                                      Upload New
-                                    </ObjectUploader>
-                                  </div>
-                                  {field.value && (
-                                    <div className="mt-2">
-                                      <img 
-                                        src={field.value} 
-                                        alt="Collection preview" 
-                                        className="w-32 h-24 object-cover rounded border" 
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <UnifiedImageUploader
+                              value={field.value}
+                              onChange={field.onChange}
+                              onGetUploadParameters={async () => {
+                                const res = await apiRequest("POST", "/api/objects/upload", {});
+                                return { method: "PUT" as const, url: (res as any).uploadURL };
+                              }}
+                              label="Collection Image"
+                              helperText={imageSizeGuide.category}
+                            />
                           )}
                         />
                         <FormField
@@ -1785,24 +1738,39 @@ export default function AdminDashboard() {
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => deleteCategoryMutation.mutate(category.id)}
+                          <DeleteConfirmation
+                            title="Delete Category?"
+                            description="This will permanently remove this category."
+                            itemName={category.name}
+                            impact={(Array.isArray(products) ? products : []).filter(p => p.categoryId === category.id).length > 0
+                              ? `${(Array.isArray(products) ? products : []).filter(p => p.categoryId === category.id).length} products use this category`
+                              : undefined}
+                            onConfirm={() => deleteCategoryMutation.mutate(category.id)}
+                            isLoading={deleteCategoryMutation.isPending}
                             disabled={(Array.isArray(products) ? products : []).some(p => p.categoryId === category.id)}
-                            title={(Array.isArray(products) ? products : []).some(p => p.categoryId === category.id) ? "Cannot delete - has products" : "Delete category"}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                            trigger={
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={(Array.isArray(products) ? products : []).some(p => p.categoryId === category.id)}
+                                title={(Array.isArray(products) ? products : []).some(p => p.categoryId === category.id) ? "Cannot delete - has products" : "Delete category"}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            }
+                          />
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
                 {(Array.isArray(categories) ? categories : []).length === 0 && (
-                  <div className="col-span-full text-center py-12">
-                    <p className="text-gray-500 mb-4">No plant collections created yet.</p>
-                    <p className="text-sm text-gray-400">Collections you create here will appear as plant collections on your home page.</p>
+                  <div className="col-span-full">
+                    <EmptyState
+                      {...emptyStates.categories}
+                      actionLabel="Add Your First Category"
+                      onAction={() => setIsCategoryDialogOpen(true)}
+                    />
                   </div>
                 )}
               </div>
@@ -1844,13 +1812,11 @@ export default function AdminDashboard() {
                           control={blogForm.control}
                           name="slug"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Slug</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <AutoSlugInput
+                              sourceValue={blogForm.watch("title")}
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
                           )}
                         />
                         <FormField
@@ -1870,43 +1836,16 @@ export default function AdminDashboard() {
                           control={blogForm.control}
                           name="imageUrl"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Featured Image</FormLabel>
-                              <FormControl>
-                                <div className="space-y-2">
-                                  <Input {...field} placeholder="https://..." />
-                                  <div className="flex gap-2">
-                                    <GalleryImageSelector
-                                      onSelect={field.onChange}
-                                      selectedImageUrl={field.value}
-                                    />
-                                    <ObjectUploader
-                                      maxNumberOfFiles={1}
-                                      maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
-                                      onComplete={(result) => {
-                                        if (result.successful && result.successful.length > 0) {
-                                          field.onChange(result.successful[0].uploadURL);
-                                        }
-                                      }}
-                                      buttonClassName="text-sm"
-                                    >
-                                      Upload New
-                                    </ObjectUploader>
-                                  </div>
-                                  {field.value && (
-                                    <div className="mt-2">
-                                      <img 
-                                        src={field.value} 
-                                        alt="Preview" 
-                                        className="w-20 h-20 object-cover rounded border" 
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <UnifiedImageUploader
+                              value={field.value}
+                              onChange={field.onChange}
+                              onGetUploadParameters={async () => {
+                                const res = await apiRequest("POST", "/api/objects/upload", {});
+                                return { method: "PUT" as const, url: (res as any).uploadURL };
+                              }}
+                              label="Featured Image"
+                              helperText={imageSizeGuide.blog}
+                            />
                           )}
                         />
                         <FormField
@@ -1950,9 +1889,18 @@ export default function AdminDashboard() {
                         <Button size="sm" variant="outline" onClick={() => handleEditBlogPost(post)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteBlogPostMutation.mutate(post.id)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <DeleteConfirmation
+                          title="Delete Blog Post?"
+                          description="This will permanently remove this blog post from your site."
+                          itemName={post.title}
+                          onConfirm={() => deleteBlogPostMutation.mutate(post.id)}
+                          isLoading={deleteBlogPostMutation.isPending}
+                          trigger={
+                            <Button size="sm" variant="outline">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
                       </div>
                     </CardContent>
                   </Card>
@@ -2257,14 +2205,11 @@ export default function AdminDashboard() {
                           control={galleryForm.control}
                           name="tags"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Tags</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="e.g., bluebonnet, native, wildflower, spring" />
-                              </FormControl>
-                              <p className="text-xs text-gray-500">Comma-separated tags for easy filtering</p>
-                              <FormMessage />
-                            </FormItem>
+                            <TagSelector
+                              value={field.value || []}
+                              onChange={field.onChange}
+                              helperText={helperText.gallery.tags}
+                            />
                           )}
                         />
                         <div className="flex gap-4">
@@ -2326,36 +2271,29 @@ export default function AdminDashboard() {
                             <Edit className="w-4 h-4 mr-2" />
                             Edit
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => deleteGalleryImageMutation.mutate(image.id)}
-                            className="flex-1"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Delete
-                          </Button>
-                          {!(image as any).commonName && (
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => identifyPlantMutation.mutate(image.id)}
-                              disabled={identifyPlantMutation.isPending}
-                              className="flex-1"
-                            >
-                              {identifyPlantMutation.isPending && identifyPlantMutation.variables === image.id ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2"></div>
-                                  Identifying...
-                                </>
-                              ) : (
-                                <>
-                                  <span className="w-4 h-4 mr-2">🌿</span>
-                                  ID Plant
-                                </>
-                              )}
-                            </Button>
-                          )}
+                          <DeleteConfirmation
+                            title="Delete Image?"
+                            description="This will permanently remove this image from your gallery."
+                            itemName={image.title || "Untitled Image"}
+                            onConfirm={() => deleteGalleryImageMutation.mutate(image.id)}
+                            isLoading={deleteGalleryImageMutation.isPending}
+                            trigger={
+                              <Button size="sm" variant="destructive" className="flex-1">
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </Button>
+                            }
+                          />
+                          <PlantIdentificationStatus
+                            isIdentified={(image as any).aiIdentified || false}
+                            isIdentifying={identifyPlantMutation.isPending && identifyingImageId === image.id}
+                            commonName={(image as any).commonName}
+                            onIdentify={() => {
+                              setIdentifyingImageId(image.id);
+                              identifyPlantMutation.mutate(image.id);
+                            }}
+                            variant="button"
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -2516,14 +2454,18 @@ export default function AdminDashboard() {
                           >
                             {review.approved ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => deleteReviewMutation.mutate(review.id)}
-                            title="Delete review"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <DeleteConfirmation
+                            title="Delete Review?"
+                            description="This will permanently remove this customer review."
+                            itemName={`Review by ${review.customerName}`}
+                            onConfirm={() => deleteReviewMutation.mutate(review.id)}
+                            isLoading={deleteReviewMutation.isPending}
+                            trigger={
+                              <Button size="sm" variant="outline" title="Delete review">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            }
+                          />
                         </div>
                       </div>
                       <p className="text-gray-700">{review.content}</p>
@@ -2633,43 +2575,16 @@ export default function AdminDashboard() {
                           control={teamMemberForm.control}
                           name="imageUrl"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Profile Image</FormLabel>
-                              <FormControl>
-                                <div className="space-y-2">
-                                  <Input {...field} placeholder="https://..." />
-                                  <div className="flex gap-2">
-                                    <GalleryImageSelector
-                                      onSelect={field.onChange}
-                                      selectedImageUrl={field.value}
-                                    />
-                                    <ObjectUploader
-                                      maxNumberOfFiles={1}
-                                      maxFileSize={10485760}
-                                      onGetUploadParameters={() => apiRequest("POST", "/api/objects/upload", {}).then(r => ({ method: "PUT" as const, url: (r as any).uploadURL }))}
-                                      onComplete={(result) => {
-                                        if (result.successful && result.successful.length > 0) {
-                                          field.onChange(result.successful[0].uploadURL);
-                                        }
-                                      }}
-                                      buttonClassName="text-sm"
-                                    >
-                                      Upload New
-                                    </ObjectUploader>
-                                  </div>
-                                  {field.value && (
-                                    <div className="mt-2">
-                                      <img 
-                                        src={field.value} 
-                                        alt="Preview" 
-                                        className="w-20 h-20 object-cover rounded-full border" 
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <UnifiedImageUploader
+                              value={field.value}
+                              onChange={field.onChange}
+                              onGetUploadParameters={async () => {
+                                const res = await apiRequest("POST", "/api/objects/upload", {});
+                                return { method: "PUT" as const, url: (res as any).uploadURL };
+                              }}
+                              label="Profile Image"
+                              helperText={imageSizeGuide.team}
+                            />
                           )}
                         />
                         <div className="grid grid-cols-2 gap-4">
@@ -2755,16 +2670,29 @@ export default function AdminDashboard() {
                         <Button size="sm" variant="outline" onClick={() => handleEditTeamMember(member)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteTeamMemberMutation.mutate(member.id)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <DeleteConfirmation
+                          title="Delete Team Member?"
+                          description="This will permanently remove this team member from your site."
+                          itemName={member.name}
+                          onConfirm={() => deleteTeamMemberMutation.mutate(member.id)}
+                          isLoading={deleteTeamMemberMutation.isPending}
+                          trigger={
+                            <Button size="sm" variant="outline">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
                       </div>
                     </CardContent>
                   </Card>
                 ))}
                 {(teamMembers || []).length === 0 && (
-                  <div className="col-span-full text-center py-8">
-                    <p className="text-gray-500">No team members added yet. Click "Add Team Member" to get started.</p>
+                  <div className="col-span-full">
+                    <EmptyState
+                      {...emptyStates.team}
+                      actionLabel="Add Your First Team Member"
+                      onAction={() => setIsTeamMemberDialogOpen(true)}
+                    />
                   </div>
                 )}
               </div>
@@ -3434,7 +3362,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </TabsContent>
-          </Tabs>
+          </GroupedTabs>
         </Card>
       </div>
     </section>
