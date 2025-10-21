@@ -13,9 +13,9 @@ interface HeroSectionProps {
 
 export default function HeroSection({
   heroTitle = "Gringo Gardens",
-  heroSubtitle = "Texas Native Plants & Trees", 
+  heroSubtitle = "Texas Native Plants & Trees",
   heroDescription = "Your local source for Texas natives, trees, and plants.",
-  heroImageUrl = "/hero-image.jpg?v=1",
+  heroImageUrl = "https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
   ctaText = "Shop Native Plants",
   ctaLink = "/products"
 }: HeroSectionProps) {
@@ -66,9 +66,9 @@ export default function HeroSection({
             </Button>
           </Link>
           <Link href="/contact">
-            <Button 
-              variant="outline" 
-              className="border-2 border-bluebonnet bg-bluebonnet-600 hover:bg-bluebonnet hover:text-bluebonnet-900 px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
+            <Button
+              variant="outline"
+              className="border-2 border-white bg-transparent hover:bg-white hover:text-bluebonnet-900 text-white px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
             >
               Visit Our Nursery
             </Button>

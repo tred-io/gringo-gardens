@@ -83,41 +83,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* Team Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-bluebonnet-900 mb-4">Meet Our Team</h2>
-          <p className="text-xl text-gray-600">The passionate people behind Gringo Gardens</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-          {(teamMembers || []).map((member, index) => (
-            <Card key={member.id} className="shadow-lg">
-              <CardContent className="p-8 text-center">
-                {member.imageUrl ? (
-                  <img
-                    src={member.imageUrl}
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                  />
-                ) : (
-                  <div className={`w-24 h-24 ${index % 2 === 0 ? 'bg-bluebonnet-100' : 'bg-texas-green-100'} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <span className={`text-2xl font-bold ${index % 2 === 0 ? 'text-bluebonnet-600' : 'text-texas-green-600'}`}>
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                )}
-                <h3 className="text-xl font-bold text-bluebonnet-900 mb-2">{member.name}</h3>
-                <p className="text-bluebonnet-600 font-medium mb-3">{member.position}</p>
-                <p className="text-gray-600">{member.bio}</p>
-              </CardContent>
-            </Card>
-          ))}
-          {(teamMembers || []).length === 0 && (
-            <div className="col-span-full text-center py-8">
-              <p className="text-gray-500">Team member information is being updated.</p>
-            </div>
-          )}
-        </div>
       </div>
     </section>
   );

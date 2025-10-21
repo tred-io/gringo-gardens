@@ -119,7 +119,6 @@ export const ADMIN_TAB_GROUPS: TabGroup[] = [
     label: "Settings",
     icon: <Settings className="w-4 h-4" />,
     tabs: [
-      { id: "team", label: "Team", icon: <User className="w-4 h-4" /> },
       { id: "content-pages", label: "Pages", icon: <Home className="w-4 h-4" /> },
       { id: "business", label: "Business", icon: <Info className="w-4 h-4" /> },
     ],
