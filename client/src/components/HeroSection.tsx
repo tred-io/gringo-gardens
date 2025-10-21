@@ -19,35 +19,38 @@ export default function HeroSection({
   ctaText = "Shop Native Plants",
   ctaLink = "/products"
 }: HeroSectionProps) {
-  const [imageSrc, setImageSrc] = useState(heroImageUrl);
+  const defaultImageUrl = "https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
+  const [imageSrc, setImageSrc] = useState(heroImageUrl || defaultImageUrl);
   const [hasTriedFallback, setHasTriedFallback] = useState(false);
 
   // Reset state when heroImageUrl prop changes
   useEffect(() => {
-    setImageSrc(heroImageUrl);
-    setHasTriedFallback(false);
+    if (heroImageUrl && heroImageUrl !== imageSrc) {
+      setImageSrc(heroImageUrl);
+      setHasTriedFallback(false);
+    }
   }, [heroImageUrl]);
+
   return (
-    <section className="relative h-screen flex items-center justify-center text-white">
+    <section className="relative h-screen flex items-center justify-center text-white overflow-hidden">
       {/* Background Image */}
-      <img 
-        src={imageSrc} 
+      <img
+        src={imageSrc}
         alt="Texas wildflowers"
         className="absolute inset-0 w-full h-full object-cover z-0"
         onError={(e) => {
           if (!hasTriedFallback) {
             console.error('Hero image failed to load, trying fallback:', e);
             setHasTriedFallback(true);
-            setImageSrc('https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            setImageSrc(defaultImageUrl);
           } else {
             console.error('Both hero and fallback images failed to load');
           }
         }}
-        onLoad={() => console.log('Hero image loaded successfully')}
       />
       <div className="absolute inset-0 bg-black bg-opacity-15 z-[5]"></div>
 
-      <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+      <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto animate-in fade-in duration-700">
         <h1 className="text-6xl sm:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
           <span className="text-texas-green-400">{heroTitle}</span>
         </h1>
