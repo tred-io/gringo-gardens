@@ -846,7 +846,7 @@ export default function AdminDashboard() {
 
   const identifyPlantMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("POST", `/api/admin/gallery?id=${id}&action=identify`, {});
+      return await apiRequest("POST", `/api/admin/gallery/${id}/identify`, {});
     },
     onSuccess: () => {
       // Invalidate immediately and then again after a delay to catch the backend update

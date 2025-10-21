@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -58,7 +59,7 @@ async function initializeServer() {
   }
 
   // For Vercel deployment, don't start server
-  if (process.env.VERCEL) {
+  if (process.env.VERCEL === 'true') {
     return app;
   }
 
@@ -90,8 +91,11 @@ async function handler(req: any, res: any) {
 }
 
 // Start server in non-Vercel environments
-if (!process.env.VERCEL) {
-  initializeServer();
+if (process.env.VERCEL !== 'true') {
+  initializeServer().catch(error => {
+    console.error("Failed to initialize server:", error);
+    process.exit(1);
+  });
 }
 
 // Export for Vercel

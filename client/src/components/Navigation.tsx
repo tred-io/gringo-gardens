@@ -51,6 +51,16 @@ export default function Navigation() {
               </Link>
             ))}
 
+            {/* Gift Card CTA */}
+            <a
+              href="https://www.clover.com/online-ordering/gringogardens/giftcard"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className="bg-yellow-400 hover:bg-yellow-500 text-bluebonnet-900 font-bold px-6 py-2 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl">
+                Buy a Gift Card
+              </button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -85,6 +95,19 @@ export default function Navigation() {
                 </Link>
               ))}
 
+              {/* Gift Card CTA - Mobile */}
+              <a
+                href="https://www.clover.com/online-ordering/gringogardens/giftcard"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button
+                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-bluebonnet-900 font-bold px-6 py-3 rounded-full shadow-lg transition-all mt-4"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Buy a Gift Card
+                </button>
+              </a>
             </div>
           </div>
         )}
