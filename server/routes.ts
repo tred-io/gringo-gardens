@@ -782,15 +782,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const objectStorageService = new ObjectStorageService();
       const vercelBlobService = new VercelBlobStorageService();
-      
+
       // Try Vercel Blob first (for production), then fall back to Replit object storage
       if (vercelBlobService.isAvailable()) {
         // Return fully qualified Vercel Blob upload endpoint
         const protocol = req.get('x-forwarded-proto') || req.secure ? 'https' : 'http';
         const host = req.get('host');
         const uploadURL = `${protocol}://${host}/api/blob/upload`;
-        
-        return res.json({ 
+
+        return res.json({
           uploadURL: uploadURL,
           method: "PUT",
           headers: {
@@ -803,7 +803,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const uploadURL = await objectStorageService.getObjectEntityUploadURL();
         res.json({ uploadURL });
       } else {
-        return res.status(503).json({ 
+        return res.status(503).json({
           error: "No storage service available",
           message: "Please use external image hosting (like Unsplash URLs) for gallery images"
         });
@@ -811,6 +811,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating upload URL:", error);
       res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+
+  // Handle direct blob upload
+  app.put("/api/blob/upload", async (req, res) => {
+    try {
+      const vercelBlobService = new VercelBlobStorageService();
+
+      if (!vercelBlobService.isAvailable()) {
+        return res.status(503).json({
+          error: "Vercel Blob storage not available",
+          message: "Blob storage is only available in Vercel deployments"
+        });
+      }
+
+      // Get the raw file buffer from the request body
+      const chunks: Buffer[] = [];
+      req.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+
+      req.on('end', async () => {
+        try {
+          const fileBuffer = Buffer.concat(chunks);
+          const contentType = req.get('content-type') || 'image/jpeg';
+
+          console.log(`Received blob upload: ${fileBuffer.length} bytes, type: ${contentType}`);
+
+          // Process and upload the image
+          const result = await vercelBlobService.processDirectUpload(fileBuffer, contentType);
+
+          res.json({
+            success: true,
+            url: result.url,
+            objectPath: result.objectPath,
+            sizes: result.sizes
+          });
+        } catch (error) {
+          console.error('Error processing blob upload:', error);
+          res.status(500).json({
+            error: "Upload processing failed",
+            message: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      });
+
+      req.on('error', (error) => {
+        console.error('Error receiving upload data:', error);
+        res.status(500).json({
+          error: "Upload failed",
+          message: error.message
+        });
+      });
+    } catch (error) {
+      console.error("Error handling blob upload:", error);
+      res.status(500).json({ error: "Failed to process upload" });
     }
   });
 
