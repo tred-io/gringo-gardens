@@ -2699,7 +2699,7 @@ export default function AdminDashboard() {
             </TabsContent>
 
             {/* Content Management Tab */}
-            <TabsContent value="content" className="p-6">
+            <TabsContent value="content-pages" className="p-6">
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-bluebonnet-900 mb-2">Content Management</h2>
                 <p className="text-gray-600">Manage your website content page by page. Select a page below to edit its content, images, and SEO settings.</p>
@@ -3200,8 +3200,8 @@ export default function AdminDashboard() {
               </div>
             </TabsContent>
 
-            {/* Settings Tab */}
-            <TabsContent value="settings" className="p-6">
+            {/* Business Settings Tab */}
+            <TabsContent value="business" className="p-6">
               <div className="space-y-8">
                 <div>
                   <h2 className="text-xl font-bold text-bluebonnet-900 mb-6">Business Settings</h2>
