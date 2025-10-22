@@ -11,6 +11,17 @@ export default function About() {
     queryKey: ["/api/team"],
   });
 
+  // Fetch About page content from CMS
+  const { data: aboutPageSetting } = useQuery({
+    queryKey: ["/api/settings/page_content_about"],
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+
+  // Parse about page content from CMS
+  const aboutContent = (aboutPageSetting as any)?.value ? JSON.parse((aboutPageSetting as any).value) : null;
+
   return (
     <section className="py-12">
       <SEOHead
@@ -23,33 +34,41 @@ export default function About() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-5xl font-bold text-bluebonnet-900 mb-6">
-            Our Story
+            {aboutContent?.pageTitle || "Our Story"}
           </h1>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            From a passion for native Texas flora to becoming Central Texas's trusted plant nursery
+            {aboutContent?.heroSubtitle || "From a passion for native Texas flora to becoming Central Texas's trusted plant nursery"}
           </p>
         </div>
 
         {/* Story Content */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
           <div>
-            <img 
-              src="/nursery-photo.jpg" 
-              alt="Gringo Gardens nursery with shade structures and native plants at sunset" 
+            <img
+              src="/nursery-photo.jpg"
+              alt="Gringo Gardens nursery with shade structures and native plants at sunset"
               className="rounded-2xl shadow-2xl"
             />
           </div>
           <div>
             <h2 className="text-3xl font-bold text-bluebonnet-900 mb-6">Growing Texas Heritage</h2>
-            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              Founded in 2019 in the heart of Lampasas, Gringo Gardens began as a small operation with a big dream: to help Texans create beautiful, sustainable landscapes using the incredible diversity of native plants that call the Lone Star State home.
-            </p>
-            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              What started as a weekend hobby of propagating plants and other wildflowers has grown into Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice. We've remained committed to our original mission: promoting the beauty and ecological benefits of native Texas flora.
-            </p>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              Today, we serve customers across Texas and beyond, offering our carefully cultivated plants to gardeners who share our passion for authentic Texas landscapes that support local wildlife and thrive in our unique climate.
-            </p>
+            <div className="text-lg text-gray-700 leading-relaxed">
+              {aboutContent?.story ? (
+                <div dangerouslySetInnerHTML={{ __html: aboutContent.story.replace(/\n/g, '</p><p class="mb-6">') }} />
+              ) : (
+                <>
+                  <p className="mb-6">
+                    Founded in 2019 in the heart of Lampasas, Gringo Gardens began as a small operation with a big dream: to help Texans create beautiful, sustainable landscapes using the incredible diversity of native plants that call the Lone Star State home.
+                  </p>
+                  <p className="mb-6">
+                    What started as a weekend hobby of propagating plants and other wildflowers has grown into Central Texas's premier destination for native plants, fruit trees, and expert horticultural advice. We've remained committed to our original mission: promoting the beauty and ecological benefits of native Texas flora.
+                  </p>
+                  <p>
+                    Today, we serve customers across Texas and beyond, offering our carefully cultivated plants to gardeners who share our passion for authentic Texas landscapes that support local wildlife and thrive in our unique climate.
+                  </p>
+                </>
+              )}
+            </div>
           </div>
         </div>
 

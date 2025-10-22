@@ -3015,40 +3015,101 @@ export default function AdminDashboard() {
                               Edit your about page content and story
                             </DialogDescription>
                           </DialogHeader>
-                          
-                          <div className="space-y-6">
-                            <div className="border rounded-lg p-4">
-                              <h3 className="font-semibold text-lg mb-4">Page Content</h3>
-                              <div className="grid gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Page Title</label>
-                                  <Input placeholder="About Gringo Gardens" data-testid="input-about-page-title" />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-                                  <Input placeholder="Our Story & Mission" data-testid="input-about-hero-subtitle" />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Our Story</label>
-                                  <Textarea placeholder="Founded in..." rows={4} data-testid="textarea-our-story" />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Mission Statement</label>
-                                  <Textarea placeholder="Our mission is to..." rows={3} data-testid="textarea-mission" />
+
+                          <Form {...aboutForm}>
+                            <form onSubmit={aboutForm.handleSubmit(onAboutSubmit)} className="space-y-6">
+                              <div className="border rounded-lg p-4">
+                                <h3 className="font-semibold text-lg mb-4">Page Content</h3>
+                                <div className="grid gap-4">
+                                  <FormField
+                                    control={aboutForm.control}
+                                    name="pageTitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Page Title</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="About Gringo Gardens"
+                                            data-testid="input-about-page-title"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={aboutForm.control}
+                                    name="heroSubtitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Hero Subtitle</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Our Story & Mission"
+                                            data-testid="input-about-hero-subtitle"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={aboutForm.control}
+                                    name="story"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Our Story</FormLabel>
+                                        <FormControl>
+                                          <Textarea
+                                            placeholder="Founded in..."
+                                            rows={4}
+                                            data-testid="textarea-our-story"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={aboutForm.control}
+                                    name="mission"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Mission Statement</FormLabel>
+                                        <FormControl>
+                                          <Textarea
+                                            placeholder="Our mission is to..."
+                                            rows={3}
+                                            data-testid="textarea-mission"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
                                 </div>
                               </div>
-                            </div>
-                          </div>
 
-                          <div className="flex justify-end gap-2 mt-6">
-                            <DialogClose asChild>
-                              <Button variant="outline" data-testid="button-cancel-about">Cancel</Button>
-                            </DialogClose>
-                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-about">
-                              <Save className="w-4 h-4 mr-2" />
-                              Save About Content
-                            </Button>
-                          </div>
+                              <div className="flex justify-end gap-2 mt-6">
+                                <DialogClose asChild>
+                                  <Button type="button" variant="outline" data-testid="button-cancel-about">Cancel</Button>
+                                </DialogClose>
+                                <Button
+                                  type="submit"
+                                  className="bg-bluebonnet-600 hover:bg-bluebonnet-700"
+                                  data-testid="button-save-about"
+                                  disabled={contentLoading}
+                                >
+                                  <Save className="w-4 h-4 mr-2" />
+                                  {contentLoading ? 'Saving...' : 'Save About Content'}
+                                </Button>
+                              </div>
+                            </form>
+                          </Form>
                         </DialogContent>
                       </Dialog>
                     </CardContent>
@@ -3078,46 +3139,120 @@ export default function AdminDashboard() {
                               Edit contact information and business details
                             </DialogDescription>
                           </DialogHeader>
-                          
-                          <div className="space-y-6">
-                            <div className="border rounded-lg p-4">
-                              <h3 className="font-semibold text-lg mb-4">Contact Information</h3>
-                              <div className="grid gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Page Title</label>
-                                  <Input placeholder="Contact Us" data-testid="input-contact-title" />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Description</label>
-                                  <Textarea placeholder="Get in touch with our team..." rows={2} data-testid="textarea-contact-description" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">Phone</label>
-                                    <Input placeholder="(555) 123-4567" data-testid="input-contact-phone" />
+
+                          <Form {...contactForm}>
+                            <form onSubmit={contactForm.handleSubmit(onContactSubmit)} className="space-y-6">
+                              <div className="border rounded-lg p-4">
+                                <h3 className="font-semibold text-lg mb-4">Contact Information</h3>
+                                <div className="grid gap-4">
+                                  <FormField
+                                    control={contactForm.control}
+                                    name="pageTitle"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Page Title</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Contact Us"
+                                            data-testid="input-contact-title"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={contactForm.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                          <Textarea
+                                            placeholder="Get in touch with our team..."
+                                            rows={2}
+                                            data-testid="textarea-contact-description"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <FormField
+                                      control={contactForm.control}
+                                      name="phone"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Phone</FormLabel>
+                                          <FormControl>
+                                            <Input
+                                              placeholder="(555) 123-4567"
+                                              data-testid="input-contact-phone"
+                                              {...field}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    <FormField
+                                      control={contactForm.control}
+                                      name="email"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Email</FormLabel>
+                                          <FormControl>
+                                            <Input
+                                              placeholder="info@gringogardens.com"
+                                              data-testid="input-contact-email"
+                                              {...field}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
                                   </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2">Email</label>
-                                    <Input placeholder="info@gringogardens.com" data-testid="input-contact-email" />
-                                  </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2">Address</label>
-                                  <Textarea placeholder="123 Garden Lane, Lampasas, TX" rows={2} data-testid="textarea-contact-address" />
+                                  <FormField
+                                    control={contactForm.control}
+                                    name="address"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Address</FormLabel>
+                                        <FormControl>
+                                          <Textarea
+                                            placeholder="123 Garden Lane, Lampasas, TX"
+                                            rows={2}
+                                            data-testid="textarea-contact-address"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
                                 </div>
                               </div>
-                            </div>
-                          </div>
 
-                          <div className="flex justify-end gap-2 mt-6">
-                            <DialogClose asChild>
-                              <Button variant="outline" data-testid="button-cancel-contact">Cancel</Button>
-                            </DialogClose>
-                            <Button className="bg-bluebonnet-600 hover:bg-bluebonnet-700" data-testid="button-save-contact">
-                              <Save className="w-4 h-4 mr-2" />
-                              Save Contact Content
-                            </Button>
-                          </div>
+                              <div className="flex justify-end gap-2 mt-6">
+                                <DialogClose asChild>
+                                  <Button type="button" variant="outline" data-testid="button-cancel-contact">Cancel</Button>
+                                </DialogClose>
+                                <Button
+                                  type="submit"
+                                  className="bg-bluebonnet-600 hover:bg-bluebonnet-700"
+                                  data-testid="button-save-contact"
+                                  disabled={contentLoading}
+                                >
+                                  <Save className="w-4 h-4 mr-2" />
+                                  {contentLoading ? 'Saving...' : 'Save Contact Content'}
+                                </Button>
+                              </div>
+                            </form>
+                          </Form>
                         </DialogContent>
                       </Dialog>
                     </CardContent>

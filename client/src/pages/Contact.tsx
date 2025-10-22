@@ -30,6 +30,17 @@ export default function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Fetch Contact page content from CMS
+  const { data: contactPageSetting } = useQuery({
+    queryKey: ["/api/settings/page_content_contact"],
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+
+  // Parse contact page content from CMS
+  const contactContent = (contactPageSetting as any)?.value ? JSON.parse((contactPageSetting as any).value) : null;
+
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -90,10 +101,10 @@ export default function Contact() {
         {/* Page Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold text-bluebonnet-900 mb-4">
-            Contact Us
+            {contactContent?.pageTitle || "Contact Us"}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get in touch with our expert team for plant advice, orders, or visit our nursery in Lampasas
+            {contactContent?.description || "Get in touch with our expert team for plant advice, orders, or visit our nursery in Lampasas"}
           </p>
         </div>
 
@@ -228,15 +239,15 @@ export default function Contact() {
                   <MapPin className="text-bluebonnet-600 w-6 h-6 mt-1 mr-4" />
                   <div>
                     <h3 className="font-semibold text-bluebonnet-900">Address</h3>
-                    <p className="text-gray-700">4041 FM 1715<br />Lampasas, TX 76550</p>
+                    <p className="text-gray-700" dangerouslySetInnerHTML={{ __html: (contactContent?.address || "4041 FM 1715<br />Lampasas, TX 76550").replace(/\n/g, '<br />') }}></p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <Mail className="text-bluebonnet-600 w-6 h-6 mt-1 mr-4" />
                   <div>
                     <h3 className="font-semibold text-bluebonnet-900">Email</h3>
-                    <p className="text-gray-700">info@gringogardens.com</p>
+                    <p className="text-gray-700">{contactContent?.email || "info@gringogardens.com"}</p>
                   </div>
                 </div>
                 
