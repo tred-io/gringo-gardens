@@ -51,15 +51,15 @@ export default function HeroSection({
       <div className="absolute inset-0 bg-black bg-opacity-15 z-[5]"></div>
 
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto animate-in fade-in duration-700">
-        <h1 className="text-6xl sm:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
+        <h1 className="text-6xl sm:text-6xl lg:text-8xl font-bold mb-6 leading-tight" style={{ textShadow: '0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.9)' }}>
           <span className="text-texas-green-400">{heroTitle}</span>
         </h1>
         {heroSubtitle && (
-          <h2 className="text-3xl sm:text-4xl mb-4 text-bluebonnet-200 font-medium">
+          <h2 className="text-3xl sm:text-4xl mb-4 text-bluebonnet-200 font-medium" style={{ textShadow: '0 0 15px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.9)' }}>
             {heroSubtitle}
           </h2>
         )}
-        <p className="text-2xl sm:text-3xl mb-8 text-gray-100 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-2xl sm:text-3xl mb-8 text-gray-100 max-w-3xl mx-auto leading-relaxed" style={{ textShadow: '0 0 15px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.9)' }}>
           {heroDescription}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
