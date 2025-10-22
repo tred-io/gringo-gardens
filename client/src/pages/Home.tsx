@@ -52,7 +52,7 @@ export default function Home() {
   });
 
   // Fetch homepage content from CMS
-  const { data: homepageContentSetting } = useQuery({
+  const { data: homepageContentSetting, isLoading: isLoadingHomepage } = useQuery({
     queryKey: ["/api/settings/page_content_homepage"],
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -98,15 +98,15 @@ export default function Home() {
         url="/"
         image={homepageContent?.heroImageUrl || "/hero-wildflowers.jpg"}
       />
-      
+
       {/* Hero Section */}
-      <HeroSection 
-        heroTitle={homepageContent?.heroTitle}
-        heroSubtitle={homepageContent?.heroSubtitle}
-        heroDescription={homepageContent?.heroDescription}
-        heroImageUrl={homepageContent?.heroImageUrl}
-        ctaText={homepageContent?.ctaText}
-        ctaLink={homepageContent?.ctaLink}
+      <HeroSection
+        heroTitle={homepageContent?.heroTitle || "Gringo Gardens"}
+        heroSubtitle={homepageContent?.heroSubtitle || "Texas Native Plants & Trees"}
+        heroDescription={homepageContent?.heroDescription || "Your local source for Texas natives, trees, and plants."}
+        heroImageUrl={homepageContent?.heroImageUrl || "https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"}
+        ctaText={homepageContent?.ctaText || "Shop Native Plants"}
+        ctaLink={homepageContent?.ctaLink || "/products"}
       />
 
       {/* About Section */}

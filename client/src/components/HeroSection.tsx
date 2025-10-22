@@ -12,12 +12,12 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({
-  heroTitle = "Gringo Gardens",
-  heroSubtitle = "Texas Native Plants & Trees",
-  heroDescription = "Your local source for Texas natives, trees, and plants.",
-  heroImageUrl = "https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  ctaText = "Shop Native Plants",
-  ctaLink = "/products"
+  heroTitle,
+  heroSubtitle,
+  heroDescription,
+  heroImageUrl,
+  ctaText,
+  ctaLink
 }: HeroSectionProps) {
   const defaultImageUrl = "https://images.unsplash.com/photo-1523275353616-af4c9c0c8b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
   const [imageSrc, setImageSrc] = useState(heroImageUrl || defaultImageUrl);
