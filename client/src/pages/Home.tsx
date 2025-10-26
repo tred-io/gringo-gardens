@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { Star, MapPin, Phone, Clock } from "lucide-react";
 import { SEOHead } from "../components/SEOHead";
 import { trackEvent } from "../lib/analytics";
+import { convertTo12Hour } from "../lib/timeFormat";
 import type { Product, GalleryImage, Review, Category } from "@shared/schema";
 import nurseryImage from "../../../attached_assets/image000001(2)_1755303882674.jpg";
 import nativePlantsImage from "../../../attached_assets/image000000(30)_1755304019590.jpg";
@@ -326,7 +327,7 @@ export default function Home() {
                       {businessHours ? (
                         Object.entries(businessHours)
                           .filter(([_, hours]) => hours && hours !== 'Closed')
-                          .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours}`)
+                          .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${convertTo12Hour(hours as string)}`)
                           .join(', ')
                       ) : (
                         'Mon-Sat 8AM-6PM, Sun 10AM-4PM'

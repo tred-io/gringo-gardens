@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
+import { convertTo12Hour } from "../lib/timeFormat";
 import { MapPin, Phone, Mail, Facebook, Instagram } from "lucide-react";
 import { FaGoogle, FaYoutube, FaTiktok, FaTwitter } from "react-icons/fa";
 import logoPath from "../../../attached_assets/gringogardens_logo_1755358597034.png";
@@ -177,7 +178,7 @@ export default function Footer() {
                 {businessHours ? (
                   Object.entries(businessHours).map(([day, hours]: [string, any]) => (
                     <div key={day} className="text-bluebonnet-200 capitalize">
-                      <strong>{day}:</strong> {hours.closed ? 'Closed' : `${hours.open} - ${hours.close}`}
+                      <strong>{day}:</strong> {hours.closed ? 'Closed' : `${convertTo12Hour(hours.open)} - ${convertTo12Hour(hours.close)}`}
                     </div>
                   ))
                 ) : (
