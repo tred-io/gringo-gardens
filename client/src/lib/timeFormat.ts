@@ -11,7 +11,7 @@ export function convertTo12Hour(time24: string): string {
   // Handle time ranges (e.g., "08:00-18:00")
   if (time24.includes('-')) {
     const [start, end] = time24.split('-');
-    return `${convertSingleTime(start.trim())}-${convertSingleTime(end.trim())}`;
+    return `${convertSingleTime(start.trim())} - ${convertSingleTime(end.trim())}`;
   }
 
   // Handle single time
@@ -35,6 +35,6 @@ function convertSingleTime(time: string): string {
   const period = hour >= 12 ? 'PM' : 'AM';
   hour = hour % 12 || 12; // Convert to 12-hour format (0 becomes 12)
 
-  // Remove leading zero from hour
-  return `${hour}:${minute}${period}`;
+  // Remove leading zero from hour and add space before AM/PM
+  return `${hour}:${minute} ${period}`;
 }

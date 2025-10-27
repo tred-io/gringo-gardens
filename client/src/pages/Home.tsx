@@ -326,8 +326,10 @@ export default function Home() {
                     <span className="text-gray-700">
                       {businessHours ? (
                         Object.entries(businessHours)
-                          .filter(([_, hours]) => hours && hours !== 'Closed')
-                          .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${convertTo12Hour(hours as string)}`)
+                          .filter(([_, hours]: [string, any]) => hours && !hours.closed)
+                          .map(([day, hours]: [string, any]) =>
+                            `${day.charAt(0).toUpperCase() + day.slice(1)}: ${convertTo12Hour(hours.open)} - ${convertTo12Hour(hours.close)}`
+                          )
                           .join(', ')
                       ) : (
                         'Mon-Sat 8AM-6PM, Sun 10AM-4PM'
